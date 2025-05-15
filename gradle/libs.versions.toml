@@ -15,6 +15,7 @@ googleServices = "4.4.2"
 firebaseBom = "33.13.0"
 playServicesAuth = "20.5.0"
 firebaseUI = "8.0.2"
+firebaseFirestoreKtx = "25.1.4"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -35,6 +36,7 @@ firebase-storage-ktx = { module = "com.google.firebase:firebase-storage-ktx" }
 firebase-ui-auth = { group = "com.firebaseui", name = "firebase-ui-auth", version.ref = "firebaseUI" }
 firebase-ui-database = { group = "com.firebaseui", name = "firebase-ui-database", version.ref = "firebaseUI" }
 play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
+firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
 
 
 [plugins]

@@ -3,11 +3,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/classSelectFragment">
+    app:startDestination="@id/welcomeFragment">
 
     <fragment
         android:id="@+id/classSelectFragment"
         android:name="com.ellenspertus.qroster.ClassSelectFragment"
         android:label="fragment_class_select"
         tools:layout="@layout/fragment_class_select" />
+    <fragment
+        android:id="@+id/welcomeFragment"
+        android:name="com.ellenspertus.qroster.WelcomeFragment"
+        android:label="fragment_welcome"
+        tools:layout="@layout/fragment_welcome" >
+        <action
+            android:id="@+id/action_welcomeFragment_to_classSelectFragment"
+            app:destination="@id/classSelectFragment" />
+    </fragment>
 </navigation>
