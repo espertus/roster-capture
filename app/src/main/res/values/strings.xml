@@ -2,4 +2,6 @@
     <string name="app_name">QRoster</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="loading_authentication">Loading authentication...</string>
+    <string name="sign_out">Sign Out</string>
 </resources>

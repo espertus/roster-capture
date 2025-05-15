@@ -15,3 +15,22 @@
 local.properties
 .kotlin/
 
+# Key files and sensitive information
+*.jks
+*.keystore
+google-services.json
+**/google-services.json
+firebase_options.dart
+**/firebase_options.dart
+google-play-service-account.json
+*.p8
+*.p12
+*.key
+*.mobileprovision
+**/.firebaserc
+
+# Firebase local emulator files
+firebase-debug.log
+ui-debug.log
+.firebase/
+
