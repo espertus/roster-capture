@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/classSelectFragment"
-        android:name="com.ellenspertus.qroster.ClassSelectFragment"
+        android:name="com.ellenspertus.qroster.SelectCourseFragment"
         android:label="fragment_class_select"
         tools:layout="@layout/fragment_class_select" />
     <fragment
