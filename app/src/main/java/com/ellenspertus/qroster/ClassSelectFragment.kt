@@ -25,6 +25,7 @@ class ClassSelectFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
+        (activity as MainActivity).verifyAuthentication()
         retrieveClasses()
     }
 
