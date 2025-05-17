@@ -14,7 +14,6 @@ import com.ellenspertus.qroster.model.Course
 import com.google.firebase.firestore.firestore
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.AggregateSource
-import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -86,8 +85,8 @@ class SelectCourseFragment : Fragment() {
         val deferredResults = courses.map { course ->
             async {
                 try {
-                    val snapshot = db.collection(STUDENTS_COLLECTION)
-                        .whereEqualTo("courseName", course.shortName)
+                    val snapshot = db.collection(ENROLLMENTS_COLLECTION)
+                        .whereEqualTo("crn", course.crn)
                         .count()
                         .get(AggregateSource.SERVER)
                         .await()
@@ -108,8 +107,6 @@ class SelectCourseFragment : Fragment() {
     }
 
     companion object {
-        const val COURSES_COLLECTION = "courses"
-        const val STUDENTS_COLLECTION = "students"
         const val TAG = "SelectCourseFragment"
     }
 }

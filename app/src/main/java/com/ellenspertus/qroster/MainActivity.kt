@@ -10,6 +10,9 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 
 private const val TAG = "MainActivity"
+const val COURSES_COLLECTION = "courses"
+const val STUDENTS_COLLECTION = "students"
+const val ENROLLMENTS_COLLECTION = "enrollment"
 
 class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
