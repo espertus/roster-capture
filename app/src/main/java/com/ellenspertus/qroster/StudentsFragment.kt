@@ -6,19 +6,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.navArgs
-import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.MarginPageTransformer
 import com.ellenspertus.qroster.databinding.FragmentStudentsBinding
-import com.ellenspertus.qroster.model.Student
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.firestore
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 
 class StudentsFragment() : Fragment() {
     private var _binding: FragmentStudentsBinding? = null
@@ -72,33 +62,13 @@ class StudentsFragment() : Fragment() {
         val args = arguments?.let { StudentsFragmentArgs.fromBundle(it) }
         val crn = args?.crn
         if (crn != null) {
-            Log.d(tag, "About to load students with crn $crn")
             viewModel.loadStudentsForCourse(crn)
+        } else {
+            Log.e(TAG, "crn was null")
         }
     }
 
-//    private suspend fun retrieveStudents():  = coroutineScope {
-//        try {
-//            val snapshot = db.collection(STUDENTS_COLLECTION)
-//                .get()
-//                .await() // This suspends until the task completes and returns the QuerySnapshot
-//
-//            // Process the result after await() completes
-//            students = snapshot.documents.mapNotNull { document ->
-//                try {
-//                    document.toObject(Student::class.java)
-//                } catch (e: Exception) {
-//                    Log.e(SelectCourseFragment.TAG, "Error converting document ${document.id}", e)
-//                    null
-//                }
-//            }
-//        } catch (exception: Exception) {
-//            Log.e(SelectCourseFragment.TAG, "Error getting documents", exception)
-//        }
-//    }
-
     companion object {
         const val TAG = "StudentsFragment"
-        const val STUDENTS_COLLECTION = "students"
     }
 }

@@ -12,7 +12,7 @@ data class Student(
     constructor() : this(
         firstName = "",
         lastName = "",
-        preferredName = "",
+        preferredName = null,
         nuid = 0L,
         pronouns = "",
         selfieFile = null,
