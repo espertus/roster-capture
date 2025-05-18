@@ -6,17 +6,29 @@
     app:startDestination="@id/welcomeFragment">
 
     <fragment
-        android:id="@+id/classSelectFragment"
+        android:id="@+id/selectCourseFragment"
         android:name="com.ellenspertus.qroster.SelectCourseFragment"
         android:label="fragment_class_select"
-        tools:layout="@layout/fragment_class_select" />
+        tools:layout="@layout/fragment_class_select" >
+        <action
+            android:id="@+id/action_selectCourseFragment_to_studentsFragment"
+            app:destination="@id/studentsFragment" />
+    </fragment>
     <fragment
         android:id="@+id/welcomeFragment"
         android:name="com.ellenspertus.qroster.WelcomeFragment"
         android:label="fragment_welcome"
         tools:layout="@layout/fragment_welcome" >
         <action
-            android:id="@+id/action_welcomeFragment_to_classSelectFragment"
-            app:destination="@id/classSelectFragment" />
+            android:id="@+id/action_welcomeFragment_to_selectCourseFragment"
+            app:destination="@id/selectCourseFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/studentsFragment"
+        android:name="com.ellenspertus.qroster.StudentsFragment"
+        android:label="StudentsFragment" >
+        <argument
+            android:name="crn"
+            app:argType="long" />
     </fragment>
 </navigation>

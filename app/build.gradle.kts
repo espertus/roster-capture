@@ -21,6 +21,7 @@ android {
     defaultConfig {
         applicationId = "com.ellenspertus.qroster"
         minSdk = 34
+        //noinspection OldTargetApi
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -47,6 +48,7 @@ android {
     buildFeatures {
         compose = false
         buildConfig = true
+        viewBinding = true
     }
 }
 
@@ -66,6 +68,8 @@ dependencies {
     implementation(libs.firebase.ui.database)
     implementation(libs.play.services.auth)
     implementation(libs.firebase.firestore.ktx)
+    implementation(libs.glide)
+    implementation(libs.viewpager2)
 
     // Test dependencies
     testImplementation(libs.junit)

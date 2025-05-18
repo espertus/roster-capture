@@ -10,6 +10,7 @@ import android.widget.AutoCompleteTextView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.ellenspertus.qroster.model.Course
 import com.google.firebase.firestore.firestore
 import com.google.firebase.Firebase
@@ -54,6 +55,8 @@ class SelectCourseFragment : Fragment() {
             setOnItemClickListener { _, _, position, _ ->
                 val selectedCourse = courses[position]
                 Log.d(TAG, "User selected $selectedCourse")
+                val action = SelectCourseFragmentDirections.actionSelectCourseFragmentToStudentsFragment(selectedCourse.crn)
+                findNavController().navigate(action)
             }
         }
     }
@@ -62,9 +65,8 @@ class SelectCourseFragment : Fragment() {
         try {
             val snapshot = db.collection(COURSES_COLLECTION)
                 .get()
-                .await() // This suspends until the task completes and returns the QuerySnapshot
+                .await()
 
-            // Process the result after await() completes
             val courses = snapshot.documents.mapNotNull { document ->
                 try {
                     document.toObject(Course::class.java)

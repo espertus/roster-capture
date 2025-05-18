@@ -54,7 +54,7 @@ class WelcomeFragment : Fragment() {
                 user = it
                 Log.d(TAG, "Successfully signed in")
                 findNavController()
-                    .navigate(R.id.action_welcomeFragment_to_classSelectFragment)
+                    .navigate(R.id.action_welcomeFragment_to_selectCourseFragment)
                 return
             }
             Log.e(TAG, "RESULT_OK but user null?!")
