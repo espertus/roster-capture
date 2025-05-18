@@ -31,47 +31,44 @@ class StudentsFragment() : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-       _binding = FragmentStudentsBinding.inflate(inflater, container, false)
+        _binding = FragmentStudentsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Find views
-        val studentViewPager = binding.studentViewPager
         val progressBar = binding.progressBar
+        val progressTextView = binding.progressTextView
+        val studentViewPager = binding.studentViewPager
         val emptyStateLayout = binding.emptyStateLayout
 
-        // Setup initial state
+        // Initial state - show loading
         progressBar.visibility = View.VISIBLE
+        progressTextView.visibility = View.VISIBLE
         studentViewPager.visibility = View.GONE
         emptyStateLayout.visibility = View.GONE
 
-        // Observe student data from ViewModel
         viewModel.students.observe(viewLifecycleOwner) { students ->
             progressBar.visibility = View.GONE
+            progressTextView.visibility = View.GONE
 
             if (students.isEmpty()) {
-                // Show empty state
-                emptyStateLayout.visibility = View.VISIBLE
                 studentViewPager.visibility = View.GONE
+                emptyStateLayout.visibility = View.VISIBLE
             } else {
-                // Show students
-                emptyStateLayout.visibility = View.GONE
                 studentViewPager.visibility = View.VISIBLE
+                emptyStateLayout.visibility = View.GONE
 
-                // Create adapter with students
-                adapter = StudentPagerAdapter(requireContext(), students)
+                // Setup adapter and viewpager
+                val adapter = StudentPagerAdapter(requireContext(), students)
                 studentViewPager.adapter = adapter
 
-                // Add nice page transitions
+                // Optional: add page transformer for nice effects
                 studentViewPager.setPageTransformer(MarginPageTransformer(40))
-
             }
         }
 
-        // Load students for the course
         val args = arguments?.let { StudentsFragmentArgs.fromBundle(it) }
         val crn = args?.crn
         if (crn != null) {
