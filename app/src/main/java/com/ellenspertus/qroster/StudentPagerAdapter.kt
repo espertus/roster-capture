@@ -15,7 +15,7 @@ import com.google.firebase.storage.FirebaseStorage
 class StudentPagerAdapter(
     private val context: Context,
     private val students: List<Student>,
-    private val enclosingFragment: StudentsFragment,
+    private val enclosingFragment: StudentsFragment, // TODO: Create listener interface
 ) : RecyclerView.Adapter<StudentPagerAdapter.StudentViewHolder>() {
 
     private val storageRef = FirebaseStorage.getInstance().reference
@@ -24,15 +24,7 @@ class StudentPagerAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StudentViewHolder {
         val binding = ItemStudentCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return StudentViewHolder(binding)
-    }
-
-    override fun onBindViewHolder(holder: StudentViewHolder, position: Int) {
-        val student = students[position]
-        with (holder.binding) {
-            nameTextView.text = student.displayName
-            pronounsTextView.text = student.pronouns
-
+        with (binding) {
             showInfoButton.visibility = View.VISIBLE
             showInfoButton.let {
                 it.visibility = View.VISIBLE
@@ -42,8 +34,19 @@ class StudentPagerAdapter(
                     enclosingFragment.showButtons()
                 }
             }
+        }
+        return StudentViewHolder(binding)
+    }
+
+    override fun onBindViewHolder(holder: StudentViewHolder, position: Int) {
+        val student = students[position]
+        with (holder.binding) {
+            nameTextView.text = student.displayName
+            pronounsTextView.text = student.pronouns
+            enclosingFragment.hideButtons()
+
             if (student.selfieFile == null) {
-                studentImageView.setImageResource(R.drawable.placeholder_profile)
+                studentImageView.setImageResource(R.drawable.missing_profile)
                 imageProgressBar.visibility = View.GONE
             } else {
                 val storagePath = getStoragePath(student.selfieFile)
@@ -60,7 +63,7 @@ class StudentPagerAdapter(
                     Log.e(TAG, "Failed to load image for ${student.displayName}", e)
 
                     // Handle image loading failure
-                    studentImageView.setImageResource(R.drawable.missing_profile)
+                    studentImageView.setImageResource(R.drawable.error_face)
                     imageProgressBar.visibility = View.GONE
                 }
             }
@@ -81,7 +84,6 @@ class StudentPagerAdapter(
                     val parts = uri.split("/", limit = 2)
                     if (parts.size > 1) parts[1] else file
                 }
-
                 else -> file
             }
     }
