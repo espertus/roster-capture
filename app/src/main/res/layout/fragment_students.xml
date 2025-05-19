@@ -1,19 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/studentViewPager"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/controlsLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/studentViewPager"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/controlsLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <LinearLayout
         android:id="@+id/emptyStateLayout"
@@ -31,7 +40,6 @@
         <ImageView
             android:layout_width="120dp"
             android:layout_height="120dp" />
-         <!--   android:src="@drawable/ic_empty_state" /> -->
 
         <TextView
             android:layout_width="wrap_content"
@@ -85,9 +93,9 @@
             android:layout_height="wrap_content"
             android:text="Dunno"
             android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/markAsKnownButton"
@@ -95,9 +103,9 @@
             android:layout_height="wrap_content"
             android:text="I know this name"
             android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

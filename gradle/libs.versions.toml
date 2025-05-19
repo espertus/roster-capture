@@ -18,6 +18,7 @@ firebaseUI = "8.0.2"
 firebaseFirestoreKtx = "25.1.4"
 glide = "4.16.0"
 viewpager2 = "1.0.0"
+swipeRefresh = "1.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -41,6 +42,7 @@ play-services-auth = { group = "com.google.android.gms", name = "play-services-a
 firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
 viewpager2 = { group = "androidx.viewpager2", name = "viewpager2", version.ref = "viewpager2" }
+swipe-refresh-layout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swipeRefresh"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

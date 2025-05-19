@@ -70,6 +70,7 @@ dependencies {
     implementation(libs.firebase.firestore.ktx)
     implementation(libs.glide)
     implementation(libs.viewpager2)
+    implementation(libs.swipe.refresh.layout)
 
     // Test dependencies
     testImplementation(libs.junit)
