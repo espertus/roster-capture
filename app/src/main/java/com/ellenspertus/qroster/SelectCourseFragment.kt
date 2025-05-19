@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.ellenspertus.qroster.model.Course
+import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.firestore.firestore
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.AggregateSource
@@ -29,7 +30,7 @@ class SelectCourseFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_class_select, container, false)
+        return inflater.inflate(R.layout.fragment_course_select, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -43,20 +44,26 @@ class SelectCourseFragment : Fragment() {
     }
 
     private fun solicitCourse(courses: List<Course>) {
-        view?.findViewById<TextView>(R.id.textWelcome)?.text = ""
-        view?.findViewById<AutoCompleteTextView>(R.id.dropdown_text)?.apply {
-            val adapter = ArrayAdapter(
-                requireContext(),
-                android.R.layout.simple_dropdown_item_1line,
-                courses.map { "${it.shortName} (${it.count})"}
-            )
-            setAdapter(adapter)
+        view?.apply {
+            findViewById<TextView>(R.id.textWelcome)?.text = "Select a course"
+            findViewById<TextInputLayout>(R.id.menu_layout).visibility = View.VISIBLE
+            findViewById<AutoCompleteTextView>(R.id.dropdown_text)?.apply {
+                visibility = View.VISIBLE
+                val adapter = ArrayAdapter(
+                    requireContext(),
+                    android.R.layout.simple_dropdown_item_1line,
+                    courses.map { "${it.shortName} (${it.count})" }
+                )
+                setAdapter(adapter)
 
-            setOnItemClickListener { _, _, position, _ ->
-                val selectedCourse = courses[position]
-                Log.d(TAG, "User selected $selectedCourse")
-                val action = SelectCourseFragmentDirections.actionSelectCourseFragmentToStudentsFragment(selectedCourse.crn)
-                findNavController().navigate(action)
+                setOnItemClickListener { _, _, position, _ ->
+                    val selectedCourse = courses[position]
+                    val action =
+                        SelectCourseFragmentDirections.actionSelectCourseFragmentToStudentsFragment(
+                            selectedCourse.crn
+                        )
+                    findNavController().navigate(action)
+                }
             }
         }
     }
