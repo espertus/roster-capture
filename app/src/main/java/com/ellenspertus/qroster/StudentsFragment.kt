@@ -6,16 +6,18 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.fragment.app.viewModels
+import androidx.transition.Visibility
 import androidx.viewpager2.widget.MarginPageTransformer
 import com.ellenspertus.qroster.databinding.FragmentStudentsBinding
+import com.ellenspertus.qroster.databinding.ItemStudentCardBinding
 
 class StudentsFragment() : Fragment() {
     private var _binding: FragmentStudentsBinding? = null
     private val binding get() = _binding!!
 
     private val viewModel: StudentViewModel by viewModels()
-    private var adapter: StudentPagerAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -27,7 +29,20 @@ class StudentsFragment() : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        displayStudents()
+    }
 
+    fun showButtons() {
+        binding.markAsKnownButton.visibility = View.VISIBLE
+        binding.markAsNotKnownButton.visibility = View.VISIBLE
+    }
+
+    fun hideButtons() {
+        binding.markAsKnownButton.visibility = View.INVISIBLE
+        binding.markAsNotKnownButton.visibility = View.INVISIBLE
+    }
+
+    private fun displayStudents() {
         val progressBar = binding.progressBar
         val progressTextView = binding.progressTextView
         val studentViewPager = binding.studentViewPager
@@ -51,7 +66,7 @@ class StudentsFragment() : Fragment() {
                 emptyStateLayout.visibility = View.GONE
 
                 // Setup adapter and viewpager
-                val adapter = StudentPagerAdapter(requireContext(), students)
+                val adapter = StudentPagerAdapter(requireContext(), students, this)
                 studentViewPager.adapter = adapter
 
                 // Optional: add page transformer for nice effects

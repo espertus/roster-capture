@@ -69,7 +69,7 @@
         app:layout_constraintStart_toStartOf="@+id/progressBar"
         app:layout_constraintTop_toBottomOf="@+id/progressBar" />
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/controlsLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -79,21 +79,26 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <TextView
-            android:id="@+id/counterTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            tools:text="Student 1 of 25" />
-
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/markAsLearnedButton"
+            android:id="@+id/markAsNotKnownButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="I know this name" />
-            <!-- app:icon="@drawable/ic_check" -->
+            android:text="Dunno"
+            android:visibility="invisible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
-    </LinearLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/markAsKnownButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="I know this name"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

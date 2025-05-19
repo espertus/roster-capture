@@ -22,12 +22,8 @@ class StudentViewModel : ViewModel() {
 
                 // Extract all student IDs from the enrollments
                 val studentIds = enrollmentDocuments.documents.mapNotNull { doc ->
-                    Log.d("StudentViewModel", "Enrollment doc data: ${doc.data}")
-                    val nuid = doc.getLong("nuid")
-                    Log.d("StudentViewModel", "Extracted NUID: $nuid from document ${doc.id}")
-                    nuid
+                    doc.getLong("nuid")
                 }
-
                 Log.d("StudentViewModel", "Extracted student IDs: $studentIds")
 
                 if (studentIds.isEmpty()) {
@@ -44,7 +40,6 @@ class StudentViewModel : ViewModel() {
                     .addOnSuccessListener { studentDocuments ->
                         Log.d("StudentViewModel", "Found ${studentDocuments.size()} student documents")
                         val studentsList = studentDocuments.documents.mapNotNull { doc ->
-                            Log.d("StudentViewModel", "Student doc ID: ${doc.id}, data: ${doc.data}")
                             try {
                                 doc.toObject(Student::class.java)
                             } catch (e: Exception) {
@@ -52,7 +47,6 @@ class StudentViewModel : ViewModel() {
                                 null
                             }
                         }
-                        Log.d("StudentViewModel", "Final processed student list: $studentsList")
                         _students.value = studentsList
                     }
                     .addOnFailureListener { e ->
@@ -60,22 +54,6 @@ class StudentViewModel : ViewModel() {
                         _students.value = emptyList()
                     }
             }
-    }
-
-    // Helper function to get course name - you might want to cache this
-    private fun getCourseNameFromId(crn: String): String {
-        // You could maintain a cache of course names
-        // For now, this is a placeholder
-        return "Course: $crn"
-
-        // Alternatively, you could load this asynchronously:
-        /*
-        firestore.collection("courses").document(courseId).get()
-            .addOnSuccessListener { doc ->
-                val courseName = doc.getString("courseName") ?: "Unknown Course"
-                // Update students with this course name
-            }
-        */
     }
 
 //    // Track learning progress

@@ -19,10 +19,11 @@
             android:layout_height="0dp"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.6"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintHeight_percent="0.6">
+            app:layout_constraintTop_toTopOf="parent">
 
+            <!-- ImageView and ProgressBar remain the same -->
             <ImageView
                 android:id="@+id/studentImageView"
                 android:layout_width="match_parent"
@@ -39,28 +40,44 @@
                 android:visibility="gone" />
         </FrameLayout>
 
-        <TextView
-            android:id="@+id/nameTextView"
+        <!-- Student info container - position directly below imageContainer -->
+        <LinearLayout
+            android:id="@+id/studentInfoContainer"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
-            android:textStyle="bold"
+            android:orientation="vertical"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageContainer"
-            tools:text="Jane Smith" />
+            app:layout_constraintTop_toBottomOf="@+id/imageContainer">
 
-        <TextView
-            android:id="@+id/pronounsTextView"
-            android:layout_width="0dp"
+            <TextView
+                android:id="@+id/nameTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+                android:textStyle="bold"
+                tools:text="Jane Smith" />
+
+            <TextView
+                android:id="@+id/pronounsTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                tools:text="she/her" />
+        </LinearLayout>
+
+        <!-- Button - position at same place as studentInfoContainer -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/showInfoButton"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp"
+            android:text="Show info"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/nameTextView"
-            tools:text="she/her" />
+            app:layout_constraintTop_toBottomOf="@+id/imageContainer" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>
