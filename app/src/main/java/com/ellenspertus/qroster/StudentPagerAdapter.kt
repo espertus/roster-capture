@@ -52,11 +52,22 @@ class StudentPagerAdapter(
         with(holder.binding) {
             nameTextView.text = student.displayName
             pronounsTextView.text = student.pronouns
-            enclosingFragment.hideButtons()
-
             addSelfieIfPresent(student, this)
             addAudioIfPresent(student, this, position)
         }
+    }
+
+    // When we show a view, whether for the first time or later times,
+    // we should not display the info or the mark buttons.
+    override fun onViewAttachedToWindow(holder: StudentViewHolder) {
+        super.onViewAttachedToWindow(holder)
+
+        with(holder.binding) {
+            showInfoButton.visibility = View.VISIBLE
+            studentInfoContainer.visibility = View.GONE
+        }
+
+        enclosingFragment.hideButtons()
     }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
