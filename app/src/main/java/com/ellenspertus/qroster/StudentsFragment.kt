@@ -37,13 +37,11 @@ class StudentsFragment() : Fragment() {
     }
 
     fun showButtons() {
-        binding.markAsKnownButton.visibility = View.VISIBLE
-        binding.markAsNotKnownButton.visibility = View.VISIBLE
+        binding.controlsLayout.visibility = View.VISIBLE
     }
 
     fun hideButtons() {
-        binding.markAsKnownButton.visibility = View.INVISIBLE
-        binding.markAsNotKnownButton.visibility = View.INVISIBLE
+        binding.controlsLayout.visibility = View.INVISIBLE
     }
 
     private fun displayStudents() {

@@ -21,6 +21,7 @@ class StudentPagerAdapter(
 ) : RecyclerView.Adapter<StudentPagerAdapter.StudentViewHolder>() {
 
     private val storageRef = FirebaseStorage.getInstance().reference
+    private lateinit var itemStudentCardBinding: ItemStudentCardBinding
     private var mediaPlayer = MediaPlayer()
     private var currentPlayingPosition = 0
 
@@ -31,9 +32,9 @@ class StudentPagerAdapter(
         RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StudentViewHolder {
-        val binding =
+        itemStudentCardBinding =
             ItemStudentCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        with(binding) {
+        with(itemStudentCardBinding) {
             showInfoButton.let {
                 it.visibility = View.VISIBLE
                 it.setOnClickListener {
@@ -43,7 +44,7 @@ class StudentPagerAdapter(
                 }
             }
         }
-        return StudentViewHolder(binding)
+        return StudentViewHolder(itemStudentCardBinding)
     }
 
     override fun onBindViewHolder(holder: StudentViewHolder, position: Int) {
@@ -82,12 +83,8 @@ class StudentPagerAdapter(
             )
 
             setOnCompletionListener {
-                // Reset state when playback completes
-                val oldPosition = currentPlayingPosition
                 currentPlayingPosition = -1
-                if (oldPosition >= 0) {
-                    notifyItemChanged(oldPosition) // Update just the previously playing item
-                }
+                itemStudentCardBinding.playButton.isEnabled = true
             }
 
             setOnErrorListener { _, what, extra ->
@@ -167,6 +164,7 @@ class StudentPagerAdapter(
 
             // Set up the click listener
             binding.playButton.setOnClickListener {
+                binding.playButton.isEnabled = false
                 playPreloadedAudio(position)
             }
         }.addOnFailureListener { e ->
@@ -195,11 +193,6 @@ class StudentPagerAdapter(
             initializeMediaPlayer() // Re-initialize if reset fails
         }
 
-        // Update old position's UI if needed
-        if (currentPlayingPosition >= 0 && currentPlayingPosition != position) {
-            notifyItemChanged(currentPlayingPosition)
-        }
-
         // Set the new position as current
         currentPlayingPosition = position
 
@@ -214,7 +207,6 @@ class StudentPagerAdapter(
                     } catch (e: IllegalStateException) {
                         Log.e(TAG, "Error starting playback after prepare", e)
                         currentPlayingPosition = -1
-                        notifyItemChanged(position)
                     }
                 }
 
@@ -223,7 +215,6 @@ class StudentPagerAdapter(
         } catch (e: Exception) {
             Log.e(TAG, "Error setting up playback", e)
             currentPlayingPosition = -1
-            notifyItemChanged(position)
         }
     }
 
@@ -235,7 +226,6 @@ class StudentPagerAdapter(
             Log.e(TAG, "Error releasing MediaPlayer on detach", e)
         }
     }
-
 
     override fun getItemCount(): Int = students.size
 
