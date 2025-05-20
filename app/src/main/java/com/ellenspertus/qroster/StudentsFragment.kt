@@ -59,6 +59,7 @@ class StudentsFragment() : Fragment() {
         viewModel.students.observe(viewLifecycleOwner) { students ->
             progressBar.visibility = View.GONE
             progressTextView.visibility = View.GONE
+            binding.swipeRefreshLayout.isRefreshing = false
 
             if (students.isEmpty()) {
                 studentViewPager.visibility = View.GONE
