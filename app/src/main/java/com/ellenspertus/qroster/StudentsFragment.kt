@@ -33,27 +33,6 @@ class StudentsFragment() : Fragment() {
             displayStudents()
         }
 
-        // Observe students LiveData
-        viewModel.students.observe(viewLifecycleOwner) { students ->
-            // Stop the refreshing animation
-            binding.swipeRefreshLayout.isRefreshing = false
-
-            if (students.isEmpty()) {
-                binding.studentViewPager.visibility = View.GONE
-                binding.emptyStateLayout.visibility = View.VISIBLE
-            } else {
-                binding.studentViewPager.visibility = View.VISIBLE
-                binding.emptyStateLayout.visibility = View.GONE
-
-                // Update adapter
-                studentAdapter = StudentPagerAdapter(requireContext(), students, this)
-                binding.studentViewPager.adapter = studentAdapter
-            }
-
-            binding.progressBar.visibility = View.GONE
-            binding.progressTextView.visibility = View.GONE
-        }
-
         displayStudents()
     }
 
