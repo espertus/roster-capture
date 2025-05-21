@@ -101,7 +101,6 @@ class SelectCourseFragment : Fragment() {
                         .await()
 
                     course.count = snapshot.count.toInt()
-                    Log.d(TAG, "Count for ${course.shortName}: ${course.count}")
                 } catch (e: Exception) {
                     Log.e(TAG, "Error getting student count for ${course.shortName}", e)
                     course.count = 0
@@ -111,7 +110,6 @@ class SelectCourseFragment : Fragment() {
 
         // Wait for all async operations to complete
         deferredResults.awaitAll()
-        Log.d(TAG, "All course counts retrieved")
         courses
     }
 

@@ -18,42 +18,57 @@ class StudentViewModel : ViewModel() {
             .whereEqualTo("crn", crn)
             .get()
             .addOnSuccessListener { enrollmentDocuments ->
-                Log.d("StudentViewModel", "Found ${enrollmentDocuments.size()} enrollment documents for CRN $crn")
-
                 // Extract all student IDs from the enrollments
                 val studentIds = enrollmentDocuments.documents.mapNotNull { doc ->
                     doc.getLong("nuid")
                 }
-                Log.d("StudentViewModel", "Extracted student IDs: $studentIds")
-
                 if (studentIds.isEmpty()) {
-                    Log.d("StudentViewModel", "No student IDs found, returning empty list")
                     _students.value = emptyList()
                     return@addOnSuccessListener
                 }
 
-                // TODO: Chunk the studentIds in groups of 10 for correctness.
-                Log.d("StudentViewModel", "Looking up students with IDs: $studentIds")
-                firestore.collection(STUDENTS_COLLECTION)
-                    .whereIn("nuid", studentIds)
-                    .get()
-                    .addOnSuccessListener { studentDocuments ->
-                        Log.d("StudentViewModel", "Found ${studentDocuments.size()} student documents")
-                        val studentsList = studentDocuments.documents.mapNotNull { doc ->
-                            try {
-                                doc.toObject(Student::class.java)
-                            } catch (e: Exception) {
-                                Log.e("StudentViewModel", "Error converting doc ${doc.id}", e)
-                                null
-                            }
+                // Split student IDs into chunks of 10 (Firestore limit for whereIn)
+                val chunks = studentIds.chunked(RETRIEVAL_CHUNK_SIZE)
+                val allStudents = mutableListOf<Student>()
+                var remainingQueries = chunks.size
+
+                fun completeChunk(newStudents: List<Student> = emptyList()) {
+                    synchronized(allStudents) {
+                        allStudents.addAll(newStudents)
+                        if (--remainingQueries == 0) {
+                            _students.value = allStudents.shuffled()
                         }
-                        _students.value = studentsList
                     }
-                    .addOnFailureListener { e ->
-                        Log.e("StudentViewModel", "Error loading students", e)
-                        _students.value = emptyList()
-                    }
+                }
+
+                // For each chunk, run a separate query
+                chunks.forEach { chunk ->
+                    firestore.collection(STUDENTS_COLLECTION)
+                        .whereIn("nuid", chunk)
+                        .get()
+                        .addOnSuccessListener { studentDocuments ->
+                            val chunkStudents = studentDocuments.documents.mapNotNull { doc ->
+                                try {
+                                    val temp = doc.toObject(Student::class.java)
+                                    temp
+                                } catch (e: Exception) {
+                                    Log.e("StudentViewModel", "Error converting doc ${doc.id}", e)
+                                    null
+                                }
+                            }
+                            completeChunk(chunkStudents)
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("StudentViewModel", "Error loading students chunk", e)
+                            completeChunk()
+                        }
+                }
             }
+    }
+
+    companion object {
+        // whereIn queries can have up to 10 values
+        private const val RETRIEVAL_CHUNK_SIZE = 10
     }
 
 //    // Track learning progress

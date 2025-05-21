@@ -59,7 +59,7 @@ class WelcomeFragment : Fragment() {
             }
             Log.e(TAG, "RESULT_OK but user null?!")
         } else if (response == null) {
-            Log.d(TAG, "User cancelled sign-in. Retry.")
+            Log.w(TAG, "User cancelled sign-in. Retry.")
             launchSignInIntent()
         } else {
             Log.e(TAG, response.error.toString())
