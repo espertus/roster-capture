@@ -7,6 +7,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+//import androidx.navigation.Navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -99,6 +101,10 @@ class StudentPagerAdapter(
     private fun setupStartOverCard(binding: ItemStartOverCardBinding) {
         binding.startOverButton.setOnClickListener {
             enclosingFragment.startOver()
+        }
+        binding.doneButton.setOnClickListener {
+            enclosingFragment.findNavController()
+                .navigate(R.id.action_studentsFragment_to_selectCourseFragment)
         }
     }
 
