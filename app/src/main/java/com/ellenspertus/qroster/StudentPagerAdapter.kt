@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.ellenspertus.qroster.databinding.ItemStartOverCardBinding
 import com.ellenspertus.qroster.databinding.ItemStudentCardBinding
 import com.ellenspertus.qroster.model.Student
 import com.google.firebase.storage.FirebaseStorage
@@ -17,8 +18,8 @@ import com.google.firebase.storage.FirebaseStorage
 class StudentPagerAdapter(
     private val context: Context,
     private val students: List<Student>,
-    private val enclosingFragment: StudentsFragment, // TODO: Create listener interface
-) : RecyclerView.Adapter<StudentPagerAdapter.StudentViewHolder>() {
+    private val enclosingFragment: StudentsFragment,
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val storageRef = FirebaseStorage.getInstance().reference
     private lateinit var itemStudentCardBinding: ItemStudentCardBinding
@@ -31,10 +32,59 @@ class StudentPagerAdapter(
     inner class StudentViewHolder(val binding: ItemStudentCardBinding) :
         RecyclerView.ViewHolder(binding.root)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StudentViewHolder {
-        itemStudentCardBinding =
-            ItemStudentCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        with(itemStudentCardBinding) {
+    inner class StartOverViewHolder(val binding: ItemStartOverCardBinding) :
+        RecyclerView.ViewHolder(binding.root)
+
+    override fun getItemViewType(position: Int): Int {
+        return if (position < students.size) {
+            VIEW_TYPE_STUDENT
+        } else {
+            VIEW_TYPE_START_OVER
+        }
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return when (viewType) {
+            VIEW_TYPE_STUDENT -> {
+                val binding = ItemStudentCardBinding.inflate(
+                    LayoutInflater.from(parent.context), parent, false
+                )
+                setupStudentCard(binding)
+                StudentViewHolder(binding)
+            }
+
+            VIEW_TYPE_START_OVER -> {
+                val binding = ItemStartOverCardBinding.inflate(
+                    LayoutInflater.from(parent.context), parent, false
+                )
+                setupStartOverCard(binding)
+                StartOverViewHolder(binding)
+            }
+
+            else -> throw IllegalArgumentException("Unknown view type: $viewType")
+        }
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when (holder) {
+            is StudentViewHolder -> {
+                val student = students[position]
+                with(holder.binding) {
+                    nameTextView.text = student.displayName
+                    pronounsTextView.text = student.pronouns
+                    addSelfieIfPresent(student, this)
+                    addAudioIfPresent(student, this, position)
+                }
+            }
+
+            is StartOverViewHolder -> {
+                // Start over card is static, no binding needed
+            }
+        }
+    }
+
+    private fun setupStudentCard(binding: ItemStudentCardBinding) {
+        with(binding) {
             showInfoButton.let {
                 it.visibility = View.VISIBLE
                 it.setOnClickListener {
@@ -44,29 +94,25 @@ class StudentPagerAdapter(
                 }
             }
         }
-        return StudentViewHolder(itemStudentCardBinding)
     }
 
-    override fun onBindViewHolder(holder: StudentViewHolder, position: Int) {
-        val student = students[position]
-        with(holder.binding) {
-            nameTextView.text = student.displayName
-            pronounsTextView.text = student.pronouns
-            addSelfieIfPresent(student, this)
-            addAudioIfPresent(student, this, position)
+    private fun setupStartOverCard(binding: ItemStartOverCardBinding) {
+        binding.startOverButton.setOnClickListener {
+            enclosingFragment.startOver()
         }
     }
 
     // When we show a view, whether for the first time or later times,
     // we should not display the info or the mark buttons.
-    override fun onViewAttachedToWindow(holder: StudentViewHolder) {
+    override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
         super.onViewAttachedToWindow(holder)
 
-        with(holder.binding) {
-            showInfoButton.visibility = View.VISIBLE
-            studentInfoContainer.visibility = View.GONE
+        if (holder is StudentViewHolder) {
+            with(holder.binding) {
+                showInfoButton.visibility = View.VISIBLE
+                studentInfoContainer.visibility = View.GONE
+            }
         }
-
         enclosingFragment.hideButtons()
     }
 
@@ -238,10 +284,15 @@ class StudentPagerAdapter(
         }
     }
 
-    override fun getItemCount(): Int = students.size
+    override fun getItemCount(): Int {
+        val count = students.size + 1 // start over card
+        return count
+    }
 
     companion object {
         const val TAG = "StudentPagerAdapter"
+        const val VIEW_TYPE_STUDENT = 0
+        const val VIEW_TYPE_START_OVER = 1
 
         fun getStoragePath(file: String) =
             when {

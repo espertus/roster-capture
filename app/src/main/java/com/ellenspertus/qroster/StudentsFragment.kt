@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.viewpager2.widget.MarginPageTransformer
 import com.ellenspertus.qroster.databinding.FragmentStudentsBinding
+import com.google.android.material.snackbar.Snackbar
 
 class StudentsFragment() : Fragment() {
     private var _binding: FragmentStudentsBinding? = null
@@ -42,6 +43,19 @@ class StudentsFragment() : Fragment() {
 
     fun hideButtons() {
         binding.controlsLayout.visibility = View.INVISIBLE
+    }
+
+    fun startOver() {
+        // Go back to the first student
+        binding.studentViewPager.setCurrentItem(0, true)
+
+        // Optional: Show a toast or snackbar
+        view?.let { v ->
+            Snackbar.make(v, "Starting over with first student", Snackbar.LENGTH_SHORT).show()
+        }
+
+        // Optional: Reshuffle the students if you want variety
+        // viewModel.reshuffleStudents()
     }
 
     private fun displayStudents() {
