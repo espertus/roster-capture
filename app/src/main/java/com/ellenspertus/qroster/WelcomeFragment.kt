@@ -13,16 +13,13 @@ import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.auth.User
 
 
 /**
- * A simple [Fragment] subclass.
- * Use the [WelcomeFragment.newInstance] factory method to
- * create an instance of this fragment.
+ * The initial fragment,w hich signs int he user.
  */
 class WelcomeFragment : Fragment() {
-    lateinit var user: FirebaseUser
+    private lateinit var user: FirebaseUser
     private val signInLauncher = registerForActivityResult(
         FirebaseAuthUIActivityResultContract(),
     ) { res ->
@@ -75,6 +72,6 @@ class WelcomeFragment : Fragment() {
     }
 
     companion object {
-        val TAG = "WelcomeFragment"
+        const val TAG = "WelcomeFragment"
     }
 }

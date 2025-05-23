@@ -34,7 +34,7 @@ class StudentPagerAdapter(
     inner class StudentViewHolder(val binding: ItemStudentCardBinding) :
         RecyclerView.ViewHolder(binding.root)
 
-    inner class StartOverViewHolder(val binding: ItemStartOverCardBinding) :
+    inner class StartOverViewHolder(binding: ItemStartOverCardBinding) :
         RecyclerView.ViewHolder(binding.root)
 
     override fun getItemViewType(position: Int): Int {
@@ -89,7 +89,7 @@ class StudentPagerAdapter(
         with(binding) {
             showInfoButton.let {
                 it.visibility = View.VISIBLE
-                it.setOnClickListener {
+                it.setOnClickListener { _ ->
                     it.visibility = View.GONE
                     studentInfoContainer.visibility = View.VISIBLE
                     enclosingFragment.showButtons()

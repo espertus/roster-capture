@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 class SelectCourseFragment : Fragment() {
-    val db = Firebase.firestore
+    private val db = Firebase.firestore
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,7 +45,8 @@ class SelectCourseFragment : Fragment() {
 
     private fun solicitCourse(courses: List<Course>) {
         view?.apply {
-            findViewById<TextView>(R.id.textWelcome)?.text = "Select a course"
+            findViewById<TextView>(R.id.textWelcome)?.text =
+                context.getString(R.string.select_a_course)
             findViewById<TextInputLayout>(R.id.menu_layout).visibility = View.VISIBLE
             findViewById<AutoCompleteTextView>(R.id.dropdown_text)?.apply {
                 visibility = View.VISIBLE

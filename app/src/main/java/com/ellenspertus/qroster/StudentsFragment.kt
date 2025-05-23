@@ -11,7 +11,7 @@ import androidx.viewpager2.widget.MarginPageTransformer
 import com.ellenspertus.qroster.databinding.FragmentStudentsBinding
 import com.google.android.material.snackbar.Snackbar
 
-class StudentsFragment() : Fragment() {
+class StudentsFragment : Fragment() {
     private var _binding: FragmentStudentsBinding? = null
     private val binding get() = _binding!!
     private lateinit var studentAdapter: StudentPagerAdapter
@@ -21,7 +21,7 @@ class StudentsFragment() : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentStudentsBinding.inflate(inflater, container, false)
         return binding.root
     }
