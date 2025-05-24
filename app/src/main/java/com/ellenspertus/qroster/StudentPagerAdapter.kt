@@ -7,10 +7,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.Toast
-//import androidx.navigation.Navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewbinding.ViewBinding
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.ellenspertus.qroster.databinding.ItemStartOverCardBinding
@@ -27,9 +28,7 @@ class StudentPagerAdapter(
     private val students: List<Student>,
     private val enclosingFragment: StudentsFragment,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
     private val storageRef = FirebaseStorage.getInstance().reference
-    private lateinit var itemStudentCardBinding: ItemStudentCardBinding
     private var mediaPlayer = MediaPlayer()
     private var currentPlayingPosition = 0
 
@@ -251,11 +250,6 @@ class StudentPagerAdapter(
                     .build()
             )
 
-            setOnCompletionListener {
-                currentPlayingPosition = -1
-                itemStudentCardBinding.playButton.isEnabled = true
-            }
-
             setOnErrorListener { _, what, extra ->
                 Log.e(TAG, "MediaPlayer error: $what, $extra")
                 resetMediaPlayer()
@@ -334,7 +328,7 @@ class StudentPagerAdapter(
             // Set up the click listener
             binding.playButton.setOnClickListener {
                 binding.playButton.isEnabled = false
-                playPreloadedAudio(position)
+                playPreloadedAudio(position, binding.playButton)
             }
         }.addOnFailureListener { e ->
             Log.e(TAG, "Failed to get download URL for audio", e)
@@ -342,7 +336,7 @@ class StudentPagerAdapter(
         }
     }
 
-    private fun playPreloadedAudio(position: Int) {
+    private fun playPreloadedAudio(position: Int, playButton: Button) {
         // If media is already playing, ignore the click
         if (position == currentPlayingPosition && mediaPlayer.isPlaying) {
             return
@@ -365,9 +359,7 @@ class StudentPagerAdapter(
         // Set the new position as current
         currentPlayingPosition = position
 
-        // Use the preloaded URL
         try {
-            // Set source and prepare
             mediaPlayer.apply {
                 setDataSource(audioUrl)
                 setOnPreparedListener {
@@ -377,6 +369,10 @@ class StudentPagerAdapter(
                         Log.e(TAG, "Error starting playback after prepare", e)
                         currentPlayingPosition = -1
                     }
+                }
+                setOnCompletionListener {
+                    currentPlayingPosition = -1
+                    playButton.isEnabled = true
                 }
 
                 prepareAsync()
