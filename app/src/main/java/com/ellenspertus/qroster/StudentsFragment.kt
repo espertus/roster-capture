@@ -29,12 +29,57 @@ class StudentsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Add refresh listener
-        binding.swipeRefreshLayout.setOnRefreshListener {
-            displayStudents()
-        }
+//        // Add refresh listener
+//        binding.swipeRefreshLayout.setOnRefreshListener {
+//            displayStudents()
+//        }
 
-        displayStudents()
+        initializeUi()
+        studentAdapter = StudentPagerAdapter(requireContext(), viewModel, this)
+        binding.apply {
+            studentViewPager.adapter = studentAdapter
+            studentViewPager.setPageTransformer(MarginPageTransformer(40))
+
+            viewModel.students.observe(viewLifecycleOwner) { students ->
+
+                progressBar.visibility = View.GONE
+                progressTextView.visibility = View.GONE
+//            binding.swipeRefreshLayout.isRefreshing = false
+
+                if (students.isEmpty()) {
+                    studentViewPager.visibility = View.GONE
+                    emptyStateLayout.visibility = View.VISIBLE
+                } else {
+                    studentViewPager.visibility = View.VISIBLE
+                    emptyStateLayout.visibility = View.GONE
+                    studentAdapter.submitList(students)
+                }
+            }
+            loadStudents()
+        }
+    }
+
+    private fun loadStudents() {
+        val args = arguments?.let { StudentsFragmentArgs.fromBundle(it) }
+        val crn = args?.crn
+        if (crn != null) {
+            viewModel.loadStudentsForCourse(crn)
+        } else {
+            Log.e(TAG, "crn was null")
+        }
+    }
+
+    private fun initializeUi() {
+        val progressBar = binding.progressBar
+        val progressTextView = binding.progressTextView
+        val studentViewPager = binding.studentViewPager
+        val emptyStateLayout = binding.emptyStateLayout
+
+        // Initial state - show loading
+        progressBar.visibility = View.VISIBLE
+        progressTextView.visibility = View.VISIBLE
+        studentViewPager.visibility = View.GONE
+        emptyStateLayout.visibility = View.GONE
     }
 
     fun showButtons() {
@@ -46,58 +91,13 @@ class StudentsFragment : Fragment() {
     }
 
     fun startOver() {
-        // Go back to the first student
-        binding.studentViewPager.setCurrentItem(0, true)
-
-        // Optional: Show a toast or snackbar
         view?.let { v ->
             Snackbar.make(v, "Starting over with first student", Snackbar.LENGTH_SHORT).show()
         }
+        binding.studentViewPager.setCurrentItem(0, true)
 
         // Optional: Reshuffle the students if you want variety
         // viewModel.reshuffleStudents()
-    }
-
-    private fun displayStudents() {
-        val progressBar = binding.progressBar
-        val progressTextView = binding.progressTextView
-        val studentViewPager = binding.studentViewPager
-        val emptyStateLayout = binding.emptyStateLayout
-
-        // Initial state - show loading
-        progressBar.visibility = View.VISIBLE
-        progressTextView.visibility = View.VISIBLE
-        studentViewPager.visibility = View.GONE
-        emptyStateLayout.visibility = View.GONE
-
-        viewModel.students.observe(viewLifecycleOwner) { students ->
-            progressBar.visibility = View.GONE
-            progressTextView.visibility = View.GONE
-            binding.swipeRefreshLayout.isRefreshing = false
-
-            if (students.isEmpty()) {
-                studentViewPager.visibility = View.GONE
-                emptyStateLayout.visibility = View.VISIBLE
-            } else {
-                studentViewPager.visibility = View.VISIBLE
-                emptyStateLayout.visibility = View.GONE
-
-                // Setup adapter and viewpager
-                studentAdapter = StudentPagerAdapter(requireContext(), students, this)
-                studentViewPager.adapter = studentAdapter
-
-                // Optional: add page transformer for nice effects
-                studentViewPager.setPageTransformer(MarginPageTransformer(40))
-            }
-        }
-
-        val args = arguments?.let { StudentsFragmentArgs.fromBundle(it) }
-        val crn = args?.crn
-        if (crn != null) {
-            viewModel.loadStudentsForCourse(crn)
-        } else {
-            Log.e(TAG, "crn was null")
-        }
     }
 
     companion object {

@@ -1,17 +1,29 @@
 package com.ellenspertus.qroster
 
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.media3.common.AudioAttributes
+import androidx.media3.common.C
+import androidx.media3.common.MediaItem
+import androidx.media3.exoplayer.ExoPlayer
 import com.ellenspertus.qroster.model.Student
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class StudentViewModel : ViewModel() {
     private val _students = MutableLiveData<List<Student>>()
     val students: LiveData<List<Student>> = _students
 
     private val firestore = FirebaseFirestore.getInstance()
+    private var exoPlayer: ExoPlayer? = null
 
     fun loadStudentsForCourse(crn: Long) {
         firestore.collection(ENROLLMENTS_COLLECTION)
@@ -49,9 +61,15 @@ class StudentViewModel : ViewModel() {
                         .addOnSuccessListener { studentDocuments ->
                             val chunkStudents = studentDocuments.documents.mapNotNull { doc ->
                                 try {
-                                    val temp = doc.toObject(Student::class.java)
-                                    temp?.docId = doc.id
-                                    temp
+                                    doc.toObject(Student::class.java)?.apply {
+                                        // Save docId to facilitate updates.
+                                        docId = doc.id
+                                        val student = this
+
+                                        viewModelScope.launch {
+                                            prefetchAudio(student)
+                                        }
+                                    }
                                 } catch (e: Exception) {
                                     Log.e("StudentViewModel", "Error converting doc ${doc.id}", e)
                                     null
@@ -67,7 +85,66 @@ class StudentViewModel : ViewModel() {
             }
     }
 
+    private suspend fun prefetchAudio(student: Student) = coroutineScope {
+        student.audioFile?.let {
+            try {
+                val url = FirebaseStorage.getInstance()
+                    .getReferenceFromUrl(it)
+                    .downloadUrl
+                    .await()
+                    .toString()
+                student.audioDownloadUrl = url
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to get URL for ${student.nuid}", e)
+            }
+        }
+    }
+
+    private fun getOrCreatePlayer(context: Context): ExoPlayer {
+        return exoPlayer ?: ExoPlayer.Builder(context)
+            .setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setUsage(C.USAGE_MEDIA)
+                    .setContentType(C.AUDIO_CONTENT_TYPE_SPEECH)
+                    .build(),
+                true // handleAudioFocus
+            )
+            .build()
+            .also { exoPlayer = it }
+    }
+
+    fun playAudio(context: Context, student: Student) {
+        // If there is no audio file, this should not be reachable.
+        if (student.audioFile == null) {
+            Log.e(TAG, "playAudio() called even though audioFile null for $student")
+            return
+        }
+
+        student.audioDownloadUrl?.let {
+            // Reset player.
+            val player = getOrCreatePlayer(context)
+            player.stop()
+            player.clearMediaItems()
+
+            // Play item.
+            val mediaItem = MediaItem.fromUri(it)
+            player.setMediaItem(mediaItem)
+            player.prepare()
+            player.play()
+        } ?: run {
+            Log.e(TAG, "playAudio() called but audioDownloadUrl not available")
+            Toast.makeText(context, "Unable to play audio", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        exoPlayer?.release()
+        exoPlayer = null
+    }
+
     companion object {
+        private const val TAG = "StudentViewModel"
         // whereIn queries can have up to 10 values
         private const val RETRIEVAL_CHUNK_SIZE = 10
     }

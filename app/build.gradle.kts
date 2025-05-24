@@ -71,6 +71,8 @@ dependencies {
     implementation(libs.glide)
     implementation(libs.viewpager2)
     implementation(libs.swipe.refresh.layout)
+    implementation(libs.media3.exoplayer)
+    implementation(libs.media3.ui)
 
     // Test dependencies
     testImplementation(libs.junit)
