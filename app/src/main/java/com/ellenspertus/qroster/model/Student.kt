@@ -8,6 +8,8 @@ data class Student(
     val pronouns: String,
     val selfieFile: String? = null,
     val audioFile: String? = null,
+    var note: String? = null,
+    var docId: String = "",
 ) {
     constructor() : this(
         firstName = "",
@@ -16,7 +18,9 @@ data class Student(
         nuid = 0L,
         pronouns = "",
         selfieFile = null,
-        audioFile = null
+        audioFile = null,
+        note = null,
+        docId = "",
     )
 
     val displayName

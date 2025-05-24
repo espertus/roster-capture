@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 //import androidx.navigation.Navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
@@ -15,6 +16,10 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.ellenspertus.qroster.databinding.ItemStartOverCardBinding
 import com.ellenspertus.qroster.databinding.ItemStudentCardBinding
 import com.ellenspertus.qroster.model.Student
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 
 class StudentPagerAdapter(
@@ -67,24 +72,6 @@ class StudentPagerAdapter(
         }
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when (holder) {
-            is StudentViewHolder -> {
-                val student = students[position]
-                with(holder.binding) {
-                    nameTextView.text = student.displayName
-                    pronounsTextView.text = student.pronouns
-                    addSelfieIfPresent(student, this)
-                    addAudioIfPresent(student, this, position)
-                }
-            }
-
-            is StartOverViewHolder -> {
-                // Start over card is static, no binding needed
-            }
-        }
-    }
-
     private fun setupStudentCard(binding: ItemStudentCardBinding) {
         with(binding) {
             showInfoButton.let {
@@ -95,7 +82,126 @@ class StudentPagerAdapter(
                     enclosingFragment.showButtons()
                 }
             }
+
+            addEditNoteButton.setOnClickListener {
+                val position = it.tag as? Int ?: return@setOnClickListener
+                showAddNoteDialog(students[position], position)
+            }
+
+            noteIndicator.setOnClickListener {
+                showInfoButton.visibility = View.GONE
+                studentInfoContainer.visibility = View.VISIBLE
+                enclosingFragment.showButtons()
+            }
         }
+    }
+
+    // Update onBindViewHolder to set up note display
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when (holder) {
+            is StudentViewHolder -> {
+                val student = students[position]
+                with(holder.binding) {
+                    nameTextView.text = student.displayName
+                    pronounsTextView.text = student.pronouns
+
+                    // Set the position as a tag so we can access it in click listeners
+                    addEditNoteButton.tag = position
+                    deleteNoteButton.tag = position
+
+                    setupNoteDisplay(student, this)
+                    addSelfieIfPresent(student, this)
+                    addAudioIfPresent(student, this, position)
+                }
+            }
+            is StartOverViewHolder -> {
+            }
+        }
+    }
+
+    private fun setupNoteDisplay(student: Student, binding: ItemStudentCardBinding) {
+        with(binding) {
+            if (student.note.isNullOrEmpty()) {
+                // No note exists
+                noteIndicator.visibility = View.GONE
+                notePreview.text = context.getString(R.string.no_notes_yet)
+                addEditNoteButton.text = context.getString(R.string.add_note)
+                deleteNoteButton.visibility = View.GONE
+            } else {
+                // Note exists
+                noteIndicator.visibility = View.VISIBLE
+                notePreview.text = student.note
+                addEditNoteButton.text = context.getString(R.string.edit_note)
+                deleteNoteButton.visibility = View.VISIBLE
+                deleteNoteButton.setOnClickListener { _ ->
+                    deleteNoteForStudent(student)
+                    student.note = null
+                    notifyItemChanged(deleteNoteButton.tag as Int)
+                }
+            }
+        }
+    }
+
+    private fun showAddNoteDialog(student: Student, position: Int) {
+        // Inflate the dialog layout
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_add_note, null)
+        val noteEditText = dialogView.findViewById<TextInputEditText>(R.id.noteEditText)
+        student.note?.let {
+            noteEditText.setText(it)
+            noteEditText.setSelection(it.length)
+        }
+
+        // Create and show the dialog
+        MaterialAlertDialogBuilder(context)
+            .setTitle("Note for ${student.displayName}")
+            .setView(dialogView)
+            .setPositiveButton("Save") { _, _ ->
+                val noteText = noteEditText.text.toString().trim()
+
+                if (noteText != student.note) {
+                    student.note = noteText
+                    if (noteText.isNotEmpty()) {
+                        saveNoteForStudent(student)
+                    } else {
+                        deleteNoteForStudent(student)
+                    }
+                    notifyItemChanged(position)
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+
+        noteEditText.requestFocus()
+    }
+
+    private fun saveNoteForStudent(student: Student) {
+        FirebaseFirestore.getInstance()
+            .collection(STUDENTS_COLLECTION)
+            .document(student.docId)
+            .update("note", student.note)
+            .addOnSuccessListener {
+                Log.d(TAG, "Saved note for ${student.displayName}: ${student.note}")
+                Toast.makeText(context, "Note saved for ${student.displayName}", Toast.LENGTH_SHORT)
+                    .show()
+            }
+            .addOnFailureListener { e ->
+                Log.e(TAG, "Unable to save note: $e")
+            }
+    }
+
+    private fun deleteNoteForStudent(student: Student) {
+        FirebaseFirestore.getInstance()
+            .collection(STUDENTS_COLLECTION)
+            .document(student.docId)
+            .update("note", FieldValue.delete())
+            .addOnSuccessListener {
+                Log.d(TAG, "Deleted note for ${student.displayName}")
+                Toast.makeText(context, "Note deleted for ${student.displayName}", Toast.LENGTH_SHORT)
+                    .show()
+            }
+            .addOnFailureListener { e ->
+                Log.e(TAG, "Unable to delete note: $e")
+            }
     }
 
     private fun setupStartOverCard(binding: ItemStartOverCardBinding) {

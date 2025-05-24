@@ -5,4 +5,7 @@
     <string name="loading_authentication">Loading authentication...</string>
     <string name="sign_out">Sign Out</string>
     <string name="select_a_course">Select a course</string>
+    <string name="no_notes_yet">No notes yet</string>
+    <string name="add_note">Add note</string>
+    <string name="edit_note">Edit note</string>
 </resources>

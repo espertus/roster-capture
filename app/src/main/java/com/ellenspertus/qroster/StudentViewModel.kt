@@ -50,6 +50,7 @@ class StudentViewModel : ViewModel() {
                             val chunkStudents = studentDocuments.documents.mapNotNull { doc ->
                                 try {
                                     val temp = doc.toObject(Student::class.java)
+                                    temp?.docId = doc.id
                                     temp
                                 } catch (e: Exception) {
                                     Log.e("StudentViewModel", "Error converting doc ${doc.id}", e)

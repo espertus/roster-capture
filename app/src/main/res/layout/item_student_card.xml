@@ -23,7 +23,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <!-- ImageView and ProgressBar remain the same -->
             <ImageView
                 android:id="@+id/studentImageView"
                 android:layout_width="match_parent"
@@ -38,9 +37,27 @@
                 android:layout_height="48dp"
                 android:layout_gravity="center"
                 android:visibility="gone" />
+
+            <!-- Note indicator badge -->
+            <TextView
+                android:id="@+id/noteIndicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|end"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="36dp"
+                android:background="@drawable/note_badge_background"
+                android:clickable="true"
+                android:focusable="true"
+                android:paddingHorizontal="6dp"
+                android:paddingVertical="4dp"
+                android:text="📝"
+                android:textSize="16sp"
+                android:visibility="gone" />
+
         </FrameLayout>
 
-        <!-- Student info container - position directly below imageContainer -->
+        <!-- Student info container -->
         <LinearLayout
             android:id="@+id/studentInfoContainer"
             android:layout_width="0dp"
@@ -68,15 +85,60 @@
                 android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                 tools:text="she/her" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/playButton"
-                android:layout_width="wrap_content"
+            <!-- Notes section -->
+            <TextView
+                android:id="@+id/notesHeader"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Play name" />
+                android:layout_marginTop="12dp"
+                android:text="Notes"
+                android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                android:textColor="?attr/colorOnSurfaceVariant" />
+
+            <TextView
+                android:id="@+id/notePreview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="No notes yet"
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:maxLines="3"
+                android:ellipsize="end"
+                tools:text="This is a sample note that might be longer than the preview area allows..." />
+
+            <!-- Button container for play and note buttons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/playButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:text="Play name" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/addEditNoteButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:text="Add note" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/deleteNoteButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Delete note" />
+
+            </LinearLayout>
+
         </LinearLayout>
 
-        <!-- Button - position at same place as studentInfoContainer -->
+        <!-- Show info button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/showInfoButton"
             android:layout_width="wrap_content"
