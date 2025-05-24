@@ -15,8 +15,16 @@ class StudentsFragment : Fragment() {
     private var _binding: FragmentStudentsBinding? = null
     private val binding get() = _binding!!
     private lateinit var studentAdapter: StudentPagerAdapter
+    private var crn: Long? = null
 
     private val viewModel: StudentViewModel by viewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            crn = StudentsFragmentArgs.fromBundle(it).crn
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,58 +36,62 @@ class StudentsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupViewPager()
+        setupObservers()
+        refreshData()
 
-//        // Add refresh listener
-//        binding.swipeRefreshLayout.setOnRefreshListener {
-//            displayStudents()
-//        }
-
-        initializeUi()
-        studentAdapter = StudentPagerAdapter(requireContext(), viewModel, this)
-        binding.apply {
-            studentViewPager.adapter = studentAdapter
-            studentViewPager.setPageTransformer(MarginPageTransformer(40))
-
-            viewModel.students.observe(viewLifecycleOwner) { students ->
-
-                progressBar.visibility = View.GONE
-                progressTextView.visibility = View.GONE
-//            binding.swipeRefreshLayout.isRefreshing = false
-
-                if (students.isEmpty()) {
-                    studentViewPager.visibility = View.GONE
-                    emptyStateLayout.visibility = View.VISIBLE
-                } else {
-                    studentViewPager.visibility = View.VISIBLE
-                    emptyStateLayout.visibility = View.GONE
-                    studentAdapter.submitList(students)
-                }
-            }
-            loadStudents()
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            refreshData()
         }
     }
 
+    private fun setupViewPager() {
+        studentAdapter = StudentPagerAdapter(requireContext(), viewModel, this)
+        binding.studentViewPager.apply {
+            adapter = studentAdapter
+            setPageTransformer(MarginPageTransformer(40))
+        }
+    }
+
+    private fun setupObservers() {
+        viewModel.students.observe(viewLifecycleOwner) { students ->
+            // Hide loading indicators
+            binding.progressBar.visibility = View.GONE
+            binding.progressTextView.visibility = View.GONE
+            binding.swipeRefreshLayout.isRefreshing = false
+
+            if (students.isEmpty()) {
+                binding.studentViewPager.visibility = View.GONE
+                binding.emptyStateLayout.visibility = View.VISIBLE
+            } else {
+                binding.studentViewPager.visibility = View.VISIBLE
+                binding.emptyStateLayout.visibility = View.GONE
+                studentAdapter.submitList(students)
+            }
+        }
+    }
+
+    private fun refreshData() {
+        initializeUi()
+        loadStudents()
+    }
+
     private fun loadStudents() {
-        val args = arguments?.let { StudentsFragmentArgs.fromBundle(it) }
-        val crn = args?.crn
-        if (crn != null) {
-            viewModel.loadStudentsForCourse(crn)
-        } else {
+        crn?.let {
+            viewModel.loadStudentsForCourse(it)
+        } ?: run {
             Log.e(TAG, "crn was null")
         }
     }
 
     private fun initializeUi() {
-        val progressBar = binding.progressBar
-        val progressTextView = binding.progressTextView
-        val studentViewPager = binding.studentViewPager
-        val emptyStateLayout = binding.emptyStateLayout
-
-        // Initial state - show loading
-        progressBar.visibility = View.VISIBLE
-        progressTextView.visibility = View.VISIBLE
-        studentViewPager.visibility = View.GONE
-        emptyStateLayout.visibility = View.GONE
+        // Indicate that data is loading.
+        binding.apply {
+            progressBar.visibility = View.VISIBLE
+            progressTextView.visibility = View.VISIBLE
+            studentViewPager.visibility = View.GONE
+            emptyStateLayout.visibility = View.GONE
+        }
     }
 
     fun showButtons() {
