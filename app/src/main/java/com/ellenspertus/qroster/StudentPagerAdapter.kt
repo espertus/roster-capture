@@ -148,12 +148,13 @@ class StudentPagerAdapter(
             if (student.note.isNullOrEmpty()) {
                 // No note exists
                 noteIndicator.visibility = View.GONE
-                notePreview.text = context.getString(R.string.no_notes_yet)
+                notePreview.visibility = View.GONE
                 addEditNoteButton.text = context.getString(R.string.add_note)
                 deleteNoteButton.visibility = View.GONE
             } else {
                 // Note exists
                 noteIndicator.visibility = View.VISIBLE
+                notePreview.visibility = View.VISIBLE
                 notePreview.text = student.note
                 addEditNoteButton.text = context.getString(R.string.edit_note)
                 deleteNoteButton.visibility = View.VISIBLE
@@ -167,7 +168,6 @@ class StudentPagerAdapter(
     }
 
     private fun showAddNoteDialog(student: Student, position: Int) {
-        // Inflate the dialog layout
         val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_add_note, null)
         val noteEditText = dialogView.findViewById<TextInputEditText>(R.id.noteEditText)
         student.note?.let {
