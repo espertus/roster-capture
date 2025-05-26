@@ -39,7 +39,7 @@ class StudentViewModel : ViewModel() {
                     return@addOnSuccessListener
                 }
 
-                // Split student IDs into chunks of 10 (Firestore limit for whereIn)
+                // Split student IDs into chunks as required
                 val chunks = studentIds.chunked(RETRIEVAL_CHUNK_SIZE)
                 val allStudents = mutableListOf<Student>()
                 var remainingQueries = chunks.size
