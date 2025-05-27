@@ -6,7 +6,6 @@ import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -16,8 +15,6 @@ import com.ellenspertus.qroster.databinding.ItemStudentCardBinding
 import com.ellenspertus.qroster.model.Student
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
@@ -39,9 +36,6 @@ class StudentPagerAdapter(
                 val student = students[position]
                 nameTextView.text = student.displayName
                 pronounsTextView.text = student.pronouns
-
-                addEditNoteButton.tag = position
-                deleteNoteButton.tag = position
 
                 setupNoteDisplay(student, this)
                 addSelfieIfPresent(student, this)
@@ -82,7 +76,6 @@ class StudentPagerAdapter(
                 val binding = ItemStudentCardBinding.inflate(
                     LayoutInflater.from(parent.context), parent, false
                 )
-                setupStudentCard(binding)
                 StudentViewHolder(binding)
             }
 
@@ -98,7 +91,7 @@ class StudentPagerAdapter(
         }
     }
 
-    private fun setupStudentCard(binding: ItemStudentCardBinding) {
+    private fun setupStudentCard(student: Student, binding: ItemStudentCardBinding) {
         with(binding) {
             showInfoButton.let {
                 it.visibility = View.VISIBLE
@@ -110,8 +103,7 @@ class StudentPagerAdapter(
             }
 
             addEditNoteButton.setOnClickListener {
-                val position = it.tag as? Int ?: return@setOnClickListener
-                showAddNoteDialog(students[position], position)
+                showAddNoteDialog(student)
             }
 
             noteIndicator.setOnClickListener {
@@ -127,11 +119,8 @@ class StudentPagerAdapter(
             is StudentViewHolder -> {
                 holder.bind(position)
 
-                // Set the position as a tag so we can access it in click listeners
-                holder.binding.addEditNoteButton.tag = position
-                holder.binding.deleteNoteButton.tag = position
-
                 val student = students[position]
+                setupStudentCard(student, holder.binding)
                 setupNoteDisplay(student, holder.binding)
                 addSelfieIfPresent(student, holder.binding)
             }
@@ -163,7 +152,7 @@ class StudentPagerAdapter(
         }
     }
 
-    private fun showAddNoteDialog(student: Student, position: Int) {
+    private fun showAddNoteDialog(student: Student) {
         val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_add_note, null)
         val noteEditText = dialogView.findViewById<TextInputEditText>(R.id.noteEditText)
         student.note?.let {
