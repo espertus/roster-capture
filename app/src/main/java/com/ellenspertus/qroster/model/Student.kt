@@ -6,7 +6,7 @@ data class Student(
     val firstName: String,
     val lastName: String,
     val preferredName: String? = null,
-    val nuid: Long,
+    val nuid: String,
     val pronouns: String,
     val selfieFile: String? = null,
     // TODO: Change field name to audioStoragePath
@@ -21,7 +21,7 @@ data class Student(
         firstName = "",
         lastName = "",
         preferredName = null,
-        nuid = 0L,
+        nuid = "",
         pronouns = "",
         selfieFile = null,
         audioFile = null,

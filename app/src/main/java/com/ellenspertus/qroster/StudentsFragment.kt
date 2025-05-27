@@ -15,7 +15,7 @@ class StudentsFragment : Fragment() {
     private var _binding: FragmentStudentsBinding? = null
     private val binding get() = _binding!!
     private lateinit var studentAdapter: StudentPagerAdapter
-    private var crn: Long? = null
+    private var crn: String? = null
 
     private val viewModel: StudentViewModel by viewModels()
 

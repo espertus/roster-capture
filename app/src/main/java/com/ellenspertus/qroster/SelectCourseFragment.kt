@@ -15,9 +15,6 @@ import com.ellenspertus.qroster.model.Course
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.firestore.firestore
 import com.google.firebase.Firebase
-import com.google.firebase.firestore.AggregateSource
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -37,9 +34,7 @@ class SelectCourseFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         (activity as MainActivity).verifyAuthentication()
         viewLifecycleOwner.lifecycleScope.launch {
-            val courses = retrieveCourses()
-            retrieveCourseCounts(courses)
-            solicitCourse(courses)
+            solicitCourse(retrieveCourses())
         }
     }
 
@@ -53,7 +48,7 @@ class SelectCourseFragment : Fragment() {
                 val adapter = ArrayAdapter(
                     requireContext(),
                     android.R.layout.simple_dropdown_item_1line,
-                    courses.map { "${it.shortName} (${it.count})" }
+                    courses.map { "${it.shortName} (${it.studentsCount}/${it.enrollmentsCount})" }
                 )
                 setAdapter(adapter)
 
@@ -77,7 +72,9 @@ class SelectCourseFragment : Fragment() {
 
             val courses = snapshot.documents.mapNotNull { document ->
                 try {
-                    document.toObject(Course::class.java)
+                    document.toObject(Course::class.java)?.also {
+                        it.crn = document.id
+                    } ?: throw Exception("documentToObject() returned null")
                 } catch (e: Exception) {
                     Log.e(TAG, "Error converting document ${document.id}", e)
                     null
@@ -89,29 +86,6 @@ class SelectCourseFragment : Fragment() {
             Log.e(TAG, "Error getting documents", exception)
             emptyList() // Return empty list on error
         }
-    }
-
-    private suspend fun retrieveCourseCounts(courses: List<Course>): List<Course> = coroutineScope {
-        val deferredResults = courses.map { course ->
-            async {
-                try {
-                    val snapshot = db.collection(ENROLLMENTS_COLLECTION)
-                        .whereEqualTo("crn", course.crn)
-                        .count()
-                        .get(AggregateSource.SERVER)
-                        .await()
-
-                    course.count = snapshot.count.toInt()
-                } catch (e: Exception) {
-                    Log.e(TAG, "Error getting student count for ${course.shortName}", e)
-                    course.count = 0
-                }
-            }
-        }
-
-        // Wait for all async operations to complete
-        deferredResults.awaitAll()
-        courses
     }
 
     companion object {

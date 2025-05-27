@@ -29,7 +29,7 @@
         android:label="StudentsFragment" >
         <argument
             android:name="crn"
-            app:argType="long" />
+            app:argType="string" />
         <action
             android:id="@+id/action_studentsFragment_to_selectCourseFragment"
             app:destination="@id/selectCourseFragment" />

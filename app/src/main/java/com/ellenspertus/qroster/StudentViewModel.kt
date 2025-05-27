@@ -25,14 +25,14 @@ class StudentViewModel : ViewModel() {
     private val firestore = FirebaseFirestore.getInstance()
     private var exoPlayer: ExoPlayer? = null
 
-    fun loadStudentsForCourse(crn: Long) {
+    fun loadStudentsForCourse(crn: String) {
         firestore.collection(ENROLLMENTS_COLLECTION)
             .whereEqualTo("crn", crn)
             .get()
             .addOnSuccessListener { enrollmentDocuments ->
                 // Extract all student IDs from the enrollments
                 val studentIds = enrollmentDocuments.documents.mapNotNull { doc ->
-                    doc.getLong("nuid")
+                    doc.getString("nuid")
                 }
                 if (studentIds.isEmpty()) {
                     _students.value = emptyList()
