@@ -2,6 +2,7 @@ package com.ellenspertus.qroster
 
 import android.content.Context
 import android.util.Log
+import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,7 +18,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.ktx.storage
 
 class StudentPagerAdapter(
     private val context: Context,
@@ -43,23 +46,18 @@ class StudentPagerAdapter(
                 setupNoteDisplay(student, this)
                 addSelfieIfPresent(student, this)
 
-//                // For API 34+, you can use Coil with better performance
-//                // implementation("io.coil-kt:coil:2.6.0")
-//                studentPhoto.load(student.photoUrl) {
-//                    crossfade(true)
-//                    error(R.drawable.ic_person_placeholder)
-//                }
-
+                // Display the play button even if the audio file has not yet been loaded.
                 student.audioFile?.let {
-                    playButton.visibility = View.VISIBLE
-                    playButton.setOnClickListener {
-                        viewModel.playAudio(root.context, student)
+                    playButton.apply {
+                        visibility = View.VISIBLE
+                        setOnClickListener {
+                            viewModel.playAudio(root.context, student)
+                        }
+                        performHapticFeedback(
+                            HapticFeedbackConstants.CONFIRM,
+                            HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING
+                        )
                     }
-//                        // Haptic feedback for API 34+
-//                        it.performHapticFeedback(
-//                            HapticFeedbackConstants.CONFIRM,
-//                            HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING
-//                        )
                 } ?: run {
                     playButton.visibility = View.GONE
                 }
@@ -124,20 +122,20 @@ class StudentPagerAdapter(
         }
     }
 
-    // Update onBindViewHolder to set up note display
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is StudentViewHolder -> {
                 holder.bind(position)
 
-                    // Set the position as a tag so we can access it in click listeners
-                    holder.binding.addEditNoteButton.tag = position
-                    holder.binding.deleteNoteButton.tag = position
-                    val student = students[position]
-                    setupNoteDisplay(student, holder.binding)
-                    addSelfieIfPresent(student, holder.binding)
-//                    addAudioIfPresent(student, holder.binding, position)
+                // Set the position as a tag so we can access it in click listeners
+                holder.binding.addEditNoteButton.tag = position
+                holder.binding.deleteNoteButton.tag = position
+
+                val student = students[position]
+                setupNoteDisplay(student, holder.binding)
+                addSelfieIfPresent(student, holder.binding)
             }
+
             is StartOverViewHolder -> {
             }
         }
@@ -290,16 +288,10 @@ class StudentPagerAdapter(
         const val VIEW_TYPE_START_OVER = 1
 
         fun getStoragePath(file: String) =
-            when {
-                file.startsWith("gs://") -> {
-                    // Extract the path after the bucket name
-                    // Format: gs://bucket-name/path/to/file.jpg
-                    val uri = file.removePrefix("gs://")
-                    val parts = uri.split("/", limit = 2)
-                    if (parts.size > 1) parts[1] else file
-                }
-
-                else -> file
+            try {
+                Firebase.storage.getReferenceFromUrl(file).path
+            } catch (e: IllegalArgumentException) {
+                file
             }
     }
 }
