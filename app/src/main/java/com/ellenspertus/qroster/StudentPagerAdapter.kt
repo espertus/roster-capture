@@ -157,9 +157,7 @@ class StudentPagerAdapter(
                 addEditNoteButton.text = context.getString(R.string.edit_note)
                 deleteNoteButton.visibility = View.VISIBLE
                 deleteNoteButton.setOnClickListener { _ ->
-                    deleteNoteForStudent(student)
-                    student.note = null
-                    notifyItemChanged(deleteNoteButton.tag as Int)
+                    viewModel.deleteStudentNote(student)
                 }
             }
         }
@@ -181,49 +179,17 @@ class StudentPagerAdapter(
                 val noteText = noteEditText.text.toString().trim()
 
                 if (noteText != student.note) {
-                    student.note = noteText
                     if (noteText.isNotEmpty()) {
-                        saveNoteForStudent(student)
+                        viewModel.updateStudentNote(student, noteText)
                     } else {
-                        deleteNoteForStudent(student)
+                        viewModel.deleteStudentNote(student)
                     }
-                    notifyItemChanged(position)
                 }
             }
             .setNegativeButton("Cancel", null)
             .show()
 
         noteEditText.requestFocus()
-    }
-
-    private fun saveNoteForStudent(student: Student) {
-        FirebaseFirestore.getInstance()
-            .collection(STUDENTS_COLLECTION)
-            .document(student.docId)
-            .update("note", student.note)
-            .addOnSuccessListener {
-                Log.d(TAG, "Saved note for ${student.displayName}: ${student.note}")
-                Toast.makeText(context, "Note saved for ${student.displayName}", Toast.LENGTH_SHORT)
-                    .show()
-            }
-            .addOnFailureListener { e ->
-                Log.e(TAG, "Unable to save note: $e")
-            }
-    }
-
-    private fun deleteNoteForStudent(student: Student) {
-        FirebaseFirestore.getInstance()
-            .collection(STUDENTS_COLLECTION)
-            .document(student.docId)
-            .update("note", FieldValue.delete())
-            .addOnSuccessListener {
-                Log.d(TAG, "Deleted note for ${student.displayName}")
-                Toast.makeText(context, "Note deleted for ${student.displayName}", Toast.LENGTH_SHORT)
-                    .show()
-            }
-            .addOnFailureListener { e ->
-                Log.e(TAG, "Unable to delete note: $e")
-            }
     }
 
     private fun setupStartOverCard(binding: ItemStartOverCardBinding) {

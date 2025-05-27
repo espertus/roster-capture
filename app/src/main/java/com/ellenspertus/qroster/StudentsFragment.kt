@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.viewpager2.widget.MarginPageTransformer
 import com.ellenspertus.qroster.databinding.FragmentStudentsBinding
@@ -67,6 +68,16 @@ class StudentsFragment : Fragment() {
                 binding.studentViewPager.visibility = View.VISIBLE
                 binding.emptyStateLayout.visibility = View.GONE
                 studentAdapter.submitList(students)
+            }
+        }
+
+        viewModel.uiMessage.observe(viewLifecycleOwner) { message ->
+            message?.let {
+                when (it) {
+                    is UiMessage.Success -> Toast.makeText(context, it.text, Toast.LENGTH_SHORT).show()
+                    is UiMessage.Failure -> Toast.makeText(context, it.text, Toast.LENGTH_LONG).show()
+                }
+                viewModel.clearMessage()
             }
         }
     }

@@ -12,6 +12,7 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import com.ellenspertus.qroster.model.Student
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.coroutineScope
@@ -21,6 +22,9 @@ import kotlinx.coroutines.tasks.await
 class StudentViewModel : ViewModel() {
     private val _students = MutableLiveData<List<Student>>()
     val students: LiveData<List<Student>> = _students
+
+    private val _uiMessage = MutableLiveData<UiMessage?>()
+    val uiMessage: LiveData<UiMessage?> = _uiMessage
 
     private val firestore = FirebaseFirestore.getInstance()
     private var exoPlayer: ExoPlayer? = null
@@ -53,7 +57,6 @@ class StudentViewModel : ViewModel() {
                     }
                 }
 
-                // For each chunk, run a separate query
                 chunks.forEach { chunk ->
                     firestore.collection(STUDENTS_COLLECTION)
                         .whereIn("nuid", chunk)
@@ -95,7 +98,7 @@ class StudentViewModel : ViewModel() {
                     .toString()
                 student.audioDownloadUrl = url
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to get URL for ${student.nuid}", e)
+                _uiMessage.value = UiMessage.Failure("Failed to get URL for ${student.nuid}")
             }
         }
     }
@@ -141,6 +144,41 @@ class StudentViewModel : ViewModel() {
         super.onCleared()
         exoPlayer?.release()
         exoPlayer = null
+    }
+
+    fun updateStudentNote(student: Student, newNote: String?) {
+        viewModelScope.launch {
+            student.note = newNote
+            try {
+                firestore.collection(STUDENTS_COLLECTION)
+                    .document(student.nuid)
+                    .update("note", newNote)
+                    .await()
+
+                _uiMessage.value = UiMessage.Success("Saved note")
+                _students.value = _students.value // Trigger LiveData update
+
+            } catch (e: Exception) {
+                _uiMessage.value = UiMessage.Failure("Failed to update note: $e")
+            }
+        }
+    }
+
+    fun deleteStudentNote(student: Student) {
+        FirebaseFirestore.getInstance()
+            .collection(STUDENTS_COLLECTION)
+            .document(student.docId)
+            .update("note", FieldValue.delete())
+            .addOnSuccessListener {
+                _uiMessage.value = UiMessage.Success("Deleted note for ${student.displayName}")
+            }
+            .addOnFailureListener { e ->
+                Log.e(StudentPagerAdapter.TAG, "Unable to delete note: $e")
+            }
+    }
+
+    fun clearMessage() {
+        _uiMessage.value = null
     }
 
     companion object {

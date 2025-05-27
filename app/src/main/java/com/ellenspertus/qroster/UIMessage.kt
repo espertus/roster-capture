@@ -1,4 +1,6 @@
 package com.ellenspertus.qroster
 
-class UIMessage {
+sealed class UiMessage {
+    data class Success(val text: String) : UiMessage()
+    data class Failure(val text: String) : UiMessage()
 }
