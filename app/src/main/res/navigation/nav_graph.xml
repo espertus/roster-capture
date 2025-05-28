@@ -11,8 +11,11 @@
         android:label="fragment_class_select"
         tools:layout="@layout/fragment_select_course" >
         <action
-            android:id="@+id/action_selectCourseFragment_to_studentsFragment"
+            android:id="@+id/action_selectCourseFragment_to_browseStudentsFragment"
             app:destination="@id/studentsFragment" />
+        <action
+            android:id="@+id/action_selectCourseFragment_to_quizFragment"
+            app:destination="@id/quizFragment" />
     </fragment>
     <fragment
         android:id="@+id/welcomeFragment"
@@ -31,7 +34,16 @@
             android:name="crn"
             app:argType="string" />
         <action
-            android:id="@+id/action_studentsFragment_to_selectCourseFragment"
+            android:id="@+id/action_browseStudentsFragment_to_selectCourseFragment"
             app:destination="@id/selectCourseFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/quizFragment"
+        android:name="com.ellenspertus.qroster.QuizFragment"
+        android:label="fragment_quiz"
+        tools:layout="@layout/fragment_quiz" >
+        <argument
+            android:name="crn"
+            app:argType="string" />
     </fragment>
 </navigation>

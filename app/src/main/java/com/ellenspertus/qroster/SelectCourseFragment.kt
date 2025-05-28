@@ -11,8 +11,8 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.ellenspertus.qroster.databinding.FragmentSelectCourseBinding
 import com.ellenspertus.qroster.model.Course
-import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.firestore.firestore
 import com.google.firebase.Firebase
 import kotlinx.coroutines.coroutineScope
@@ -20,6 +20,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 class SelectCourseFragment : Fragment() {
+    private var _binding: FragmentSelectCourseBinding? = null
+    private val binding get() = _binding!!
     private val db = Firebase.firestore
 
     override fun onCreateView(
@@ -27,7 +29,8 @@ class SelectCourseFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_select_course, container, false)
+        _binding = FragmentSelectCourseBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -39,26 +42,40 @@ class SelectCourseFragment : Fragment() {
     }
 
     private fun solicitCourse(courses: List<Course>) {
-        view?.apply {
-            findViewById<TextView>(R.id.textWelcome)?.text =
-                context.getString(R.string.select_a_course)
-            findViewById<TextInputLayout>(R.id.menu_layout).visibility = View.VISIBLE
-            findViewById<AutoCompleteTextView>(R.id.dropdown_text)?.apply {
-                visibility = View.VISIBLE
+        binding.apply {
+            textWelcome.text = requireContext().getString(R.string.select_a_course)
+            menuLayout.visibility = View.VISIBLE
+            dropdownText.let {
+                it.visibility = View.VISIBLE
                 val adapter = ArrayAdapter(
                     requireContext(),
                     android.R.layout.simple_dropdown_item_1line,
                     courses.map { "${it.shortName} (${it.studentsCount}/${it.enrollmentsCount})" }
                 )
-                setAdapter(adapter)
+                it.setAdapter(adapter)
 
-                setOnItemClickListener { _, _, position, _ ->
+                it.setOnItemClickListener { _, _, position, _ ->
                     val selectedCourse = courses[position]
-                    val action =
-                        SelectCourseFragmentDirections.actionSelectCourseFragmentToStudentsFragment(
-                            selectedCourse.crn
-                        )
-                    findNavController().navigate(action)
+
+                    browseButton.apply {
+                        isEnabled = true
+                        setOnClickListener {
+                            val action = SelectCourseFragmentDirections.actionSelectCourseFragmentToBrowseStudentsFragment(
+                                selectedCourse.crn
+                            )
+                            findNavController().navigate(action)
+                        }
+                    }
+
+                    quizButton.apply {
+                        isEnabled = true
+                        setOnClickListener {
+                            val action = SelectCourseFragmentDirections.actionSelectCourseFragmentToQuizFragment(
+                                selectedCourse.crn
+                            )
+                            findNavController().navigate(action)
+                        }
+                    }
                 }
             }
         }
