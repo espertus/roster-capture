@@ -47,7 +47,19 @@ class BrowseStudentsFragment : Fragment() {
     }
 
     private fun setupViewPager() {
-        studentAdapter = StudentPagerAdapter(requireContext(), viewModel, this)
+        val host = object : StudentPagerAdapter.Host {
+            override val showInfoAtStart = true
+            override val showInfoButtonAtStart = false
+            override val context = requireContext()
+            override fun startOver() {
+                view?.let { v ->
+                    Snackbar.make(v, "Starting over with first student", Snackbar.LENGTH_SHORT).show()
+                }
+                binding.studentViewPager.setCurrentItem(0, true)
+            }
+        }
+
+        studentAdapter = StudentPagerAdapter(requireContext(), viewModel, this, host)
         binding.studentViewPager.apply {
             adapter = studentAdapter
             setPageTransformer(MarginPageTransformer(40))
@@ -105,25 +117,7 @@ class BrowseStudentsFragment : Fragment() {
         }
     }
 
-    fun showButtons() {
-        binding.controlsLayout.visibility = View.VISIBLE
-    }
-
-    fun hideButtons() {
-        binding.controlsLayout.visibility = View.INVISIBLE
-    }
-
-    fun startOver() {
-        view?.let { v ->
-            Snackbar.make(v, "Starting over with first student", Snackbar.LENGTH_SHORT).show()
-        }
-        binding.studentViewPager.setCurrentItem(0, true)
-
-        // Optional: Reshuffle the students if you want variety
-        // viewModel.reshuffleStudents()
-    }
-
     companion object {
-        const val TAG = "StudentsFragment"
+        const val TAG = "BrowseStudentsFragment"
     }
 }

@@ -6,6 +6,7 @@ import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -22,10 +23,18 @@ import com.google.firebase.storage.ktx.storage
 class StudentPagerAdapter(
     private val context: Context,
     private val viewModel: StudentViewModel,
-    private val enclosingFragment: BrowseStudentsFragment,
+    private val enclosingFragment: Fragment,
+    private val host: Host,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val storageRef = FirebaseStorage.getInstance().reference
     private var students = emptyList<Student>()
+
+    interface Host {
+        val showInfoAtStart: Boolean
+        val showInfoButtonAtStart: Boolean
+        val context: Context
+        fun startOver()
+    }
 
     inner class StudentViewHolder(
         val binding: ItemStudentCardBinding
@@ -98,7 +107,6 @@ class StudentPagerAdapter(
                 it.setOnClickListener { _ ->
                     it.visibility = View.GONE
                     studentInfoContainer.visibility = View.VISIBLE
-                    enclosingFragment.showButtons()
                 }
             }
 
@@ -109,7 +117,6 @@ class StudentPagerAdapter(
             noteIndicator.setOnClickListener {
                 showInfoButton.visibility = View.GONE
                 studentInfoContainer.visibility = View.VISIBLE
-                enclosingFragment.showButtons()
             }
         }
     }
@@ -183,7 +190,7 @@ class StudentPagerAdapter(
 
     private fun setupStartOverCard(binding: ItemStartOverCardBinding) {
         binding.startOverButton.setOnClickListener {
-            enclosingFragment.startOver()
+            host.startOver()
         }
         binding.doneButton.setOnClickListener {
             enclosingFragment.findNavController()
@@ -191,18 +198,18 @@ class StudentPagerAdapter(
         }
     }
 
-    // When we show a view, whether for the first time or later times,
-    // we should not display the info or the mark buttons.
     override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
         super.onViewAttachedToWindow(holder)
 
         if (holder is StudentViewHolder) {
-            with(holder.binding) {
-                showInfoButton.visibility = View.VISIBLE
-                studentInfoContainer.visibility = View.GONE
-            }
+            renderInfo(holder.binding, host.showInfoAtStart, host.showInfoButtonAtStart)
         }
-        enclosingFragment.hideButtons()
+    }
+
+    private fun renderInfo(binding: ItemStudentCardBinding, showInfo: Boolean, showInfoButton: Boolean) {
+        require(!(showInfo && showInfoButton))
+        binding.showInfoButton.visibility = if (showInfoButton) View.VISIBLE else View.GONE
+        binding.studentInfoContainer.visibility = if (showInfo) View.VISIBLE else View.GONE
     }
 
     private fun addSelfieIfPresent(student: Student, binding: ItemStudentCardBinding) {
