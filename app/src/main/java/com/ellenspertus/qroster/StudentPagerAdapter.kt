@@ -22,7 +22,7 @@ import com.google.firebase.storage.ktx.storage
 class StudentPagerAdapter(
     private val context: Context,
     private val viewModel: StudentViewModel,
-    private val enclosingFragment: StudentsFragment,
+    private val enclosingFragment: BrowseStudentsFragment,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val storageRef = FirebaseStorage.getInstance().reference
     private var students = emptyList<Student>()

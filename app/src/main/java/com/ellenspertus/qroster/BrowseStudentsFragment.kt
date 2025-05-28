@@ -9,11 +9,11 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.viewpager2.widget.MarginPageTransformer
-import com.ellenspertus.qroster.databinding.FragmentStudentsBinding
+import com.ellenspertus.qroster.databinding.FragmentBrowseStudentsBinding
 import com.google.android.material.snackbar.Snackbar
 
-class StudentsFragment : Fragment() {
-    private var _binding: FragmentStudentsBinding? = null
+class BrowseStudentsFragment : Fragment() {
+    private var _binding: FragmentBrowseStudentsBinding? = null
     private val binding get() = _binding!!
     private lateinit var studentAdapter: StudentPagerAdapter
     private var crn: String? = null
@@ -23,7 +23,7 @@ class StudentsFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            crn = StudentsFragmentArgs.fromBundle(it).crn
+            crn = BrowseStudentsFragmentArgs.fromBundle(it).crn
         }
     }
 
@@ -31,7 +31,7 @@ class StudentsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentStudentsBinding.inflate(inflater, container, false)
+        _binding = FragmentBrowseStudentsBinding.inflate(inflater, container, false)
         return binding.root
     }
 

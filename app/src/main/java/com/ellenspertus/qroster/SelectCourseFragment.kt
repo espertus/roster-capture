@@ -27,7 +27,7 @@ class SelectCourseFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_course_select, container, false)
+        return inflater.inflate(R.layout.fragment_select_course, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

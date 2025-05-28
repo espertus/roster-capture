@@ -9,7 +9,7 @@
         android:id="@+id/selectCourseFragment"
         android:name="com.ellenspertus.qroster.SelectCourseFragment"
         android:label="fragment_class_select"
-        tools:layout="@layout/fragment_course_select" >
+        tools:layout="@layout/fragment_select_course" >
         <action
             android:id="@+id/action_selectCourseFragment_to_studentsFragment"
             app:destination="@id/studentsFragment" />
@@ -25,7 +25,7 @@
     </fragment>
     <fragment
         android:id="@+id/studentsFragment"
-        android:name="com.ellenspertus.qroster.StudentsFragment"
+        android:name="com.ellenspertus.qroster.BrowseStudentsFragment"
         android:label="StudentsFragment" >
         <argument
             android:name="crn"
