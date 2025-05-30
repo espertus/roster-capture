@@ -5,8 +5,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import com.ellenspertus.qroster.databinding.FragmentSelectCourseBinding
 import com.ellenspertus.qroster.databinding.ItemCourseCardBinding
@@ -22,7 +24,7 @@ class SelectCourseFragment : Fragment() {
     private val binding get() = _binding!!
     private val db = Firebase.firestore
 
-    // These layout elements are created programmatically.
+    // These cards are created programmatically.
     private val courseCards = mutableListOf<ItemCourseCardBinding>()
 
     override fun onCreateView(
@@ -93,31 +95,30 @@ class SelectCourseFragment : Fragment() {
                         card.root.isSelected = wasClicked
                     }
 
-                    binding.browseButton.apply {
-                        isEnabled = true
-                        setOnClickListener {
-                            val action =
-                                SelectCourseFragmentDirections.actionSelectCourseFragmentToBrowseStudentsFragment(
-                                    course.crn
-                                )
-                            findNavController().navigate(action)
-                        }
-                    }
-
-                    binding.quizButton.apply {
-                        isEnabled = true
-                        setOnClickListener {
-                            val action =
-                                SelectCourseFragmentDirections.actionSelectCourseFragmentToQuizFragment(
-                                    course.crn
-                                )
-                            findNavController().navigate(action)
-                        }
-                    }
+                    wireButton(
+                        binding.browseButton,
+                        course,
+                        SelectCourseFragmentDirections::actionSelectCourseFragmentToBrowseStudentsFragment)
+                    wireButton(
+                        binding.quizButton,
+                        course,
+                        SelectCourseFragmentDirections::actionSelectCourseFragmentToQuizFragment
+                    )
                 }
             }
             courseCards.add(this)
             binding.coursesContainer.addView(this.root)
+        }
+    }
+
+    private fun wireButton(
+        button: Button,
+        course: Course,
+        createAction: (String) -> NavDirections
+    ) {
+        button.isEnabled = true
+        button.setOnClickListener {
+            findNavController().navigate(createAction(course.crn))
         }
     }
 
