@@ -10,54 +10,68 @@
         android:id="@+id/textWelcome"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
+        android:textSize="20sp"
         android:textStyle="bold"
-        android:text="Select a course to continue"
+        android:text="@string/loading"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/menu_layout"
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+    <!-- ScrollView to contain the dynamically added course cards -->
+    <ScrollView
+        android:id="@+id/coursesScrollView"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginTop="16dp"
-        android:hint="Choose Course"
-        app:helperTextEnabled="true"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="16dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textWelcome">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textWelcome"
+        app:layout_constraintBottom_toTopOf="@id/buttonBarrier">
 
-        <AutoCompleteTextView
-            android:id="@+id/dropdown_text"
+        <LinearLayout
+            android:id="@+id/coursesContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="none" />
+            android:orientation="vertical" />
 
-    </com.google.android.material.textfield.TextInputLayout>
+    </ScrollView>
 
-    <!-- Buttons properly constrained below dropdown -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/browseButton"
+    <!-- Barrier to keep buttons at bottom -->
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/buttonBarrier"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="Browse Students"
+        app:barrierDirection="top"
+        app:constraint_referenced_ids="browseButton,quizButton" />
+
+    <!-- Buttons with larger touch targets for accessibility -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/browseButton"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="@string/browse_students"
+        android:textSize="16sp"
         android:enabled="false"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/menu_layout" />
+        app:layout_constraintEnd_toStartOf="@id/quizButton"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/quizButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:text="Start Quiz"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="@string/start_quiz"
+        android:textSize="16sp"
         android:enabled="false"
+        app:layout_constraintStart_toEndOf="@id/browseButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/browseButton" />
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

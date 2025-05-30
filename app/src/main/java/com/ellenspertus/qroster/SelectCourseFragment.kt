@@ -5,13 +5,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.ellenspertus.qroster.databinding.FragmentSelectCourseBinding
+import com.ellenspertus.qroster.databinding.ItemCourseCardBinding
 import com.ellenspertus.qroster.model.Course
 import com.google.firebase.firestore.firestore
 import com.google.firebase.Firebase
@@ -24,11 +22,14 @@ class SelectCourseFragment : Fragment() {
     private val binding get() = _binding!!
     private val db = Firebase.firestore
 
+    // These layout elements are created programmatically.
+    private val courseCards = mutableListOf<ItemCourseCardBinding>()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentSelectCourseBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -37,47 +38,15 @@ class SelectCourseFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         (activity as MainActivity).verifyAuthentication()
         viewLifecycleOwner.lifecycleScope.launch {
-            solicitCourse(retrieveCourses())
+            solicitCourse(retrieveCourses().sortedBy { it.longName })
         }
     }
 
     private fun solicitCourse(courses: List<Course>) {
         binding.apply {
             textWelcome.text = requireContext().getString(R.string.select_a_course)
-            menuLayout.visibility = View.VISIBLE
-            dropdownText.let {
-                it.visibility = View.VISIBLE
-                val adapter = ArrayAdapter(
-                    requireContext(),
-                    android.R.layout.simple_dropdown_item_1line,
-                    courses.map { "${it.shortName} (${it.studentsCount}/${it.enrollmentsCount})" }
-                )
-                it.setAdapter(adapter)
-
-                it.setOnItemClickListener { _, _, position, _ ->
-                    val selectedCourse = courses[position]
-
-                    browseButton.apply {
-                        isEnabled = true
-                        setOnClickListener {
-                            val action = SelectCourseFragmentDirections.actionSelectCourseFragmentToBrowseStudentsFragment(
-                                selectedCourse.crn
-                            )
-                            findNavController().navigate(action)
-                        }
-                    }
-
-                    quizButton.apply {
-                        isEnabled = true
-                        setOnClickListener {
-                            val action = SelectCourseFragmentDirections.actionSelectCourseFragmentToQuizFragment(
-                                selectedCourse.crn
-                            )
-                            findNavController().navigate(action)
-                        }
-                    }
-                }
-            }
+            courses.forEach { addCourseToUI(it) }
+            coursesContainer.visibility = View.VISIBLE
         }
     }
 
@@ -102,6 +71,53 @@ class SelectCourseFragment : Fragment() {
         } catch (exception: Exception) {
             Log.e(TAG, "Error getting documents", exception)
             emptyList() // Return empty list on error
+        }
+    }
+
+    private fun addCourseToUI(course: Course) {
+        ItemCourseCardBinding.inflate(
+            LayoutInflater.from(requireContext()),
+            binding.coursesContainer,
+            false
+        ).apply {
+            course.let {
+                courseNameText.text = it.shortName
+                courseDetailsText.text =
+                    "${it.longName}\n${it.studentsCount}/${it.enrollmentsCount} students"
+                courseDetailsText.visibility = View.VISIBLE
+
+                root.setOnClickListener { view ->
+                    courseCards.forEach { card ->
+                        val wasClicked = card.root == view
+                        card.root.isChecked = wasClicked
+                        card.root.isSelected = wasClicked
+                    }
+
+                    binding.browseButton.apply {
+                        isEnabled = true
+                        setOnClickListener {
+                            val action =
+                                SelectCourseFragmentDirections.actionSelectCourseFragmentToBrowseStudentsFragment(
+                                    course.crn
+                                )
+                            findNavController().navigate(action)
+                        }
+                    }
+
+                    binding.quizButton.apply {
+                        isEnabled = true
+                        setOnClickListener {
+                            val action =
+                                SelectCourseFragmentDirections.actionSelectCourseFragmentToQuizFragment(
+                                    course.crn
+                                )
+                            findNavController().navigate(action)
+                        }
+                    }
+                }
+            }
+            courseCards.add(this)
+            binding.coursesContainer.addView(this.root)
         }
     }
 
