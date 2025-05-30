@@ -83,10 +83,13 @@ class SelectCourseFragment : Fragment() {
             false
         ).apply {
             course.let {
-                courseNameText.text = it.shortName
-                courseDetailsText.text =
-                    "${it.longName}\n${it.studentsCount}/${it.enrollmentsCount} students"
-                courseDetailsText.visibility = View.VISIBLE
+                courseIdText.text = it.shortName
+                courseNameText.text = it.longName
+                courseCountText.text = String.format(
+                    getString(R.string.students_ratio),
+                    course.studentsCount,
+                    course.enrollmentsCount
+                )
 
                 root.setOnClickListener { view ->
                     courseCards.forEach { card ->

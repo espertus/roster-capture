@@ -9,11 +9,11 @@
     android:checkable="true"
     android:clickable="true"
     android:focusable="true"
+    app:cardBackgroundColor="@color/course_card_background_color"
     app:cardCornerRadius="8dp"
     app:cardElevation="2dp"
     app:checkedIconVisible="false"
     app:strokeColor="@color/course_card_stroke_color"
-    app:cardBackgroundColor="@color/course_card_background_color"
     app:strokeWidth="3dp">
 
     <LinearLayout
@@ -28,26 +28,44 @@
         android:paddingBottom="16dp">
 
         <TextView
-            android:id="@+id/courseNameText"
+            android:id="@+id/courseIdText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="12dp"
+            android:layout_marginEnd="20dp"
             android:textColor="?attr/colorOnSurface"
             android:textSize="20sp"
             android:textStyle="bold"
             tools:text="CS 1000" />
 
-        <TextView
-            android:id="@+id/courseDetailsText"
+        <LinearLayout
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            android:textSize="14sp"
-            android:visibility="visible"
-            tools:text="CS 1000: Programming Principles\n1/20 students"
-            tools:visibility="visible" />
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/courseNameText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="14sp"
+                tools:text="Programming Principles" />
+
+            <TextView
+                android:id="@+id/courseCountText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="14sp"
+                tools:text="1/20 students" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>
