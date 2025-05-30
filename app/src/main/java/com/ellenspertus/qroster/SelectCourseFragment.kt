@@ -40,7 +40,7 @@ class SelectCourseFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         (activity as MainActivity).verifyAuthentication()
         viewLifecycleOwner.lifecycleScope.launch {
-            solicitCourse(retrieveCourses().sortedBy { it.longName })
+            solicitCourse(retrieveCourses().sortedBy { it.id })
         }
     }
 
@@ -83,8 +83,8 @@ class SelectCourseFragment : Fragment() {
             false
         ).apply {
             course.let {
-                courseIdText.text = it.shortName
-                courseNameText.text = it.longName
+                courseIdText.text = it.id
+                courseNameText.text = it.name
                 courseCountText.text = String.format(
                     getString(R.string.students_ratio),
                     course.studentsCount,
