@@ -146,9 +146,24 @@ class StudentViewModel : ViewModel() {
         exoPlayer = null
     }
 
-    fun updateStudentNote(student: Student, newNote: String?) {
+    fun updateStudentScore(student: Student, score: Double) {
+        student.score = score
         viewModelScope.launch {
-            student.note = newNote
+            try {
+                firestore.collection(STUDENTS_COLLECTION)
+                    .document(student.nuid)
+                    .update("score", score)
+                    .await()
+
+            } catch (e: Exception) {
+                _uiMessage.value = UiMessage.Failure("Failed to update score: $e")
+            }
+        }
+    }
+
+    fun updateStudentNote(student: Student, newNote: String?) {
+        student.note = newNote
+        viewModelScope.launch {
             try {
                 firestore.collection(STUDENTS_COLLECTION)
                     .document(student.nuid)

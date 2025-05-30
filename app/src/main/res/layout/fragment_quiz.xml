@@ -98,33 +98,37 @@
             android:id="@+id/quizButton1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_marginEnd="4dp"
-            android:text="Dunno" />
+            android:layout_weight="1"
+            android:padding="0dp"
+            android:text="@string/quiz_button_wrong" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/quizButton2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_marginHorizontal="4dp"
-            android:text="Guess" />
+            android:layout_weight="1"
+            android:padding="0dp"
+            android:text="@string/quiz_button_hard" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/quizButton3"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_marginHorizontal="4dp"
-            android:text="Hard" />
+            android:layout_weight="1"
+            android:padding="0dp"
+            android:text="@string/quiz_button_good" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/quizButton4"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_marginStart="4dp"
-            android:text="Known" />
+            android:layout_weight="1"
+            android:padding="0dp"
+            android:text="@string/quiz_button_known" />
 
     </LinearLayout>
 

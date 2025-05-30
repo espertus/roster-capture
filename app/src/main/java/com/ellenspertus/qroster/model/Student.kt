@@ -16,6 +16,7 @@ data class Student(
     var note: String? = null,
     @Exclude
     var docId: String = "",
+    var score: Double = 0.0,
 ) {
     constructor() : this(
         firstName = "",
@@ -28,6 +29,7 @@ data class Student(
         audioDownloadUrl = null,
         note = null,
         docId = "",
+        score = 0.0,
     )
 
     val displayName

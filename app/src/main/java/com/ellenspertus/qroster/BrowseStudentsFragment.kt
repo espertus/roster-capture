@@ -37,6 +37,8 @@ class BrowseStudentsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        enableSwiping()
         setupViewPager()
         setupObservers()
         refreshData()
@@ -44,6 +46,10 @@ class BrowseStudentsFragment : Fragment() {
         binding.swipeRefreshLayout.setOnRefreshListener {
             refreshData()
         }
+    }
+
+    private fun enableSwiping() {
+        binding.studentViewPager.isUserInputEnabled = true
     }
 
     private fun setupViewPager() {
@@ -56,6 +62,10 @@ class BrowseStudentsFragment : Fragment() {
                     Snackbar.make(v, "Starting over with first student", Snackbar.LENGTH_SHORT).show()
                 }
                 binding.studentViewPager.setCurrentItem(0, true)
+            }
+
+            override fun onInfoVisibilityChanged(isVisible: Boolean) {
+                // do nothing
             }
         }
 
@@ -79,7 +89,7 @@ class BrowseStudentsFragment : Fragment() {
             } else {
                 binding.studentViewPager.visibility = View.VISIBLE
                 binding.emptyStateLayout.visibility = View.GONE
-                studentAdapter.submitList(students)
+                studentAdapter.setStudents(students)
             }
         }
 

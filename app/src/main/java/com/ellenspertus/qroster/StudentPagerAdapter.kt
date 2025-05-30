@@ -27,13 +27,14 @@ class StudentPagerAdapter(
     private val host: Host,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val storageRef = FirebaseStorage.getInstance().reference
-    private var students = emptyList<Student>()
+    private val students = mutableListOf<Student>()
 
     interface Host {
         val showInfoAtStart: Boolean
         val showInfoButtonAtStart: Boolean
         val context: Context
         fun startOver()
+        fun onInfoVisibilityChanged(isVisible: Boolean)
     }
 
     inner class StudentViewHolder(
@@ -100,12 +101,22 @@ class StudentPagerAdapter(
         }
     }
 
+    fun setStudents(newStudents: List<Student>) {
+        students.clear()
+        students.addAll(newStudents)
+        notifyDataSetChanged()
+    }
+
+    fun getStudents(): MutableList<Student> = students
+
     private fun setupStudentCard(student: Student, binding: ItemStudentCardBinding) {
         with(binding) {
             showInfoButton.let {
                 it.visibility = View.VISIBLE
+                host.onInfoVisibilityChanged(false)
                 it.setOnClickListener { _ ->
                     it.visibility = View.GONE
+                    host.onInfoVisibilityChanged(true)
                     studentInfoContainer.visibility = View.VISIBLE
                 }
             }
@@ -237,11 +248,6 @@ class StudentPagerAdapter(
     override fun getItemCount(): Int {
         val count = students.size + 1 // start over card
         return count
-    }
-
-    fun submitList(newStudents: List<Student>) {
-        students = newStudents
-        notifyDataSetChanged()
     }
 
     companion object {

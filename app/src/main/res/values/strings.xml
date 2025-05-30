@@ -8,4 +8,8 @@
     <string name="no_notes_yet">No notes yet</string>
     <string name="add_note">Add note</string>
     <string name="edit_note">Edit note</string>
+    <string name="quiz_button_wrong">Again</string>
+    <string name="quiz_button_hard">Hard</string>
+    <string name="quiz_button_good">Good</string>
+    <string name="quiz_button_known">Easy</string>
 </resources>
