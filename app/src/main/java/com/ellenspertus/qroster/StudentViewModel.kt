@@ -14,7 +14,8 @@ import androidx.media3.exoplayer.ExoPlayer
 import com.ellenspertus.qroster.model.Student
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -89,14 +90,14 @@ class StudentViewModel : ViewModel() {
     }
 
     private suspend fun prefetchAudio(student: Student) = coroutineScope {
-        student.audioFile?.let {
+        student.audioPath?.let {
             try {
-                val url = FirebaseStorage.getInstance()
-                    .getReferenceFromUrl(it)
+                student.audioDownloadUrl = Firebase.storage
+                    .reference
+                    .child(it)
                     .downloadUrl
                     .await()
                     .toString()
-                student.audioDownloadUrl = url
             } catch (e: Exception) {
                 _uiMessage.value = UiMessage.Failure("Failed to get URL for ${student.nuid}")
             }
@@ -118,7 +119,7 @@ class StudentViewModel : ViewModel() {
 
     fun playAudio(context: Context, student: Student) {
         // If there is no audio file, this should not be reachable.
-        if (student.audioFile == null) {
+        if (student.audioPath == null) {
             Log.e(TAG, "playAudio() called even though audioFile null for $student")
             return
         }

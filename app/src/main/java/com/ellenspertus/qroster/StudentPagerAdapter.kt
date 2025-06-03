@@ -16,9 +16,7 @@ import com.ellenspertus.qroster.databinding.ItemStudentCardBinding
 import com.ellenspertus.qroster.model.Student
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
-import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.ktx.storage
 
 class StudentPagerAdapter(
     private val context: Context,
@@ -51,7 +49,7 @@ class StudentPagerAdapter(
                 addSelfieIfPresent(student, this)
 
                 // Display the play button even if the audio file has not yet been loaded.
-                student.audioFile?.let {
+                student.audioPath?.let {
                     playButton.apply {
                         visibility = View.VISIBLE
                         setOnClickListener {
@@ -224,12 +222,11 @@ class StudentPagerAdapter(
     }
 
     private fun addSelfieIfPresent(student: Student, binding: ItemStudentCardBinding) {
-        if (student.selfieFile == null) {
+        if (student.selfiePath == null) {
             binding.studentImageView.setImageResource(R.drawable.missing_profile)
             binding.imageProgressBar.visibility = View.GONE
         } else {
-            val storagePath = getStoragePath(student.selfieFile)
-            storageRef.child(storagePath).downloadUrl.addOnSuccessListener { uri ->
+            storageRef.child(student.selfiePath).downloadUrl.addOnSuccessListener { uri ->
                 Glide.with(context)
                     .load(uri)
                     .placeholder(R.drawable.placeholder_profile)
@@ -254,12 +251,5 @@ class StudentPagerAdapter(
         const val TAG = "StudentPagerAdapter"
         const val VIEW_TYPE_STUDENT = 0
         const val VIEW_TYPE_START_OVER = 1
-
-        fun getStoragePath(file: String) =
-            try {
-                Firebase.storage.getReferenceFromUrl(file).path
-            } catch (e: IllegalArgumentException) {
-                file
-            }
     }
 }

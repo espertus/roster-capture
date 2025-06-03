@@ -8,9 +8,8 @@ data class Student(
     val preferredName: String? = null,
     val nuid: String,
     val pronouns: String,
-    val selfieFile: String? = null,
-    // TODO: Change field name to audioStoragePath
-    val audioFile: String? = null,
+    val selfiePath: String? = null,
+    val audioPath: String? = null,
     @Exclude
     var audioDownloadUrl: String? = null,
     var note: String? = null,
@@ -24,8 +23,8 @@ data class Student(
         preferredName = null,
         nuid = "",
         pronouns = "",
-        selfieFile = null,
-        audioFile = null,
+        selfiePath = null,
+        audioPath = null,
         audioDownloadUrl = null,
         note = null,
         docId = "",
