@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView android:id="@+id/bottomControlsCard"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    app:cardElevation="8dp"
+    app:cardCornerRadius="0dp"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/modeToggleGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="12dp"
+        app:singleSelection="true"
+        app:selectionRequired="true"
+        app:checkedButton="@id/browseButton">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/browseButton"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Browse"
+            app:icon="@drawable/ic_account_switch"
+            app:iconPadding="8dp"
+            app:strokeColor="@color/toggle_button_stroke"
+            app:strokeWidth="2dp"
+            app:backgroundTint="@color/toggle_button_background"
+            android:textColor="@color/toggle_button_text"
+            app:iconTint="@color/toggle_button_text" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/quizButton"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Quiz"
+            app:icon="@drawable/ic_account_question"
+            app:iconPadding="8dp"
+            app:strokeColor="@color/toggle_button_stroke"
+            app:strokeWidth="2dp"
+            app:backgroundTint="@color/toggle_button_background"
+            android:textColor="@color/toggle_button_text"
+            app:iconTint="@color/toggle_button_text" />
+
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+</com.google.android.material.card.MaterialCardView>

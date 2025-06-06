@@ -78,9 +78,11 @@ class BrowseFragment : Fragment() {
     }
 
     private fun setupButtons() {
-        binding.quizButton.setOnClickListener { _ ->
-            val action = BrowseFragmentDirections.actionBrowseFragmentToQuizFragment(crn)
-            findNavController().navigate(action)
+        binding.modeToggle.modeToggleGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (isChecked && checkedId == R.id.quizButton) {
+                val action = BrowseFragmentDirections.actionBrowseFragmentToQuizFragment(crn)
+                findNavController().navigate(action)
+            }
         }
     }
 
