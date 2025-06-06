@@ -40,7 +40,7 @@ class BrowseFragment : Fragment() {
 
         enableSwiping()
         setupViewPager()
-        setupButtons()
+        setupToggleButtons()
         setupObservers()
         refreshData()
 
@@ -60,7 +60,8 @@ class BrowseFragment : Fragment() {
             override val context = requireContext()
             override fun startOver() {
                 view?.let { v ->
-                    Snackbar.make(v, "Starting over with first student", Snackbar.LENGTH_SHORT).show()
+                    Snackbar.make(v, "Starting over with first student", Snackbar.LENGTH_SHORT)
+                        .show()
                 }
                 binding.studentViewPager.setCurrentItem(0, true)
             }
@@ -77,12 +78,14 @@ class BrowseFragment : Fragment() {
         }
     }
 
-    private fun setupButtons() {
-        binding.modeToggle.modeToggleGroup.check(R.id.browseButton);
-        binding.modeToggle.modeToggleGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
-            if (isChecked && checkedId == R.id.quizButton) {
-                val action = BrowseFragmentDirections.actionBrowseFragmentToQuizFragment(crn)
-                findNavController().navigate(action)
+    private fun setupToggleButtons() {
+        binding.modeToggle.modeToggleGroup.apply {
+            check(R.id.browseButton)
+            addOnButtonCheckedListener { _, checkedId, isChecked ->
+                if (isChecked && checkedId == R.id.quizButton) {
+                    val action = BrowseFragmentDirections.actionBrowseFragmentToQuizFragment(crn)
+                    findNavController().navigate(action)
+                }
             }
         }
     }
@@ -107,8 +110,11 @@ class BrowseFragment : Fragment() {
         viewModel.uiMessage.observe(viewLifecycleOwner) { message ->
             message?.let {
                 when (it) {
-                    is UiMessage.Success -> Toast.makeText(context, it.text, Toast.LENGTH_SHORT).show()
-                    is UiMessage.Failure -> Toast.makeText(context, it.text, Toast.LENGTH_LONG).show()
+                    is UiMessage.Success -> Toast.makeText(context, it.text, Toast.LENGTH_SHORT)
+                        .show()
+
+                    is UiMessage.Failure -> Toast.makeText(context, it.text, Toast.LENGTH_LONG)
+                        .show()
                 }
                 viewModel.clearMessage()
             }

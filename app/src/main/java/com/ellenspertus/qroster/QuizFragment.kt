@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.MarginPageTransformer
 import com.ellenspertus.qroster.databinding.FragmentQuizBinding
 import com.ellenspertus.qroster.model.Student
@@ -18,7 +19,7 @@ class QuizFragment : Fragment() {
     private val binding get() = _binding!!
     private val quizButtons = mutableListOf<MaterialButton>()
     private lateinit var studentAdapter: StudentPagerAdapter
-    private var crn: String? = null
+    private lateinit var crn: String
 
     private val viewModel: StudentViewModel by viewModels()
 
@@ -131,14 +132,23 @@ class QuizFragment : Fragment() {
             // Bind buttons.
             quizButton1.setOnClickListener(::incorporateFeedback)
         }
+        setupToggleButtons()
+    }
+
+    private fun setupToggleButtons() {
+        binding.modeToggle.modeToggleGroup.apply {
+            check(R.id.quizButton)
+            addOnButtonCheckedListener { _, checkedId, isChecked ->
+                if (isChecked && checkedId == R.id.browseButton) {
+                    val action = QuizFragmentDirections.actionQuizFragmentToBrowseFragment(crn)
+                    findNavController().navigate(action)
+                }
+            }
+        }
     }
 
     private fun loadStudents() {
-        crn?.let {
-            viewModel.loadStudentsForCourse(it)
-        } ?: run {
-            Log.e(TAG, "crn was null")
-        }
+        viewModel.loadStudentsForCourse(crn)
     }
 
     fun incorporateFeedback(view: View) {

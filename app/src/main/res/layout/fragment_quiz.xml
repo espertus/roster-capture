@@ -90,7 +90,7 @@
         android:orientation="horizontal"
         android:padding="16dp"
         android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/modeToggle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
@@ -131,5 +131,12 @@
             android:text="@string/quiz_button_known" />
 
     </LinearLayout>
-
+    <include
+        android:id="@+id/modeToggle"
+        layout="@layout/mode_toggle_card"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

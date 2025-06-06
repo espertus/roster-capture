@@ -48,5 +48,8 @@
         <argument
             android:name="crn"
             app:argType="string" />
+        <action
+            android:id="@+id/action_quizFragment_to_browseFragment"
+            app:destination="@id/browseFragment" />
     </fragment>
 </navigation>
