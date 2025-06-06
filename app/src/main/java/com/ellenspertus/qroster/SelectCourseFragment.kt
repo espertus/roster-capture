@@ -5,10 +5,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import com.ellenspertus.qroster.databinding.FragmentSelectCourseBinding
 import com.ellenspertus.qroster.databinding.ItemCourseCardBinding
@@ -42,6 +40,7 @@ class SelectCourseFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             solicitCourse(retrieveCourses().sortedBy { it.id })
         }
+        binding.modeToggle.modeToggleGroup.visibility = View.INVISIBLE
     }
 
     private fun solicitCourse(courses: List<Course>) {
@@ -97,16 +96,7 @@ class SelectCourseFragment : Fragment() {
                         card.root.isChecked = wasClicked
                         card.root.isSelected = wasClicked
                     }
-
-                    wireButton(
-                        binding.browseButton,
-                        course,
-                        SelectCourseFragmentDirections::actionSelectCourseFragmentToBrowseFragment)
-                    wireButton(
-                        binding.quizButton,
-                        course,
-                        SelectCourseFragmentDirections::actionSelectCourseFragmentToQuizFragment
-                    )
+                    enableToggleButtons(course)
                 }
             }
             courseCards.add(this)
@@ -114,14 +104,28 @@ class SelectCourseFragment : Fragment() {
         }
     }
 
-    private fun wireButton(
-        button: Button,
-        course: Course,
-        createAction: (String) -> NavDirections
-    ) {
-        button.isEnabled = true
-        button.setOnClickListener {
-            findNavController().navigate(createAction(course.crn))
+    private fun enableToggleButtons(course: Course) {
+        binding.modeToggle.modeToggleGroup.apply {
+            visibility = View.VISIBLE
+            addOnButtonCheckedListener { _, checkedId, isChecked ->
+                if (isChecked) {
+                    val action = when (checkedId) {
+                        R.id.quizButton -> SelectCourseFragmentDirections.actionSelectCourseFragmentToQuizFragment(
+                            course.crn
+                        )
+
+                        R.id.browseButton -> SelectCourseFragmentDirections.actionSelectCourseFragmentToBrowseFragment(
+                            course.crn
+                        )
+
+                        else -> {
+                            Log.e(TAG, "Unexpected case in enableToggleButtons()")
+                            throw AssertionError("Unreachable code hit in enableToggleButtons()")
+                        }
+                    }
+                    findNavController().navigate(action)
+                }
+            }
         }
     }
 

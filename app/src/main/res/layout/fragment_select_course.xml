@@ -43,35 +43,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:barrierDirection="top"
-        app:constraint_referenced_ids="browseButton,quizButton" />
+        app:constraint_referenced_ids="modeToggle" />
 
-    <!-- Buttons with larger touch targets for accessibility -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/browseButton"
+    <include
+        android:id="@+id/modeToggle"
+        layout="@layout/mode_toggle_card"
         android:layout_width="0dp"
-        android:layout_height="64dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:text="@string/browse_students"
-        android:textSize="16sp"
-        android:enabled="false"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/quizButton"
-        app:layout_constraintBottom_toBottomOf="parent" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/quizButton"
-        android:layout_width="0dp"
-        android:layout_height="64dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginBottom="8dp"
-        android:text="@string/start_quiz"
-        android:textSize="16sp"
-        android:enabled="false"
-        app:layout_constraintStart_toEndOf="@id/browseButton"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
