@@ -78,6 +78,7 @@ class BrowseFragment : Fragment() {
     }
 
     private fun setupButtons() {
+        binding.modeToggle.modeToggleGroup.check(R.id.browseButton);
         binding.modeToggle.modeToggleGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (isChecked && checkedId == R.id.quizButton) {
                 val action = BrowseFragmentDirections.actionBrowseFragmentToQuizFragment(crn)

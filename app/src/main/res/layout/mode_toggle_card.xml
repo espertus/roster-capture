@@ -17,8 +17,7 @@
         android:layout_gravity="center"
         android:layout_margin="12dp"
         app:singleSelection="true"
-        app:selectionRequired="true"
-        app:checkedButton="@id/browseButton">
+        app:selectionRequired="true">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/browseButton"
