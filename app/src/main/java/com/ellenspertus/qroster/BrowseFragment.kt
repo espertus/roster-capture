@@ -1,29 +1,29 @@
 package com.ellenspertus.qroster
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.MarginPageTransformer
-import com.ellenspertus.qroster.databinding.FragmentBrowseStudentsBinding
+import com.ellenspertus.qroster.databinding.FragmentBrowseBinding
 import com.google.android.material.snackbar.Snackbar
 
-class BrowseStudentsFragment : Fragment() {
-    private var _binding: FragmentBrowseStudentsBinding? = null
+class BrowseFragment : Fragment() {
+    private var _binding: FragmentBrowseBinding? = null
     private val binding get() = _binding!!
     private lateinit var studentAdapter: StudentPagerAdapter
-    private var crn: String? = null
+    private lateinit var crn: String
 
     private val viewModel: StudentViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            crn = BrowseStudentsFragmentArgs.fromBundle(it).crn
+            crn = BrowseFragmentArgs.fromBundle(it).crn
         }
     }
 
@@ -31,7 +31,7 @@ class BrowseStudentsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentBrowseStudentsBinding.inflate(inflater, container, false)
+        _binding = FragmentBrowseBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -40,6 +40,7 @@ class BrowseStudentsFragment : Fragment() {
 
         enableSwiping()
         setupViewPager()
+        setupButtons()
         setupObservers()
         refreshData()
 
@@ -73,6 +74,13 @@ class BrowseStudentsFragment : Fragment() {
         binding.studentViewPager.apply {
             adapter = studentAdapter
             setPageTransformer(MarginPageTransformer(40))
+        }
+    }
+
+    private fun setupButtons() {
+        binding.quizButton.setOnClickListener { _ ->
+            val action = BrowseFragmentDirections.actionBrowseFragmentToQuizFragment(crn)
+            findNavController().navigate(action)
         }
     }
 
@@ -110,11 +118,7 @@ class BrowseStudentsFragment : Fragment() {
     }
 
     private fun loadStudents() {
-        crn?.let {
-            viewModel.loadStudentsForCourse(it)
-        } ?: run {
-            Log.e(TAG, "crn was null")
-        }
+        viewModel.loadStudentsForCourse(crn)
     }
 
     private fun initializeUi() {
@@ -128,6 +132,6 @@ class BrowseStudentsFragment : Fragment() {
     }
 
     companion object {
-        const val TAG = "BrowseStudentsFragment"
+        const val TAG = "BrowseFragment"
     }
 }

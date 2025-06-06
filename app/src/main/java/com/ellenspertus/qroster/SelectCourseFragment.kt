@@ -101,7 +101,7 @@ class SelectCourseFragment : Fragment() {
                     wireButton(
                         binding.browseButton,
                         course,
-                        SelectCourseFragmentDirections::actionSelectCourseFragmentToBrowseStudentsFragment)
+                        SelectCourseFragmentDirections::actionSelectCourseFragmentToBrowseFragment)
                     wireButton(
                         binding.quizButton,
                         course,

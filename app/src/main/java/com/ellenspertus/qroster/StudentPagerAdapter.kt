@@ -203,7 +203,7 @@ class StudentPagerAdapter(
         }
         binding.doneButton.setOnClickListener {
             enclosingFragment.findNavController()
-                .navigate(R.id.action_browseStudentsFragment_to_selectCourseFragment)
+                .navigate(R.id.action_browseFragment_to_selectCourseFragment)
         }
     }
 
