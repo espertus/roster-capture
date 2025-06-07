@@ -11,13 +11,14 @@ import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.MarginPageTransformer
 import com.ellenspertus.qroster.databinding.FragmentQuizBinding
 import com.ellenspertus.qroster.model.Student
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 
 class QuizFragment : Fragment() {
     private var _binding: FragmentQuizBinding? = null
     private val binding get() = _binding!!
-    private val quizButtons = mutableListOf<MaterialButton>()
+    private val quizButtons = listOf(
+        R.id.quizButton1, R.id.quizButton2, R.id.quizButton3, R.id.quizButton4
+    )
     private lateinit var studentAdapter: StudentPagerAdapter
     private lateinit var crn: String
 
@@ -41,37 +42,23 @@ class QuizFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initializeQuizButtons()
         disableSwiping()
         setupViewPager()
         setupObservers()
         setupData()
     }
 
-    private fun initializeQuizButtons() {
-        binding.apply {
-            quizButtons.addAll(
-                listOf(quizButton1, quizButton2, quizButton3, quizButton4)
-            )
-        }
-        quizButtons.forEach {
-            it.setOnClickListener(::incorporateFeedback)
-        }
-    }
-
     private fun disableSwiping() {
         binding.studentViewPager.isUserInputEnabled = false
-    }
-
-    private fun setGuessButtonsEnabled(enabled: Boolean) {
-        quizButtons.forEach { it.isEnabled = enabled}
     }
 
     private fun setupViewPager() {
         val host = object : StudentPagerAdapter.Host {
             override val showInfoAtStart = false
             override val showInfoButtonAtStart = true
+            override val showQuizButtons = true
             override val context = requireContext()
+
             override fun startOver() {
                 view?.let { v ->
                     Snackbar.make(v, "Starting over with first student", Snackbar.LENGTH_SHORT)
@@ -80,8 +67,8 @@ class QuizFragment : Fragment() {
                 binding.studentViewPager.setCurrentItem(0, true)
             }
 
-            override fun onInfoVisibilityChanged(isVisible: Boolean) {
-                setGuessButtonsEnabled(isVisible)
+            override fun onQuizButtonPressed(id: Int) {
+                incorporateFeedback(id)
             }
         }
 
@@ -128,9 +115,6 @@ class QuizFragment : Fragment() {
             progressTextView.visibility = View.VISIBLE
             studentViewPager.visibility = View.GONE
             emptyStateLayout.visibility = View.GONE
-
-            // Bind buttons.
-            quizButton1.setOnClickListener(::incorporateFeedback)
         }
         setupToggleButtons()
     }
@@ -151,8 +135,8 @@ class QuizFragment : Fragment() {
         viewModel.loadStudentsForCourse(crn)
     }
 
-    fun incorporateFeedback(view: View) {
-        val score = difficultyMap[view.id]
+    fun incorporateFeedback(id: Int) {
+        val score = difficultyMap[id]
         if (score == null) {
             Log.e(TAG, "Illegal view in incorporateFeedback()")
         } else {

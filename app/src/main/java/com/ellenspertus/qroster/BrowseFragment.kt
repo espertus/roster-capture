@@ -57,6 +57,7 @@ class BrowseFragment : Fragment() {
         val host = object : StudentPagerAdapter.Host {
             override val showInfoAtStart = true
             override val showInfoButtonAtStart = false
+            override val showQuizButtons = false
             override val context = requireContext()
             override fun startOver() {
                 view?.let { v ->
@@ -66,8 +67,8 @@ class BrowseFragment : Fragment() {
                 binding.studentViewPager.setCurrentItem(0, true)
             }
 
-            override fun onInfoVisibilityChanged(isVisible: Boolean) {
-                // do nothing
+            override fun onQuizButtonPressed(id: Int) {
+                throw IllegalStateException("onQuizButtonPressed() should never be called in BrowseFragment")
             }
         }
 

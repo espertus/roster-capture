@@ -14,6 +14,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.ellenspertus.qroster.databinding.ItemStartOverCardBinding
 import com.ellenspertus.qroster.databinding.ItemStudentCardBinding
 import com.ellenspertus.qroster.model.Student
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.storage.FirebaseStorage
@@ -26,13 +27,15 @@ class StudentPagerAdapter(
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val storageRef = FirebaseStorage.getInstance().reference
     private val students = mutableListOf<Student>()
+    private val quizButtonList = mutableListOf<MaterialButton>()
 
     interface Host {
         val showInfoAtStart: Boolean
         val showInfoButtonAtStart: Boolean
+        val showQuizButtons: Boolean
         val context: Context
         fun startOver()
-        fun onInfoVisibilityChanged(isVisible: Boolean)
+        fun onQuizButtonPressed(id: Int)
     }
 
     inner class StudentViewHolder(
@@ -62,6 +65,22 @@ class StudentPagerAdapter(
                     }
                 } ?: run {
                     playButton.visibility = View.GONE
+                }
+
+                if (host.showQuizButtons) {
+                    // Don't show quiz buttons until info has been revealed.
+                    quizButtons.visibility = View.INVISIBLE
+
+                    quizButtonList.add(quizButton1)
+                    quizButtonList.add(quizButton2)
+                    quizButtonList.add(quizButton3)
+                    quizButtonList.add(quizButton4)
+
+                    quizButtonList.forEach {
+                        it.setOnClickListener { view ->
+                            host.onQuizButtonPressed(view.id)
+                        }
+                    }
                 }
             }
         }
@@ -111,12 +130,13 @@ class StudentPagerAdapter(
         with(binding) {
             showInfoButton.let {
                 it.visibility = View.VISIBLE
-                host.onInfoVisibilityChanged(false)
                 it.setOnClickListener { _ ->
                     it.visibility = View.GONE
-                    host.onInfoVisibilityChanged(true)
                     studentInfoContainer.visibility = View.VISIBLE
                 }
+            }
+            if (host.showQuizButtons) {
+                quizButtons.visibility = if (host.showQuizButtons) View.VISIBLE else View.GONE
             }
 
             addEditNoteButton.setOnClickListener {
@@ -127,7 +147,19 @@ class StudentPagerAdapter(
                 showInfoButton.visibility = View.GONE
                 studentInfoContainer.visibility = View.VISIBLE
             }
+
+            if (host.showQuizButtons) {
+                setupQuizButtons(binding)
+            }
         }
+    }
+
+    private fun setupQuizButtons(binding: ItemStudentCardBinding) {
+        with (binding) {
+            quizButtons.visibility = View.VISIBLE
+        }
+
+
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
