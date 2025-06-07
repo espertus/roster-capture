@@ -40,7 +40,7 @@ class SelectCourseFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             solicitCourse(retrieveCourses().sortedBy { it.id })
         }
-        binding.modeToggle.modeToggleGroup.visibility = View.INVISIBLE
+        binding.modeToggle.bottomControlsCard.visibility = View.INVISIBLE
     }
 
     private fun solicitCourse(courses: List<Course>) {
@@ -105,9 +105,9 @@ class SelectCourseFragment : Fragment() {
     }
 
     private fun enableToggleButtons(course: Course) {
-        binding.modeToggle.modeToggleGroup.apply {
-            visibility = View.VISIBLE
-            addOnButtonCheckedListener { _, checkedId, isChecked ->
+        binding.modeToggle.apply {
+            bottomControlsCard.visibility = View.VISIBLE
+            modeToggleGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
                 if (isChecked) {
                     val action = when (checkedId) {
                         R.id.quizButton -> SelectCourseFragmentDirections.actionSelectCourseFragmentToQuizFragment(
