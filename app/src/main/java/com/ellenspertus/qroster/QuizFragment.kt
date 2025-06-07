@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.MarginPageTransformer
@@ -46,6 +47,7 @@ class QuizFragment : Fragment() {
         setupViewPager()
         setupObservers()
         setupData()
+        setupBackButton()
     }
 
     private fun disableSwiping() {
@@ -133,6 +135,17 @@ class QuizFragment : Fragment() {
 
     private fun loadStudents() {
         viewModel.loadStudentsForCourse(crn)
+    }
+
+    private fun setupBackButton() {
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    findNavController().navigate(R.id.selectCourseFragment)
+                }
+            }
+        )
     }
 
     fun incorporateFeedback(id: Int) {
