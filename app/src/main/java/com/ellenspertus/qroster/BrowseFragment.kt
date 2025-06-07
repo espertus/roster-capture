@@ -43,20 +43,9 @@ class BrowseFragment : Fragment() {
         setupViewPager()
         setupToggleButtons()
         setupObservers()
+        setupBackButton()
         refreshData()
-
-        binding.swipeRefreshLayout.setOnRefreshListener {
-            refreshData()
-        }
-
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    findNavController().navigate(R.id.selectCourseFragment)
-                }
-            }
-        )
+        setupRefresh()
     }
 
     private fun enableSwiping() {
@@ -101,6 +90,12 @@ class BrowseFragment : Fragment() {
         }
     }
 
+    private fun setupRefresh() {
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            refreshData()
+        }
+    }
+
     private fun setupObservers() {
         viewModel.students.observe(viewLifecycleOwner) { students ->
             // Hide loading indicators
@@ -130,6 +125,17 @@ class BrowseFragment : Fragment() {
                 viewModel.clearMessage()
             }
         }
+    }
+
+    private fun setupBackButton() {
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    findNavController().navigate(R.id.selectCourseFragment)
+                }
+            }
+        )
     }
 
     private fun refreshData() {

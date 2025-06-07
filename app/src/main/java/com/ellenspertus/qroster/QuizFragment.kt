@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -43,8 +44,8 @@ class QuizFragment : Fragment() {
         disableSwiping()
         setupViewPager()
         setupObservers()
-        setupData()
         setupBackButton()
+        setupData()
     }
 
     private fun disableSwiping() {
@@ -59,6 +60,7 @@ class QuizFragment : Fragment() {
             override val context = requireContext()
 
             override fun startOver() {
+                // What should happen when end of quiz reached?
                 view?.let { v ->
                     Snackbar.make(v, "Starting over with first student", Snackbar.LENGTH_SHORT)
                         .show()
@@ -79,7 +81,6 @@ class QuizFragment : Fragment() {
     }
 
     private fun setupObservers() {
-        // TODO: Should this happen on the first time only?
         viewModel.students.observe(viewLifecycleOwner) { studentsList ->
             // Hide loading indicators
             binding.progressBar.visibility = View.GONE
@@ -95,6 +96,30 @@ class QuizFragment : Fragment() {
                 createStudentQueue(studentsList)
             }
         }
+
+        viewModel.uiMessage.observe(viewLifecycleOwner) { message ->
+            message?.let {
+                when (it) {
+                    is UiMessage.Success -> Toast.makeText(context, it.text, Toast.LENGTH_SHORT)
+                        .show()
+
+                    is UiMessage.Failure -> Toast.makeText(context, it.text, Toast.LENGTH_LONG)
+                        .show()
+                }
+                viewModel.clearMessage()
+            }
+        }
+    }
+
+    private fun setupBackButton() {
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    findNavController().navigate(R.id.selectCourseFragment)
+                }
+            }
+        )
     }
 
     private fun createStudentQueue(studentList: List<Student>) {
@@ -132,17 +157,6 @@ class QuizFragment : Fragment() {
 
     private fun loadStudents() {
         viewModel.loadStudentsForCourse(crn)
-    }
-
-    private fun setupBackButton() {
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    findNavController().navigate(R.id.selectCourseFragment)
-                }
-            }
-        )
     }
 
     fun incorporateFeedback(id: Int) {
