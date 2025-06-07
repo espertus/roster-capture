@@ -32,6 +32,7 @@ class StudentPagerAdapter(
     interface Host {
         val showInfoAtStart: Boolean
         val showInfoButtonAtStart: Boolean
+        // Quiz buttons are shown only when the info is displayed.
         val showQuizButtons: Boolean
         val context: Context
         fun startOver()
@@ -128,11 +129,7 @@ class StudentPagerAdapter(
             showInfoButton.let {
                 it.visibility = View.VISIBLE
                 it.setOnClickListener { _ ->
-                    it.visibility = View.GONE
-                    studentInfoContainer.visibility = View.VISIBLE
-                    if (host.showQuizButtons) {
-                        quizButtons.visibility = if (host.showQuizButtons) View.VISIBLE else View.GONE
-                    }
+                    showInfo(this)
                 }
             }
 
@@ -146,6 +143,14 @@ class StudentPagerAdapter(
             }
 
             quizButtons.visibility = View.INVISIBLE
+        }
+    }
+
+    private fun showInfo(binding: ItemStudentCardBinding) {
+        binding.showInfoButton.visibility = View.GONE
+        binding.studentInfoContainer.visibility = View.VISIBLE
+        if (host.showQuizButtons) {
+            binding.quizButtons.visibility = View.VISIBLE
         }
     }
 
@@ -230,14 +235,17 @@ class StudentPagerAdapter(
         super.onViewAttachedToWindow(holder)
 
         if (holder is StudentViewHolder) {
-            renderInfo(holder.binding, host.showInfoAtStart, host.showInfoButtonAtStart)
+            initializeInfo(holder.binding)
         }
     }
 
-    private fun renderInfo(binding: ItemStudentCardBinding, showInfo: Boolean, showInfoButton: Boolean) {
-        require(!(showInfo && showInfoButton))
-        binding.showInfoButton.visibility = if (showInfoButton) View.VISIBLE else View.GONE
-        binding.studentInfoContainer.visibility = if (showInfo) View.VISIBLE else View.GONE
+    private fun initializeInfo(binding: ItemStudentCardBinding) {
+        require(!(host.showInfoButtonAtStart && host.showInfoAtStart))
+        if (host.showInfoAtStart) {
+            showInfo(binding)
+        } else {
+            binding.studentInfoContainer.visibility = View.GONE
+        }
     }
 
     private fun addSelfieIfPresent(student: Student, binding: ItemStudentCardBinding) {

@@ -17,9 +17,6 @@ import com.google.android.material.snackbar.Snackbar
 class QuizFragment : Fragment() {
     private var _binding: FragmentQuizBinding? = null
     private val binding get() = _binding!!
-    private val quizButtons = listOf(
-        R.id.quizButton1, R.id.quizButton2, R.id.quizButton3, R.id.quizButton4
-    )
     private lateinit var studentAdapter: StudentPagerAdapter
     private lateinit var crn: String
 
