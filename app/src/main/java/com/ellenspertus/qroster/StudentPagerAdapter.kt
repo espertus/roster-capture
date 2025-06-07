@@ -68,9 +68,6 @@ class StudentPagerAdapter(
                 }
 
                 if (host.showQuizButtons) {
-                    // Don't show quiz buttons until info has been revealed.
-                    quizButtons.visibility = View.INVISIBLE
-
                     quizButtonList.add(quizButton1)
                     quizButtonList.add(quizButton2)
                     quizButtonList.add(quizButton3)
@@ -133,10 +130,10 @@ class StudentPagerAdapter(
                 it.setOnClickListener { _ ->
                     it.visibility = View.GONE
                     studentInfoContainer.visibility = View.VISIBLE
+                    if (host.showQuizButtons) {
+                        quizButtons.visibility = if (host.showQuizButtons) View.VISIBLE else View.GONE
+                    }
                 }
-            }
-            if (host.showQuizButtons) {
-                quizButtons.visibility = if (host.showQuizButtons) View.VISIBLE else View.GONE
             }
 
             addEditNoteButton.setOnClickListener {
@@ -148,18 +145,8 @@ class StudentPagerAdapter(
                 studentInfoContainer.visibility = View.VISIBLE
             }
 
-            if (host.showQuizButtons) {
-                setupQuizButtons(binding)
-            }
+            quizButtons.visibility = View.INVISIBLE
         }
-    }
-
-    private fun setupQuizButtons(binding: ItemStudentCardBinding) {
-        with (binding) {
-            quizButtons.visibility = View.VISIBLE
-        }
-
-
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
