@@ -12,13 +12,6 @@ class BrowseFragment : AbstractStudentFragment() {
     private var _binding: FragmentBrowseBinding? = null
     private val binding get() = _binding!!
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            crn = BrowseFragmentArgs.fromBundle(it).crn
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -31,10 +24,15 @@ class BrowseFragment : AbstractStudentFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Call methods defined in superclass.
-        enableSwiping()
+        enableSwiping(binding.studentViewPager)
 
         // Call local methods.
         setupToggleButtons()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun createAdapter(): StudentPagerAdapter {
@@ -42,7 +40,6 @@ class BrowseFragment : AbstractStudentFragment() {
             override val showInfoAtStart = true
             override val showInfoButtonAtStart = false
             override val showQuizButtons = false
-            override val context = requireContext()
             override fun startOver() {
                 view?.let { v ->
                     Snackbar.make(v, "Starting over with first student", Snackbar.LENGTH_SHORT)

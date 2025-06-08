@@ -34,7 +34,6 @@ class StudentPagerAdapter(
         val showInfoButtonAtStart: Boolean
         // Quiz buttons are shown only when the info is displayed.
         val showQuizButtons: Boolean
-        val context: Context
         fun startOver()
         fun onQuizButtonPressed(id: Int)
     }

@@ -12,18 +12,11 @@ import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
 
 abstract class AbstractStudentFragment : Fragment() {
-    // initialized by subclass in onCreate()
+    // initialized in onCreate()
     protected lateinit var crn: String
 
-    // initialized and referenced in onViewCreated()
-    protected val studentPagerAdapter: StudentPagerAdapter by lazy {
-        createAdapter()
-    }
-
-    // initialized and referenced in onViewCreated()
-    private val bindings: Bindings by lazy {
-        provideBindings()
-    }
+    // initialized in onViewCreated()
+    protected lateinit var studentPagerAdapter: StudentPagerAdapter
 
     protected val viewModel: StudentViewModel by viewModels()
 
@@ -38,22 +31,30 @@ abstract class AbstractStudentFragment : Fragment() {
     abstract fun createAdapter(): StudentPagerAdapter
     abstract fun provideBindings(): Bindings
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            crn = BrowseFragmentArgs.fromBundle(it).crn
+        } ?: throw IllegalStateException("No CRN passed to AbstractStudentFragment")
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupStudentViewPager()
+        studentPagerAdapter = createAdapter()
+        val bindings = provideBindings()
+        setupStudentViewPager(bindings)
         observeUiMessage()
-        observeStudents()
+        observeStudents(bindings)
         setupBackButton()
 
         bindings.swipeRefreshLayout?.setOnRefreshListener {
-            loadData()
+            loadData(bindings)
         }
-
-        loadData()
+        loadData(bindings)
     }
 
-    private fun setupStudentViewPager() {
+    private fun setupStudentViewPager(bindings: Bindings) {
         bindings.studentViewPager.apply {
             adapter = studentPagerAdapter
             setPageTransformer(MarginPageTransformer(40))
@@ -75,26 +76,24 @@ abstract class AbstractStudentFragment : Fragment() {
         }
     }
 
-    private fun observeStudents() {
+    private fun observeStudents(bindings: Bindings) {
         viewModel.students.observe(viewLifecycleOwner) { students ->
-            viewModel.students.observe(viewLifecycleOwner) { students ->
-                bindings.progressBar.visibility = View.GONE
-                bindings.progressTextView.visibility = View.GONE
-                bindings.swipeRefreshLayout?.isRefreshing = false
+            bindings.progressBar.visibility = View.GONE
+            bindings.progressTextView.visibility = View.GONE
+            bindings.swipeRefreshLayout?.isRefreshing = false
 
-                if (students.isEmpty()) {
-                    bindings.studentViewPager.visibility = View.GONE
-                    bindings.emptyStateLayout.visibility = View.VISIBLE
-                } else {
-                    bindings.studentViewPager.visibility = View.VISIBLE
-                    bindings.emptyStateLayout.visibility = View.GONE
-                    studentPagerAdapter.setStudents(students)
-                }
+            if (students.isEmpty()) {
+                bindings.studentViewPager.visibility = View.GONE
+                bindings.emptyStateLayout.visibility = View.VISIBLE
+            } else {
+                bindings.studentViewPager.visibility = View.VISIBLE
+                bindings.emptyStateLayout.visibility = View.GONE
+                studentPagerAdapter.setStudents(students)
             }
         }
     }
 
-    protected fun showDataLoading() {
+    protected fun showDataLoading(bindings: Bindings) {
         bindings.apply {
             progressBar.visibility = View.VISIBLE
             progressTextView.visibility = View.VISIBLE
@@ -114,18 +113,18 @@ abstract class AbstractStudentFragment : Fragment() {
         )
     }
 
-    private fun loadData() {
-        showDataLoading()
+    private fun loadData(bindings: Bindings) {
+        showDataLoading(bindings)
         viewModel.loadStudentsForCourse(crn)
     }
 
     // Utility functions for subclasses
-    protected fun enableSwiping() {
-        bindings.studentViewPager.isUserInputEnabled = true
+    protected fun enableSwiping(studentViewPager: ViewPager2) {
+        studentViewPager.isUserInputEnabled = true
     }
 
-    protected fun disableSwiping() {
-        bindings.studentViewPager.isUserInputEnabled = false
+    protected fun disableSwiping(studentViewPager: ViewPager2) {
+        studentViewPager.isUserInputEnabled = false
     }
 
 }
