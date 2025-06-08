@@ -2,33 +2,18 @@ package com.ellenspertus.qroster
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.viewpager2.widget.MarginPageTransformer
 import com.ellenspertus.qroster.databinding.FragmentQuizBinding
 import com.ellenspertus.qroster.model.Student
 import com.google.android.material.snackbar.Snackbar
+import kotlin.math.min
 
-class QuizFragment : Fragment() {
+class QuizFragment : AbstractStudentFragment() {
     private var _binding: FragmentQuizBinding? = null
     private val binding get() = _binding!!
-    private lateinit var studentAdapter: StudentPagerAdapter
-    private lateinit var crn: String
-
-    private val viewModel: StudentViewModel by viewModels()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            crn = QuizFragmentArgs.fromBundle(it).crn
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,26 +26,18 @@ class QuizFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        disableSwiping()
-        setupViewPager()
-        setupObservers()
-        setupBackButton()
-        setupData()
+        disableSwiping(binding.studentViewPager)
+        setupToggleButtons()
     }
 
-    private fun disableSwiping() {
-        binding.studentViewPager.isUserInputEnabled = false
-    }
-
-    private fun setupViewPager() {
+    override fun createAdapter(): StudentPagerAdapter {
         val host = object : StudentPagerAdapter.Host {
             override val showInfoAtStart = false
             override val showInfoButtonAtStart = true
             override val showQuizButtons = true
-            override val context = requireContext()
 
             override fun startOver() {
-                // What should happen when end of quiz reached?
+                // TODO: What should happen when end of quiz reached?
                 view?.let { v ->
                     Snackbar.make(v, "Starting over with first student", Snackbar.LENGTH_SHORT)
                         .show()
@@ -73,74 +50,21 @@ class QuizFragment : Fragment() {
             }
         }
 
-        studentAdapter = StudentPagerAdapter(requireContext(), viewModel, this, host)
-        binding.studentViewPager.apply {
-            adapter = studentAdapter
-            setPageTransformer(MarginPageTransformer(40))
-        }
+        return StudentPagerAdapter(requireContext(), viewModel, this, host)
     }
 
-    private fun setupObservers() {
-        viewModel.students.observe(viewLifecycleOwner) { studentsList ->
-            // Hide loading indicators
-            binding.progressBar.visibility = View.GONE
-            binding.progressTextView.visibility = View.GONE
-            binding.swipeRefreshLayout.isRefreshing = false
-
-            if (studentsList.isEmpty()) {
-                binding.studentViewPager.visibility = View.GONE
-                binding.emptyStateLayout.visibility = View.VISIBLE
-            } else {
-                binding.studentViewPager.visibility = View.VISIBLE
-                binding.emptyStateLayout.visibility = View.GONE
-                createStudentQueue(studentsList)
-            }
-        }
-
-        viewModel.uiMessage.observe(viewLifecycleOwner) { message ->
-            message?.let {
-                when (it) {
-                    is UiMessage.Success -> Toast.makeText(context, it.text, Toast.LENGTH_SHORT)
-                        .show()
-
-                    is UiMessage.Failure -> Toast.makeText(context, it.text, Toast.LENGTH_LONG)
-                        .show()
-                }
-                viewModel.clearMessage()
-            }
-        }
-    }
-
-    private fun setupBackButton() {
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    findNavController().navigate(R.id.selectCourseFragment)
-                }
-            }
+    override fun provideBindings() =
+        Bindings(
+            binding.studentViewPager,
+            binding.progressBar,
+            binding.progressTextView,
+            binding.swipeRefreshLayout,
+            binding.emptyStateLayout,
         )
-    }
 
-    private fun createStudentQueue(studentList: List<Student>) {
+    override fun processStudents(studentList: List<Student>) {
         val quizStudents = studentList.filter { it.score < 1 }.shuffled()
-        studentAdapter.setStudents(quizStudents)
-    }
-
-    private fun setupData() {
-        initializeUi()
-        loadStudents()
-    }
-
-    private fun initializeUi() {
-        binding.apply {
-            // Indicate that data is loading.
-            progressBar.visibility = View.VISIBLE
-            progressTextView.visibility = View.VISIBLE
-            studentViewPager.visibility = View.GONE
-            emptyStateLayout.visibility = View.GONE
-        }
-        setupToggleButtons()
+        studentPagerAdapter.setStudents(quizStudents)
     }
 
     private fun setupToggleButtons() {
@@ -155,16 +79,12 @@ class QuizFragment : Fragment() {
         }
     }
 
-    private fun loadStudents() {
-        viewModel.loadStudentsForCourse(crn)
-    }
-
     fun incorporateFeedback(id: Int) {
         val score = difficultyMap[id]
         if (score == null) {
             Log.e(TAG, "Illegal view in incorporateFeedback()")
         } else {
-            val students = studentAdapter.getStudents()
+            val students = studentPagerAdapter.getStudents()
             students.getOrNull(0)?.also {
                 Log.d(TAG, "Score $score for student $it")
                 val newScore = PRIOR_WEIGHT * it.score + (1.0 - PRIOR_WEIGHT) * score
@@ -177,18 +97,18 @@ class QuizFragment : Fragment() {
     }
 
     private fun moveStudent(student: Student) {
-        val students = studentAdapter.getStudents()
+        val students = studentPagerAdapter.getStudents()
         require(students.isNotEmpty() && students[0] == student)
 
-        studentAdapter.notifyItemRemoved(0)
+        studentPagerAdapter.notifyItemRemoved(0)
         if (student.score > QUIZ_THRESHOLD) {
             students.removeAt(0)
-            studentAdapter.notifyItemRemoved(0)
+            studentPagerAdapter.notifyItemRemoved(0)
         } else {
-            val newPos = Math.min((students.size * student.score).toInt() + 1, students.size - 1)
+            val newPos = min((students.size * student.score).toInt() + 1, students.size - 1)
             students.removeAt(0)
             students.add(newPos, student)
-            studentAdapter.notifyItemInserted(newPos)
+            studentPagerAdapter.notifyItemInserted(newPos)
         }
     }
 

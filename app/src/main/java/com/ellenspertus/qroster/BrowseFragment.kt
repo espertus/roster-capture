@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import com.ellenspertus.qroster.databinding.FragmentBrowseBinding
+import com.ellenspertus.qroster.model.Student
 import com.google.android.material.snackbar.Snackbar
 
 class BrowseFragment : AbstractStudentFragment() {
@@ -64,6 +65,10 @@ class BrowseFragment : AbstractStudentFragment() {
             binding.swipeRefreshLayout,
             binding.emptyStateLayout,
         )
+
+    override fun processStudents(studentList: List<Student>) {
+        studentPagerAdapter.setStudents(studentList)
+    }
 
     private fun setupToggleButtons() {
         binding.modeToggle.modeToggleGroup.apply {

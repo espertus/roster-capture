@@ -10,7 +10,11 @@ import androidx.navigation.fragment.findNavController
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
+import com.ellenspertus.qroster.model.Student
 
+/**
+ * The superclass of fragments that process all students in a course.
+ */
 abstract class AbstractStudentFragment : Fragment() {
     // initialized in onCreate()
     protected lateinit var crn: String
@@ -20,7 +24,9 @@ abstract class AbstractStudentFragment : Fragment() {
 
     protected val viewModel: StudentViewModel by viewModels()
 
-    data class Bindings(
+    // enables this class to initialize child's view and
+    // sets up swipe reload if swipeRefreshLayout is not null
+    protected data class Bindings(
         val studentViewPager: ViewPager2,
         val progressBar: View,
         val progressTextView: View,
@@ -28,8 +34,9 @@ abstract class AbstractStudentFragment : Fragment() {
         val emptyStateLayout: View,
     )
 
-    abstract fun createAdapter(): StudentPagerAdapter
-    abstract fun provideBindings(): Bindings
+    protected abstract fun createAdapter(): StudentPagerAdapter
+    protected abstract fun provideBindings(): Bindings
+    protected abstract fun processStudents(studentList: List<Student>)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,12 +95,12 @@ abstract class AbstractStudentFragment : Fragment() {
             } else {
                 bindings.studentViewPager.visibility = View.VISIBLE
                 bindings.emptyStateLayout.visibility = View.GONE
-                studentPagerAdapter.setStudents(students)
             }
+            processStudents(students)
         }
     }
 
-    protected fun showDataLoading(bindings: Bindings) {
+    private fun showDataLoading(bindings: Bindings) {
         bindings.apply {
             progressBar.visibility = View.VISIBLE
             progressTextView.visibility = View.VISIBLE
@@ -126,5 +133,4 @@ abstract class AbstractStudentFragment : Fragment() {
     protected fun disableSwiping(studentViewPager: ViewPager2) {
         studentViewPager.isUserInputEnabled = false
     }
-
 }
