@@ -7,8 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import com.ellenspertus.qroster.databinding.FragmentQuizBinding
+import com.ellenspertus.qroster.databinding.ItemQuizEndCardBinding
 import com.ellenspertus.qroster.model.Student
-import com.google.android.material.snackbar.Snackbar
 import kotlin.math.min
 
 class QuizFragment : AbstractStudentFragment() {
@@ -36,16 +36,18 @@ class QuizFragment : AbstractStudentFragment() {
             override val showInfoButtonAtStart = true
             override val showQuizButtons = true
 
-            override fun startOver() {
-                // TODO: What should happen when end of quiz reached?
-                view?.let { v ->
-                    Snackbar.make(v, "Starting over with first student", Snackbar.LENGTH_SHORT)
-                        .show()
-                }
-                binding.studentViewPager.setCurrentItem(0, true)
-            }
+            override fun provideEndViewBinding(parent: ViewGroup) =
+                ItemQuizEndCardBinding.inflate(
+                    LayoutInflater.from(parent.context), parent, false
+                ).also {
+                    it.selectCourseButton.setOnClickListener {
+                        findNavController()
+                            .navigate(R.id.action_quizFragment_to_selectCourseFragment)
 
-            override fun onQuizButtonPressed(id: Int) {
+                    }
+                }
+
+            override fun onQuizChoiceButtonPressed(id: Int) {
                 incorporateFeedback(id)
             }
         }
@@ -63,7 +65,7 @@ class QuizFragment : AbstractStudentFragment() {
         )
 
     override fun processStudents(studentList: List<Student>) {
-        val quizStudents = studentList.filter { it.score < 1 }.shuffled()
+        val quizStudents = studentList.filter { it.score < QUIZ_THRESHOLD }.shuffled()
         studentPagerAdapter.setStudents(quizStudents)
     }
 
@@ -90,7 +92,7 @@ class QuizFragment : AbstractStudentFragment() {
                 val newScore = PRIOR_WEIGHT * it.score + (1.0 - PRIOR_WEIGHT) * score
                 viewModel.updateStudentScore(it, newScore)
                 moveStudent(it)
-            }.run {
+            } ?: {
                 Log.e(TAG, "Unable to retrieve student")
             }
         }
@@ -114,7 +116,7 @@ class QuizFragment : AbstractStudentFragment() {
 
     companion object {
         const val TAG = "QuizFragment"
-        const val PRIOR_WEIGHT = .7
+        const val PRIOR_WEIGHT = .6
         const val QUIZ_THRESHOLD = .9
 
         private val difficultyMap = mapOf(

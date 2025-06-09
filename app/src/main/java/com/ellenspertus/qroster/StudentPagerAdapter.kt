@@ -7,11 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewbinding.ViewBinding
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.ellenspertus.qroster.databinding.ItemStartOverCardBinding
 import com.ellenspertus.qroster.databinding.ItemStudentCardBinding
 import com.ellenspertus.qroster.model.Student
 import com.google.android.material.button.MaterialButton
@@ -34,8 +33,8 @@ class StudentPagerAdapter(
         val showInfoButtonAtStart: Boolean
         // Quiz buttons are shown only when the info is displayed.
         val showQuizButtons: Boolean
-        fun startOver()
-        fun onQuizButtonPressed(id: Int)
+        fun provideEndViewBinding(parent: ViewGroup): ViewBinding
+        fun onQuizChoiceButtonPressed(id: Int)
     }
 
     inner class StudentViewHolder(
@@ -75,7 +74,7 @@ class StudentPagerAdapter(
 
                     quizButtonList.forEach {
                         it.setOnClickListener { view ->
-                            host.onQuizButtonPressed(view.id)
+                            host.onQuizChoiceButtonPressed(view.id)
                         }
                     }
                 }
@@ -83,14 +82,14 @@ class StudentPagerAdapter(
         }
     }
 
-    inner class StartOverViewHolder(binding: ItemStartOverCardBinding) :
+    inner class EndCardViewHolder(binding: ViewBinding) :
         RecyclerView.ViewHolder(binding.root)
 
     override fun getItemViewType(position: Int): Int {
         return if (position < students.size) {
             VIEW_TYPE_STUDENT
         } else {
-            VIEW_TYPE_START_OVER
+            VIEW_TYPE_END
         }
     }
 
@@ -103,12 +102,8 @@ class StudentPagerAdapter(
                 StudentViewHolder(binding)
             }
 
-            VIEW_TYPE_START_OVER -> {
-                val binding = ItemStartOverCardBinding.inflate(
-                    LayoutInflater.from(parent.context), parent, false
-                )
-                setupStartOverCard(binding)
-                StartOverViewHolder(binding)
+            VIEW_TYPE_END -> {
+                EndCardViewHolder(host.provideEndViewBinding(parent))
             }
 
             else -> throw IllegalArgumentException("Unknown view type: $viewType")
@@ -164,7 +159,7 @@ class StudentPagerAdapter(
                 addSelfieIfPresent(student, holder.binding)
             }
 
-            is StartOverViewHolder -> {
+            is EndCardViewHolder -> {
             }
         }
     }
@@ -220,16 +215,6 @@ class StudentPagerAdapter(
         noteEditText.requestFocus()
     }
 
-    private fun setupStartOverCard(binding: ItemStartOverCardBinding) {
-        binding.startOverButton.setOnClickListener {
-            host.startOver()
-        }
-        binding.doneButton.setOnClickListener {
-            enclosingFragment.findNavController()
-                .navigate(R.id.action_browseFragment_to_selectCourseFragment)
-        }
-    }
-
     override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
         super.onViewAttachedToWindow(holder)
 
@@ -269,13 +254,13 @@ class StudentPagerAdapter(
     }
 
     override fun getItemCount(): Int {
-        val count = students.size + 1 // start over card
+        val count = students.size + 1 // end card
         return count
     }
 
     companion object {
         const val TAG = "StudentPagerAdapter"
         const val VIEW_TYPE_STUDENT = 0
-        const val VIEW_TYPE_START_OVER = 1
+        const val VIEW_TYPE_END = 1
     }
 }

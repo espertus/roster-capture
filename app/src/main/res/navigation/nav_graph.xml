@@ -51,5 +51,8 @@
         <action
             android:id="@+id/action_quizFragment_to_browseFragment"
             app:destination="@id/browseFragment" />
+        <action
+            android:id="@+id/action_quizFragment_to_selectCourseFragment"
+            app:destination="@id/selectCourseFragment" />
     </fragment>
 </navigation>

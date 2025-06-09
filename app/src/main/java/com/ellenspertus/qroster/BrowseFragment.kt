@@ -5,7 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
+import androidx.viewbinding.ViewBinding
 import com.ellenspertus.qroster.databinding.FragmentBrowseBinding
+import com.ellenspertus.qroster.databinding.ItemStartOverCardBinding
 import com.ellenspertus.qroster.model.Student
 import com.google.android.material.snackbar.Snackbar
 
@@ -41,15 +43,11 @@ class BrowseFragment : AbstractStudentFragment() {
             override val showInfoAtStart = true
             override val showInfoButtonAtStart = false
             override val showQuizButtons = false
-            override fun startOver() {
-                view?.let { v ->
-                    Snackbar.make(v, "Starting over with first student", Snackbar.LENGTH_SHORT)
-                        .show()
-                }
-                binding.studentViewPager.setCurrentItem(0, true)
+            override fun provideEndViewBinding(parent: ViewGroup): ViewBinding {
+                return createEndViewBinding(parent)
             }
 
-            override fun onQuizButtonPressed(id: Int) {
+            override fun onQuizChoiceButtonPressed(id: Int) {
                 throw IllegalStateException("onQuizButtonPressed() should never be called in BrowseFragment")
             }
         }
@@ -79,6 +77,27 @@ class BrowseFragment : AbstractStudentFragment() {
                     findNavController().navigate(action)
                 }
             }
+        }
+    }
+
+    private fun createEndViewBinding(parent: ViewGroup) =
+        ItemStartOverCardBinding.inflate(
+            LayoutInflater.from(parent.context), parent, false
+        ).also {
+            setupStartOverCard(it)
+        }
+
+    private fun setupStartOverCard(binding: ItemStartOverCardBinding) {
+        binding.startOverButton.setOnClickListener {
+            view?.let { v ->
+                Snackbar.make(v, "Starting over with first student", Snackbar.LENGTH_SHORT)
+                    .show()
+            }
+            this.binding.studentViewPager.setCurrentItem(0, true)
+        }
+        binding.selectCourseButton.setOnClickListener {
+            findNavController()
+                .navigate(R.id.action_browseFragment_to_selectCourseFragment)
         }
     }
 

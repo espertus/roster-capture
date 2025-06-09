@@ -34,17 +34,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="You've viewed all students!"
+            android:text="You've learned all students!"
             android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/startOverButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="Start Over"
-            android:textSize="16sp" />
-
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/selectCourseButton"
