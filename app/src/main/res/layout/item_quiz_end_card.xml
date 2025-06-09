@@ -38,11 +38,19 @@
             android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/selectStudyMoreButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Study these students more"
+            android:textSize="16sp" />
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/selectCourseButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Choose Another Course"
+            android:text="Choose another course"
             android:textSize="16sp" />
 
     </LinearLayout>

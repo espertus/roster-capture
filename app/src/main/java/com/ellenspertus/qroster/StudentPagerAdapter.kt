@@ -21,7 +21,6 @@ import com.google.firebase.storage.FirebaseStorage
 class StudentPagerAdapter(
     private val context: Context,
     private val viewModel: StudentViewModel,
-    private val enclosingFragment: Fragment,
     private val host: Host,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val storageRef = FirebaseStorage.getInstance().reference

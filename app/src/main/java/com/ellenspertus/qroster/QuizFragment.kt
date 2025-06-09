@@ -9,11 +9,15 @@ import androidx.navigation.fragment.findNavController
 import com.ellenspertus.qroster.databinding.FragmentQuizBinding
 import com.ellenspertus.qroster.databinding.ItemQuizEndCardBinding
 import com.ellenspertus.qroster.model.Student
+import kotlin.math.max
 import kotlin.math.min
 
 class QuizFragment : AbstractStudentFragment() {
     private var _binding: FragmentQuizBinding? = null
     private val binding get() = _binding!!
+
+    // initialized in processStudents()
+    private var allStudents: List<Student>? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,6 +49,9 @@ class QuizFragment : AbstractStudentFragment() {
                             .navigate(R.id.action_quizFragment_to_selectCourseFragment)
 
                     }
+                    it.selectStudyMoreButton.setOnClickListener {
+                        studyMore()
+                    }
                 }
 
             override fun onQuizChoiceButtonPressed(id: Int) {
@@ -52,7 +59,23 @@ class QuizFragment : AbstractStudentFragment() {
             }
         }
 
-        return StudentPagerAdapter(requireContext(), viewModel, this, host)
+        return StudentPagerAdapter(requireContext(), viewModel, host)
+    }
+
+    private fun studyMore() {
+        allStudents?.let { students ->
+            val minScore = students.map {it.score }.min()
+            // Subtract twice as much from each score as needed to
+            // add the hardest question back into the pool.
+            val delta = 2 * (minScore - QUIZ_THRESHOLD)
+            Log.d(TAG, "Adding $delta to each student score")
+            students.forEach {
+                it.score = max(0.0, it.score - delta)
+            }
+            processStudents(students)
+        } ?: {
+            Log.e(TAG, "The class has no students to study")
+        }
     }
 
     override fun provideBindings() =
@@ -65,6 +88,7 @@ class QuizFragment : AbstractStudentFragment() {
         )
 
     override fun processStudents(studentList: List<Student>) {
+        allStudents = studentList
         val quizStudents = studentList.filter { it.score < QUIZ_THRESHOLD }.shuffled()
         studentPagerAdapter.setStudents(quizStudents)
     }
@@ -88,7 +112,6 @@ class QuizFragment : AbstractStudentFragment() {
         } else {
             val students = studentPagerAdapter.getStudents()
             students.getOrNull(0)?.also {
-                Log.d(TAG, "Score $score for student $it")
                 val newScore = PRIOR_WEIGHT * it.score + (1.0 - PRIOR_WEIGHT) * score
                 viewModel.updateStudentScore(it, newScore)
                 moveStudent(it)

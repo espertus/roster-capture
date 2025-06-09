@@ -52,7 +52,7 @@ class BrowseFragment : AbstractStudentFragment() {
             }
         }
 
-        return StudentPagerAdapter(requireContext(), viewModel, this, host)
+        return StudentPagerAdapter(requireContext(), viewModel, host)
     }
 
     override fun provideBindings() =
