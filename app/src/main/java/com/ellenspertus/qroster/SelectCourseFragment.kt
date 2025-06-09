@@ -20,7 +20,7 @@ import kotlinx.coroutines.tasks.await
 class SelectCourseFragment : Fragment() {
     private var _binding: FragmentSelectCourseBinding? = null
     private val binding get() = _binding!!
-    private val db = Firebase.firestore
+    private val firestore by lazy { Firebase.firestore }
 
     // These cards are created programmatically.
     private val courseCards = mutableListOf<ItemCourseCardBinding>()
@@ -53,7 +53,7 @@ class SelectCourseFragment : Fragment() {
 
     private suspend fun retrieveCourses(): List<Course> = coroutineScope {
         try {
-            val snapshot = db.collection(COURSES_COLLECTION)
+            val snapshot = firestore.collection(COURSES_COLLECTION)
                 .get()
                 .await()
 

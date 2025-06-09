@@ -14,6 +14,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import com.ellenspertus.qroster.model.Student
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.coroutineScope
@@ -27,7 +28,7 @@ class StudentViewModel : ViewModel() {
     private val _uiMessage = MutableLiveData<UiMessage?>()
     val uiMessage: LiveData<UiMessage?> = _uiMessage
 
-    private val firestore = FirebaseFirestore.getInstance()
+    private val firestore by lazy { Firebase.firestore }
     private var exoPlayer: ExoPlayer? = null
 
     fun loadStudentsForCourse(crn: String) {

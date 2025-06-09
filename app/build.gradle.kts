@@ -18,6 +18,10 @@ android {
     namespace = "com.ellenspertus.qroster"
     compileSdk = 36
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         applicationId = "com.ellenspertus.qroster"
         minSdk = 34
@@ -28,7 +32,17 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-
+    flavorDimensions += "environment"
+    productFlavors {
+        create("emulator") {
+            dimension = "environment"
+            buildConfigField("boolean", "USE_FIREBASE_EMULATOR", "true")
+        }
+        create("firebase") {
+            dimension = "environment"
+            buildConfigField("boolean", "USE_FIREBASE_EMULATOR", "false")
+        }
+    }
     buildTypes {
         release {
             isMinifyEnabled = false

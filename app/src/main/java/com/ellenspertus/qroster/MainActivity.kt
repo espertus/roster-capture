@@ -3,6 +3,7 @@ package com.ellenspertus.qroster
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.FragmentActivity
+import com.ellenspertus.qroster.BuildConfig
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
@@ -19,15 +20,22 @@ class MainActivity : FragmentActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        if (BuildConfig.DEBUG) {
-            try {
-                Firebase.auth.useEmulator("10.0.2.2", 9099)
-                Firebase.firestore.useEmulator("10.0.2.2", 8080)
-                Firebase.storage.useEmulator("10.0.2.2", 9199)
-                Log.d("Firebase", "Using Firebase Emulator Suite")
-            } catch (e: Exception) {
-                Log.e("Firebase", "Error setting up Firebase emulators: ${e.message}")
-            }
+        if (BuildConfig.USE_FIREBASE_EMULATOR) {
+            useEmulator()
+        }
+        // I needed to add this to keep app running on AVD from continuing to
+        // connect to Firebase emulator.
+        Firebase.firestore.clearPersistence()
+    }
+
+    private fun useEmulator() {
+        try {
+            Firebase.auth.useEmulator("10.0.2.2", 9099)
+            Firebase.firestore.useEmulator("10.0.2.2", 8080)
+            Firebase.storage.useEmulator("10.0.2.2", 9199)
+            Log.d("Firebase", "Using Firebase Emulator Suite")
+        } catch (e: Exception) {
+            Log.e("Firebase", "Error setting up Firebase emulators: ${e.message}")
         }
     }
 
