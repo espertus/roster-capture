@@ -133,23 +133,15 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:padding="16dp"
-                    android:background="@drawable/rounded_background">
+                    android:padding="16dp">
 
-                    <ImageView
-                        android:id="@+id/statusIcon"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/microphone_outline"
-                        app:tint="?attr/colorOnSurfaceVariant"
-                        android:contentDescription="Recording status" />
 
                     <TextView
                         android:id="@+id/statusText"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Press to record your name"
+                        android:text="@string/record_name_request"
                         android:layout_marginStart="8dp" />
 
                     <TextView

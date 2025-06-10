@@ -2,7 +2,6 @@ package com.ellenspertus.qroster
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Bundle
@@ -40,7 +39,6 @@ class AddStudentFragment : Fragment() {
 
     // Audio recording
     private var mediaRecorder: MediaRecorder? = null
-    private var mediaPlayer: MediaPlayer? = null
     private var audioFilePath: String? = null
     private var isRecording = false
     private var recordingStartTime = 0L
@@ -115,11 +113,6 @@ class AddStudentFragment : Fragment() {
             } else {
                 checkAudioPermissionAndRecord()
             }
-        }
-
-        // Play button
-        binding.btnPlay.setOnClickListener {
-            playRecording()
         }
 
         // Delete recording button
@@ -219,9 +212,8 @@ class AddStudentFragment : Fragment() {
             val audioFile = File(requireContext().filesDir, "student_audio_${System.currentTimeMillis()}.m4a")
             audioFilePath = audioFile.absolutePath
 
-            // Initialize MediaRecorder (API 31+ uses different constructor)
-            mediaRecorder =
-                MediaRecorder(requireContext()).apply {
+            // Initialize MediaRecorder
+            mediaRecorder = MediaRecorder(requireContext()).apply {
                 setAudioSource(MediaRecorder.AudioSource.MIC)
                 setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
                 setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
@@ -235,7 +227,6 @@ class AddStudentFragment : Fragment() {
 
             // Update UI
             binding.fabRecord.setImageResource(R.drawable.stop_circle_outline)
-            binding.statusIcon.setColorFilter(ContextCompat.getColor(requireContext(), android.R.color.holo_red_dark))
             binding.statusText.text = "Recording..."
             binding.recordingDuration.visibility = View.VISIBLE
             binding.audioWaveform.visibility = View.VISIBLE
@@ -261,10 +252,8 @@ class AddStudentFragment : Fragment() {
 
             // Update UI
             binding.fabRecord.setImageResource(R.drawable.microphone_outline)
-            binding.statusIcon.setColorFilter(ContextCompat.getColor(requireContext(), android.R.color.darker_gray))
-            binding.statusText.text = "Recording saved - Tap play to listen"
+            binding.statusText.text = "Recording saved"
             binding.audioWaveform.visibility = View.GONE
-            binding.btnPlay.visibility = View.VISIBLE
             binding.btnDeleteRecording.visibility = View.VISIBLE
 
         } catch (e: Exception) {
@@ -284,28 +273,6 @@ class AddStudentFragment : Fragment() {
         }
     }
 
-    private fun playRecording() {
-        audioFilePath?.let { path ->
-            try {
-                mediaPlayer?.release()
-                mediaPlayer = MediaPlayer().apply {
-                    setDataSource(path)
-                    prepare()
-                    start()
-
-                    setOnCompletionListener {
-                        binding.btnPlay.setIconResource(R.drawable.play_circle_outline)
-                    }
-                }
-                binding.btnPlay.setIconResource(R.drawable.pause_circle_outline)
-
-            } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Failed to play recording", Toast.LENGTH_SHORT).show()
-                Log.e(TAG, "Playback failed", e)
-            }
-        }
-    }
-
     private fun deleteRecording() {
         // Delete file
         audioFilePath?.let { path ->
@@ -314,10 +281,9 @@ class AddStudentFragment : Fragment() {
         audioFilePath = null
 
         // Reset UI
-        binding.statusText.text = "Press to record your name"
+        binding.statusText.text = getString(R.string.record_name_request)
         binding.recordingDuration.text = "0:00"
         binding.recordingDuration.visibility = View.GONE
-        binding.btnPlay.visibility = View.GONE
         binding.btnDeleteRecording.visibility = View.GONE
     }
 
@@ -367,7 +333,6 @@ class AddStudentFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         mediaRecorder?.release()
-        mediaPlayer?.release()
         recordingHandler.removeCallbacksAndMessages(null)
         _binding = null
     }

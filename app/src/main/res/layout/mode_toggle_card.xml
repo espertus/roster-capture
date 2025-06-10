@@ -39,7 +39,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Add student"
-            app:icon="@drawable/ic_account_question"
+            app:icon="@drawable/account_plus"
             app:iconPadding="8dp"
             app:strokeColor="@color/toggle_button_stroke"
             app:strokeWidth="2dp"
