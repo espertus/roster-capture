@@ -16,7 +16,7 @@ import com.google.firebase.auth.FirebaseUser
 
 
 /**
- * The initial fragment,w hich signs int he user.
+ * The initial fragment, which signs in the user and directs to [SelectCourseFragment].
  */
 class WelcomeFragment : Fragment() {
     private lateinit var user: FirebaseUser
@@ -28,7 +28,13 @@ class WelcomeFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        launchSignInIntent()
+        // Only launch sign-in if we don't already have a user
+        if (FirebaseAuth.getInstance().currentUser == null) {
+            launchSignInIntent()
+        } else {
+            // User already signed in, navigate immediately
+            findNavController().navigate(R.id.action_welcomeFragment_to_selectCourseFragment)
+        }
     }
 
     private fun launchSignInIntent() {
@@ -49,8 +55,14 @@ class WelcomeFragment : Fragment() {
             FirebaseAuth.getInstance().currentUser?.let {
                 user = it
                 Log.d(TAG, "Successfully signed in")
-                findNavController()
-                    .navigate(R.id.action_welcomeFragment_to_selectCourseFragment)
+
+                // Check if we're still at WelcomeFragment before navigating
+                val navController = findNavController()
+                if (navController.currentDestination?.id == R.id.welcomeFragment) {
+                    navController.navigate(R.id.action_welcomeFragment_to_selectCourseFragment)
+                } else {
+                    Log.d(TAG, "Already navigated away from WelcomeFragment")
+                }
                 return
             }
             Log.e(TAG, "RESULT_OK but user null?!")
