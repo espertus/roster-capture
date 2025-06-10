@@ -169,32 +169,12 @@
                     android:layout_gravity="center_horizontal">
 
                     <com.google.android.material.floatingactionbutton.FloatingActionButton
-                        android:id="@+id/fabRecord"
+                        android:id="@+id/fabRecordDelete"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:src="@drawable/microphone_outline"
                         android:contentDescription="Record audio"
                         app:fabSize="normal" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnPlay"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Play"
-                        app:icon="@drawable/play_circle_outline"
-                        android:layout_marginStart="16dp"
-                        android:visibility="gone"
-                        style="@style/Widget.Material3.Button.OutlinedButton" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnDeleteRecording"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Delete"
-                        app:icon="@drawable/delete_forever"
-                        android:layout_marginStart="8dp"
-                        android:visibility="gone"
-                        style="@style/Widget.Material3.Button.TextButton" />
 
                 </LinearLayout>
 

@@ -1,12 +1,15 @@
 package com.ellenspertus.qroster
 
 import android.Manifest
+import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -14,6 +17,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.*
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -21,6 +25,9 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.ellenspertus.qroster.databinding.FragmentAddStudentBinding
 import java.io.File
+
+private const val MILLIS_PER_SECOND = 1000
+private const val SECONDS_PER_MINUTE = 60
 
 class AddStudentFragment : Fragment() {
     private lateinit var crn: String
@@ -30,9 +37,9 @@ class AddStudentFragment : Fragment() {
     // Photo capture
     private lateinit var photoUri: Uri
     private val takePictureLauncher = registerForActivityResult(
-        TakePicture()
-    ) { success ->
-        if (success) {
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
             displayCapturedPhoto()
         }
     }
@@ -107,17 +114,14 @@ class AddStudentFragment : Fragment() {
 
     private fun setupAudioSection() {
         // Record button
-        binding.fabRecord.setOnClickListener {
+        binding.fabRecordDelete.setOnClickListener {
             if (isRecording) {
                 stopRecording()
-            } else {
+            } else if (audioFilePath == null) {
                 checkAudioPermissionAndRecord()
+            } else {
+                deleteRecording()
             }
-        }
-
-        // Delete recording button
-        binding.btnDeleteRecording.setOnClickListener {
-            deleteRecording()
         }
     }
 
@@ -181,7 +185,15 @@ class AddStudentFragment : Fragment() {
             "${requireContext().packageName}.fileprovider",
             photoFile
         )
-        takePictureLauncher.launch(photoUri)
+
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
+            putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
+            putExtra("android.intent.extras.CAMERA_FACING", 1)
+            putExtra("android.intent.extras.LENS_FACING_FRONT", 1)
+            putExtra("android.intent.extra.USE_FRONT_CAMERA", true)
+        }
+
+        takePictureLauncher.launch(intent)
     }
 
     private fun displayCapturedPhoto() {
@@ -226,7 +238,7 @@ class AddStudentFragment : Fragment() {
             recordingStartTime = System.currentTimeMillis()
 
             // Update UI
-            binding.fabRecord.setImageResource(R.drawable.stop_circle_outline)
+            binding.fabRecordDelete.setImageResource(R.drawable.stop_circle_outline)
             binding.statusText.text = "Recording..."
             binding.recordingDuration.visibility = View.VISIBLE
             binding.audioWaveform.visibility = View.VISIBLE
@@ -251,10 +263,9 @@ class AddStudentFragment : Fragment() {
             recordingHandler.removeCallbacksAndMessages(null)
 
             // Update UI
-            binding.fabRecord.setImageResource(R.drawable.microphone_outline)
+            binding.fabRecordDelete.setImageResource(R.drawable.delete_forever)
             binding.statusText.text = "Recording saved"
             binding.audioWaveform.visibility = View.GONE
-            binding.btnDeleteRecording.visibility = View.VISIBLE
 
         } catch (e: Exception) {
             Toast.makeText(requireContext(), "Failed to stop recording", Toast.LENGTH_SHORT).show()
@@ -265,8 +276,8 @@ class AddStudentFragment : Fragment() {
     private fun updateRecordingDuration() {
         if (isRecording) {
             val duration = System.currentTimeMillis() - recordingStartTime
-            val seconds = (duration / 1000) % 60
-            val minutes = (duration / 1000) / 60
+            val seconds = (duration / MILLIS_PER_SECOND) % SECONDS_PER_MINUTE
+            val minutes = (duration / MILLIS_PER_SECOND) / SECONDS_PER_MINUTE
             binding.recordingDuration.text = String.format("%d:%02d", minutes, seconds)
 
             recordingHandler.postDelayed({ updateRecordingDuration() }, 100)
@@ -282,9 +293,9 @@ class AddStudentFragment : Fragment() {
 
         // Reset UI
         binding.statusText.text = getString(R.string.record_name_request)
+        binding.fabRecordDelete.setImageResource(R.drawable.microphone_outline)
         binding.recordingDuration.text = "0:00"
         binding.recordingDuration.visibility = View.GONE
-        binding.btnDeleteRecording.visibility = View.GONE
     }
 
     // Form validation
