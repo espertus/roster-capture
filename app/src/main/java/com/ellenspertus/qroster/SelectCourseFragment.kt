@@ -122,6 +122,10 @@ class SelectCourseFragment : Fragment() {
                             course.crn
                         )
 
+                        R.id.addStudentButton -> SelectCourseFragmentDirections.actionSelectCourseFragmentToAddStudentFragment(
+                            course.crn
+                        )
+
                         else -> {
                             Log.e(TAG, "Unexpected case in enableToggleButtons()")
                             throw AssertionError("Unreachable code hit in enableToggleButtons()")

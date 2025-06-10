@@ -34,6 +34,20 @@
             app:iconTint="@color/toggle_button_text" />
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/addStudentButton"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add student"
+            app:icon="@drawable/ic_account_question"
+            app:iconPadding="8dp"
+            app:strokeColor="@color/toggle_button_stroke"
+            app:strokeWidth="2dp"
+            app:backgroundTint="@color/toggle_button_background"
+            android:textColor="@color/toggle_button_text"
+            app:iconTint="@color/toggle_button_text" />
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/quizButton"
             style="?attr/materialButtonOutlinedStyle"
             android:layout_width="wrap_content"

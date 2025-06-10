@@ -16,6 +16,9 @@
         <action
             android:id="@+id/action_selectCourseFragment_to_quizFragment"
             app:destination="@id/quizFragment" />
+        <action
+            android:id="@+id/action_selectCourseFragment_to_addStudentFragment"
+            app:destination="@id/addStudentFragment" />
     </fragment>
     <fragment
         android:id="@+id/welcomeFragment"
@@ -54,5 +57,13 @@
         <action
             android:id="@+id/action_quizFragment_to_selectCourseFragment"
             app:destination="@id/selectCourseFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addStudentFragment"
+        android:name="com.ellenspertus.qroster.AddStudentFragment"
+        android:label="AddStudentFragment" >
+        <argument
+            android:name="crn"
+            app:argType="string" />
     </fragment>
 </navigation>
