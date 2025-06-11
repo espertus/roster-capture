@@ -17,4 +17,5 @@
     <string name="start_quiz">Start Quiz</string>
     <string name="students_ratio">%d/%d students</string>
     <string name="record_name_request">Please record your name.</string>
+    <string name="no_courses_found">No courses found.</string>
 </resources>

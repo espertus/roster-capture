@@ -45,7 +45,11 @@ class SelectCourseFragment : Fragment() {
 
     private fun solicitCourse(courses: List<Course>) {
         binding.apply {
-            textWelcome.text = requireContext().getString(R.string.select_a_course)
+            if (courses.isEmpty()) {
+                textWelcome.text = getString(R.string.no_courses_found)
+                return
+            }
+            textWelcome.text = getString(R.string.select_a_course)
             courses.forEach { addCourseToUI(it) }
             coursesContainer.visibility = View.VISIBLE
         }
@@ -74,7 +78,7 @@ class SelectCourseFragment : Fragment() {
             courses
         } catch (exception: Exception) {
             Log.e(TAG, "Error getting documents", exception)
-            emptyList() // Return empty list on error
+            emptyList()
         }
     }
 
