@@ -154,7 +154,8 @@ class AddStudentFragment : Fragment() {
     }
 
     private fun setupActionButtons() {
-        binding.btnCancel.setOnClickListener {
+        // TODO: Restrict access
+        binding.btnExit.setOnClickListener {
             findNavController().navigateUp()
         }
 
