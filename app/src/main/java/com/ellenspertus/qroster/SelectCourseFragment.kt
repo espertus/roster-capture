@@ -67,6 +67,9 @@ class SelectCourseFragment : Fragment() {
                     null
                 }
             }
+            if (courses.isEmpty()) {
+                Log.e(TAG, "No courses retrieved")
+            }
 
             courses
         } catch (exception: Exception) {
@@ -107,6 +110,7 @@ class SelectCourseFragment : Fragment() {
     private fun enableToggleButtons(course: Course) {
         binding.modeToggle.apply {
             bottomControlsCard.visibility = View.VISIBLE
+            modeToggleGroup.clearOnButtonCheckedListeners()
             modeToggleGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
                 if (isChecked) {
                     val action = when (checkedId) {
