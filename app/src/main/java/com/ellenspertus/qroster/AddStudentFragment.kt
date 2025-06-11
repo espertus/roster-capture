@@ -114,7 +114,7 @@ class AddStudentFragment : Fragment() {
 
     private fun setupAudioSection() {
         // Record button
-        binding.fabRecordDelete.setOnClickListener {
+        binding.buttonRecordDelete.setOnClickListener {
             if (isRecording) {
                 stopRecording()
             } else if (audioFilePath == null) {
@@ -239,7 +239,7 @@ class AddStudentFragment : Fragment() {
             recordingStartTime = System.currentTimeMillis()
 
             // Update UI
-            binding.fabRecordDelete.setImageResource(R.drawable.stop_circle_outline)
+            binding.buttonRecordDelete.setImageResource(R.drawable.stop_circle_outline)
             binding.statusText.text = "Recording..."
             binding.recordingDuration.visibility = View.VISIBLE
             binding.audioWaveform.visibility = View.VISIBLE
@@ -264,7 +264,7 @@ class AddStudentFragment : Fragment() {
             recordingHandler.removeCallbacksAndMessages(null)
 
             // Update UI
-            binding.fabRecordDelete.setImageResource(R.drawable.delete_forever)
+            binding.buttonRecordDelete.setImageResource(R.drawable.delete_forever)
             binding.statusText.text = "Recording saved"
             binding.audioWaveform.visibility = View.GONE
 
@@ -294,7 +294,7 @@ class AddStudentFragment : Fragment() {
 
         // Reset UI
         binding.statusText.text = getString(R.string.record_name_request)
-        binding.fabRecordDelete.setImageResource(R.drawable.microphone_outline)
+        binding.buttonRecordDelete.setImageResource(R.drawable.microphone_outline)
         binding.recordingDuration.text = "0:00"
         binding.recordingDuration.visibility = View.GONE
     }

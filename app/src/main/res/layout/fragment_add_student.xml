@@ -13,283 +13,282 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-    <!-- Basic Information Section -->
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="4dp">
-
-        <LinearLayout
+        <!-- Basic Information Section -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:layout_marginBottom="8dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:text="Student Information"
-                android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
-                android:textColor="?attr/colorPrimary" />
-
-            <!-- NUID Field -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilNuid"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="NUID *">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etNuid"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:maxLength="9" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- First Name Field -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilFirstName"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:hint="First Name *">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etFirstName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:imeOptions="actionNext"
-                    android:inputType="textPersonName" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- Last Name Field -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilLastName"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:hint="Last Name *">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etLastName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:imeOptions="actionNext"
-                    android:inputType="textPersonName" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- Preferred Name Field -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilPreferredName"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:hint="Preferred Name (if not first name)" >
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etPreferredName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:imeOptions="actionNext"
-                    android:inputType="textPersonName" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- Recording -->
             <LinearLayout
-                android:id="@+id/recordingStatus"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:padding="16dp">
 
                 <TextView
-                    android:id="@+id/statusText"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="1"
-                    android:text="@string/record_name_request" />
-
-                <TextView
-                    android:id="@+id/recordingDuration"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:text="0:00"
-                    android:visibility="gone" />
+                    android:layout_marginBottom="16dp"
+                    android:text="Student Information"
+                    android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+                    android:textColor="?attr/colorPrimary" />
 
-            </LinearLayout>
-
-            <ProgressBar
-                android:id="@+id/audioWaveform"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_marginVertical="16dp"
-                android:visibility="gone" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:orientation="horizontal">
-
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/fabRecordDelete"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:contentDescription="Record audio"
-                    android:src="@drawable/microphone_outline"
-                    app:fabSize="normal" />
-
-            </LinearLayout>
-
-            <!-- Pronouns Section -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:layout_marginBottom="8dp"
-                android:text="Pronouns *"
-                android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
-
-            <RadioGroup
-                android:id="@+id/rgPronouns"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <com.google.android.material.radiobutton.MaterialRadioButton
-                    android:id="@+id/rbSheHer"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="she/her/hers" />
-
-                <com.google.android.material.radiobutton.MaterialRadioButton
-                    android:id="@+id/rbHeHim"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="he/him/his" />
-
-                <com.google.android.material.radiobutton.MaterialRadioButton
-                    android:id="@+id/rbTheyThem"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="they/them/theirs" />
-
-                <com.google.android.material.radiobutton.MaterialRadioButton
-                    android:id="@+id/rbOther"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="other (please specify)" />
-
-            </RadioGroup>
-
-            <!-- Other Pronouns Field -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilOtherPronouns"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
-                android:layout_marginTop="8dp"
-                android:hint="Please specify"
-                android:visibility="gone">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etOtherPronouns"
+                <!-- NUID Field -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilNuid"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:imeOptions="actionDone"
-                    android:inputType="text" />
+                    android:hint="NUID *">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etNuid"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:maxLength="9" />
 
-            <!-- Selfie -->
-            <FrameLayout
-                android:id="@+id/photoContainer"
-                android:layout_marginTop="20dp"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:layout_gravity="center_horizontal"
-                android:background="@drawable/dashed_border">
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <ImageView
-                    android:id="@+id/capturedPhoto"
+                <!-- First Name Field -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilFirstName"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:contentDescription="Captured selfie"
-                    android:scaleType="centerCrop"
-                    android:visibility="gone" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:hint="First Name *">
 
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etFirstName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:imeOptions="actionNext"
+                        android:inputType="textPersonName" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Last Name Field -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilLastName"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:hint="Last Name *">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etLastName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:imeOptions="actionNext"
+                        android:inputType="textPersonName" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Preferred Name and microphone -->
                 <LinearLayout
-                    android:id="@+id/photoPlaceholder"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:orientation="vertical">
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="16dp">
 
-                    <ImageView
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:contentDescription="Camera icon"
-                        android:src="@drawable/camera_account"
-                        app:tint="?attr/colorOnSurfaceVariant" />
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilPreferredName"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="8dp"
+                        android:hint="Preferred Name (if not first name)">
 
-                    <TextView
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etPreferredName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:imeOptions="actionNext"
+                            android:inputType="textPersonName" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <ImageButton
+                        android:id="@+id/buttonRecordDelete"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:textColor="?attr/colorOnSurfaceVariant" />
+                        android:layout_gravity="center_vertical"
+                        android:contentDescription="Record audio"
+                        android:src="@drawable/microphone_outline" />
+                </LinearLayout>
+
+                <!-- Recording -->
+                <LinearLayout
+                    android:id="@+id/recordingStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/statusText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:text="@string/record_name_request" />
+
+                    <TextView
+                        android:id="@+id/recordingDuration"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="0:00"
+                        android:visibility="gone" />
 
                 </LinearLayout>
 
-            </FrameLayout>
+                <ProgressBar
+                    android:id="@+id/audioWaveform"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_marginVertical="16dp"
+                    android:visibility="gone" />
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="16dp"
-                android:orientation="horizontal">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnTakePhoto"
+                <!-- Pronouns Section -->
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Take Selfie"
-                    app:icon="@drawable/camera_account" />
+                    android:layout_marginTop="24dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="Pronouns *"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnRetakePhoto"
-                    style="@style/Widget.Material3.Button.OutlinedButton"
+                <RadioGroup
+                    android:id="@+id/rgPronouns"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/rbSheHer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="she/her/hers" />
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/rbHeHim"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="he/him/his" />
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/rbTheyThem"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="they/them/theirs" />
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/rbOther"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="other (please specify)" />
+
+                </RadioGroup>
+
+                <!-- Other Pronouns -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilOtherPronouns"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="8dp"
+                    android:hint="Please specify"
+                    android:visibility="gone">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etOtherPronouns"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:imeOptions="actionDone"
+                        android:inputType="text" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Selfie -->
+                <FrameLayout
+                    android:id="@+id/photoContainer"
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/dashed_border">
+
+                    <ImageView
+                        android:id="@+id/capturedPhoto"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:contentDescription="Captured selfie"
+                        android:scaleType="centerCrop"
+                        android:visibility="gone" />
+
+                    <LinearLayout
+                        android:id="@+id/photoPlaceholder"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:contentDescription="Camera icon"
+                            android:src="@drawable/camera_account"
+                            app:tint="?attr/colorOnSurfaceVariant" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:textColor="?attr/colorOnSurfaceVariant" />
+
+                    </LinearLayout>
+
+                </FrameLayout>
+
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:text="Retake"
-                    android:visibility="gone"
-                    app:icon="@drawable/camera_retake_outline" />
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnTakePhoto"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Take Selfie"
+                        app:icon="@drawable/camera_account" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnRetakePhoto"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="Retake"
+                        android:visibility="gone"
+                        app:icon="@drawable/camera_retake_outline" />
+                </LinearLayout>
+
+
             </LinearLayout>
 
 
-        </LinearLayout>
-
-
-    </com.google.android.material.card.MaterialCardView>
-        <!-- Action Buttons -->
+        </com.google.android.material.card.MaterialCardView><!-- Action Buttons -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
