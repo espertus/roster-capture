@@ -1,12 +1,14 @@
 package com.ellenspertus.qroster.model
 
 import com.google.firebase.firestore.Exclude
+import com.google.firebase.firestore.IgnoreExtraProperties
 
+@IgnoreExtraProperties
 data class Student(
     val firstName: String,
     val lastName: String,
     val preferredName: String? = null,
-    val nuid: String,
+    var nuid: String,
     val pronouns: String,
     val selfiePath: String? = null,
     val audioPath: String? = null,

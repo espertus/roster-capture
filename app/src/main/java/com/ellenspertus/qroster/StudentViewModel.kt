@@ -45,46 +45,44 @@ class StudentViewModel : ViewModel() {
                     return@addOnSuccessListener
                 }
 
-                // Split student IDs into chunks as required
-                val chunks = studentIds.chunked(RETRIEVAL_CHUNK_SIZE)
                 val allStudents = mutableListOf<Student>()
-                var remainingQueries = chunks.size
+                var remainingQueries = studentIds.size
 
-                fun completeChunk(newStudents: List<Student> = emptyList()) {
+                fun completeQuery(student: Student?) {
                     synchronized(allStudents) {
-                        allStudents.addAll(newStudents)
+                        student?.let {
+                            allStudents.add(it)
+                        }
                         if (--remainingQueries == 0) {
                             _students.value = allStudents.shuffled()
                         }
                     }
                 }
 
-                chunks.forEach { chunk ->
+                studentIds.forEach { id ->
                     firestore.collection(STUDENTS_COLLECTION)
-                        .whereIn("nuid", chunk)
+                        .document(id)
                         .get()
-                        .addOnSuccessListener { studentDocuments ->
-                            val chunkStudents = studentDocuments.documents.mapNotNull { doc ->
-                                try {
-                                    doc.toObject(Student::class.java)?.apply {
-                                        // Save docId to facilitate updates.
-                                        docId = doc.id
-                                        val student = this
-
-                                        viewModelScope.launch {
-                                            prefetchAudio(student)
-                                        }
+                        .addOnSuccessListener { doc ->
+                            try {
+                                doc.toObject(Student::class.java)?.let {
+                                    it.nuid = id
+                                    completeQuery(it)
+                                    viewModelScope.launch {
+                                        prefetchAudio(it)
                                     }
-                                } catch (e: Exception) {
-                                    Log.e("StudentViewModel", "Error converting doc ${doc.id}", e)
-                                    null
+                                } ?: run {
+                                    // student enrolled but not in collection yet
+                                    completeQuery(null)
                                 }
+                            } catch (e: Exception) {
+                                Log.e(TAG, "Error converting doc ${doc.id}", e)
+                                completeQuery(null)
                             }
-                            completeChunk(chunkStudents)
                         }
                         .addOnFailureListener { e ->
-                            Log.e("StudentViewModel", "Error loading students chunk", e)
-                            completeChunk()
+                            Log.e("StudentViewModel", "Error loading student", e)
+                            completeQuery(null)
                         }
                 }
             }
@@ -200,28 +198,5 @@ class StudentViewModel : ViewModel() {
 
     companion object {
         private const val TAG = "StudentViewModel"
-        // whereIn queries can have up to 10 values
-        private const val RETRIEVAL_CHUNK_SIZE = 10
     }
-
-//    // Track learning progress
-//    fun markStudentAsLearned(position: Int) {
-//        val studentList = _students.value ?: return
-//        if (position < 0 || position >= studentList.size) return
-//
-//        val student = studentList[position]
-//
-//        // Update Firestore with learning progress
-//        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
-//
-//        firestore.collection("userProgress")
-//            .document(userId)
-//            .collection("learnedStudents")
-//            .document(student.nuid)
-//            .set(mapOf(
-//                "learnedAt" to FieldValue.serverTimestamp(),
-//                "studentId" to student.nuid,
-//                "crn" to student.crn
-//            ))
-//    }
 }
