@@ -1,7 +1,9 @@
 package com.ellenspertus.qroster
 
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
 import com.ellenspertus.qroster.BuildConfig
 import com.google.firebase.auth.FirebaseAuth
@@ -20,13 +22,19 @@ class MainActivity : FragmentActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        if (BuildConfig.USE_FIREBASE_EMULATOR) {
-            useEmulator()
-        }
-        // I needed to add this to keep app running on AVD from continuing to
-        // connect to Firebase emulator.
         Firebase.firestore.clearPersistence()
+        if (BuildConfig.USE_FIREBASE_EMULATOR) {
+            if (onAVD()) {
+                useEmulator()
+            } else {
+                Log.w(TAG, "Using Cloud Firebase instead of emulator")
+            }
+        }
     }
+
+    private fun onAVD() =
+        Build.SUPPORTED_ABIS.any { it.startsWith( "x86") }
+
 
     private fun useEmulator() {
         try {
