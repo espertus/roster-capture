@@ -5,6 +5,7 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Bundle
@@ -116,6 +117,9 @@ class AddStudentFragment : Fragment() {
     private fun setupAudioSection() {
         binding.btnRecord.setOnClickListener {
             recordOrStop()
+        }
+        binding.btnPlay.setOnClickListener {
+            playRecording()
         }
         binding.btnDelete.setOnClickListener {
             promptToDeleteRecording()
@@ -281,6 +285,7 @@ class AddStudentFragment : Fragment() {
             // Update UI
             binding.tilRecordedName.hint = "Name recording complete"
             binding.btnRecord.visibility = View.GONE
+            binding.btnPlay.visibility = View.VISIBLE
             binding.btnDelete.visibility = View.VISIBLE
 
         } catch (e: Exception) {
@@ -311,6 +316,28 @@ class AddStudentFragment : Fragment() {
         binding.btnRecord.setImageResource(R.drawable.microphone_outline)
         binding.btnRecord.visibility = View.VISIBLE
         binding.btnDelete.visibility = View.GONE
+        binding.btnPlay.visibility = View.GONE
+    }
+
+    private fun playRecording() {
+        if (audioFilePath == null) {
+            Log.e(TAG, "playRecording() called but no recording")
+            return
+        }
+        try {
+            binding.btnPlay.isEnabled = false
+            MediaPlayer().apply {
+                setDataSource(audioFilePath)
+                setOnCompletionListener {
+                    binding.btnPlay.isEnabled = true
+                }
+                prepare()
+                start()
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Unable to play media file: $e")
+            binding.btnPlay.isEnabled = true
+        }
     }
 
     // Form validation
