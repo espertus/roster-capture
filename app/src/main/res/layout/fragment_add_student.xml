@@ -88,7 +88,7 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Preferred Name and microphone -->
+                <!-- Preferred Name-->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -98,10 +98,8 @@
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/tilPreferredName"
                         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="8dp"
                         android:hint="Preferred Name (if not first name)">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -109,6 +107,35 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:imeOptions="actionNext"
+                            android:inputType="textPersonName" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+
+                <!-- Recording -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="16dp">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilRecordedName"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="8dp"
+                        android:hint="@string/record_name_request" >
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etRecordedName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:imeOptions="actionNext"
+                            android:enabled="false"
                             android:inputType="textPersonName" />
 
                     </com.google.android.material.textfield.TextInputLayout>
@@ -121,41 +148,6 @@
                         android:contentDescription="Record audio"
                         android:src="@drawable/microphone_outline" />
                 </LinearLayout>
-
-                <!-- Recording -->
-                <LinearLayout
-                    android:id="@+id/recordingStatus"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:id="@+id/statusText"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_weight="1"
-                        android:text="@string/record_name_request" />
-
-                    <TextView
-                        android:id="@+id/recordingDuration"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="0:00"
-                        android:visibility="gone" />
-
-                </LinearLayout>
-
-                <ProgressBar
-                    android:id="@+id/audioWaveform"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:layout_marginVertical="16dp"
-                    android:visibility="gone" />
 
                 <!-- Pronouns Section -->
                 <TextView

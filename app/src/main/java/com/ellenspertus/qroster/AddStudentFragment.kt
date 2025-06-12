@@ -240,9 +240,7 @@ class AddStudentFragment : Fragment() {
 
             // Update UI
             binding.buttonRecordDelete.setImageResource(R.drawable.stop_circle_outline)
-            binding.statusText.text = "Recording..."
-            binding.recordingDuration.visibility = View.VISIBLE
-            binding.audioWaveform.visibility = View.VISIBLE
+            binding.tilRecordedName.hint = "Recording..."
 
             // Start duration updates
             updateRecordingDuration()
@@ -264,9 +262,8 @@ class AddStudentFragment : Fragment() {
             recordingHandler.removeCallbacksAndMessages(null)
 
             // Update UI
+            binding.tilRecordedName.hint = "Name recording complete"
             binding.buttonRecordDelete.setImageResource(R.drawable.delete_forever)
-            binding.statusText.text = "Recording saved"
-            binding.audioWaveform.visibility = View.GONE
 
         } catch (e: Exception) {
             Toast.makeText(requireContext(), "Failed to stop recording", Toast.LENGTH_SHORT).show()
@@ -279,8 +276,7 @@ class AddStudentFragment : Fragment() {
             val duration = System.currentTimeMillis() - recordingStartTime
             val seconds = (duration / MILLIS_PER_SECOND) % SECONDS_PER_MINUTE
             val minutes = (duration / MILLIS_PER_SECOND) / SECONDS_PER_MINUTE
-            binding.recordingDuration.text = String.format("%d:%02d", minutes, seconds)
-
+            binding.tilRecordedName.hint = String.format("Recording in progress (%d:%02d)", minutes, seconds)
             recordingHandler.postDelayed({ updateRecordingDuration() }, 100)
         }
     }
@@ -293,10 +289,7 @@ class AddStudentFragment : Fragment() {
         audioFilePath = null
 
         // Reset UI
-        binding.statusText.text = getString(R.string.record_name_request)
         binding.buttonRecordDelete.setImageResource(R.drawable.microphone_outline)
-        binding.recordingDuration.text = "0:00"
-        binding.recordingDuration.visibility = View.GONE
     }
 
     // Form validation
