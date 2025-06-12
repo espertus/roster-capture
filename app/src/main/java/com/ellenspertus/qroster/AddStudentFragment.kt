@@ -113,15 +113,19 @@ class AddStudentFragment : Fragment() {
     }
 
     private fun setupAudioSection() {
-        // Record button
-        binding.buttonRecordDelete.setOnClickListener {
-            if (isRecording) {
-                stopRecording()
-            } else if (audioFilePath == null) {
-                checkAudioPermissionAndRecord()
-            } else {
-                deleteRecording()
-            }
+        binding.btnRecord.setOnClickListener {
+            recordOrStop()
+        }
+        binding.btnDelete.setOnClickListener {
+            deleteRecording()
+        }
+    }
+
+    private fun recordOrStop() {
+        if (isRecording) {
+            stopRecording()
+        } else {
+            checkAudioPermissionAndRecord()
         }
     }
 
@@ -239,7 +243,7 @@ class AddStudentFragment : Fragment() {
             recordingStartTime = System.currentTimeMillis()
 
             // Update UI
-            binding.buttonRecordDelete.setImageResource(R.drawable.stop_circle_outline)
+            binding.btnRecord.setImageResource(R.drawable.stop_circle_outline)
             binding.tilRecordedName.hint = "Recording..."
 
             // Start duration updates
@@ -263,7 +267,8 @@ class AddStudentFragment : Fragment() {
 
             // Update UI
             binding.tilRecordedName.hint = "Name recording complete"
-            binding.buttonRecordDelete.setImageResource(R.drawable.delete_forever)
+            binding.btnRecord.visibility = View.GONE
+            binding.btnDelete.visibility = View.VISIBLE
 
         } catch (e: Exception) {
             Toast.makeText(requireContext(), "Failed to stop recording", Toast.LENGTH_SHORT).show()
@@ -289,7 +294,10 @@ class AddStudentFragment : Fragment() {
         audioFilePath = null
 
         // Reset UI
-        binding.buttonRecordDelete.setImageResource(R.drawable.microphone_outline)
+        binding.tilRecordedName.hint = getString(R.string.record_name_request)
+        binding.btnRecord.setImageResource(R.drawable.microphone_outline)
+        binding.btnRecord.visibility = View.VISIBLE
+        binding.btnDelete.visibility = View.GONE
     }
 
     // Form validation
