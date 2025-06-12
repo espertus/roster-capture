@@ -2,6 +2,7 @@ package com.ellenspertus.qroster
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.MediaRecorder
@@ -117,8 +118,20 @@ class AddStudentFragment : Fragment() {
             recordOrStop()
         }
         binding.btnDelete.setOnClickListener {
-            deleteRecording()
+            promptToDeleteRecording()
         }
+    }
+
+    private fun promptToDeleteRecording() {
+        AlertDialog.Builder(requireContext())
+            .setMessage("Do you really want to delete the recording?")
+            .setPositiveButton("Yes") { _, _ ->
+                deleteRecording()
+            }
+            .setNegativeButton("No") {
+                dialog, _ -> dialog.dismiss()
+            }
+            .show()
     }
 
     private fun recordOrStop() {
