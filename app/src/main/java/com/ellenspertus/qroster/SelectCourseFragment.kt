@@ -114,6 +114,7 @@ class SelectCourseFragment : Fragment() {
     private fun enableToggleButtons(course: Course) {
         binding.modeToggle.apply {
             bottomControlsCard.visibility = View.VISIBLE
+            modeToggleGroup.clearChecked()
             modeToggleGroup.clearOnButtonCheckedListeners()
             modeToggleGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
                 if (isChecked) {
