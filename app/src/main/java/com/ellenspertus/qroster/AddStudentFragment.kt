@@ -26,7 +26,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.ellenspertus.qroster.databinding.FragmentAddStudentBinding
-import com.ellenspertus.qroster.model.Student
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.launch
@@ -485,9 +484,7 @@ class AddStudentFragment : Fragment() {
             val storage = FirebaseStorage.getInstance()
             val storageRef = storage.reference
 
-            val selfiePath = if (photoUri != null) "userdata/$SPECIAL_NUID/selfies/$nuid.jpg" else null
-            val audioPath = if (audioFilePath != null) "userdata/$SPECIAL_NUID/audio/$nuid.m4a" else null
-
+            // Set required fields.
             val studentMap = mutableMapOf(
                 "nuid" to nuid,
                 "crn" to crn,
@@ -495,21 +492,21 @@ class AddStudentFragment : Fragment() {
                 "lastName" to lastName,
                 "pronouns" to pronouns
             )
+
+            // Set option fields if present.
             preferredName?.let {
                 studentMap.put("preferredName", it)
             }
 
-            // Upload photo if exists.
-            if (photoUri != null && selfiePath != null) {
-                val photoRef = storageRef.child(selfiePath)
-                photoRef.putFile(photoUri).await()
+            if (photoUri != null) {
+                val selfiePath = "userdata/$SPECIAL_NUID/selfies/$nuid.jpg"
+                storageRef.child(selfiePath).putFile(photoUri).await()
                 studentMap.put("selfiePath", selfiePath)
             }
 
-            // Upload audio if exists.
-            if (audioFilePath != null && audioPath != null) {
-                val audioFile = File(audioFilePath)
-                val audioUri = Uri.fromFile(audioFile)
+            if (audioFilePath != null) {
+                val audioUri = Uri.fromFile(File(audioFilePath))
+                val audioPath = "userdata/$SPECIAL_NUID/audio/$nuid.m4a"
                 val audioRef = storageRef.child(audioPath)
                 audioRef.putFile(audioUri).await()
                 studentMap.put("audioPath", audioPath)
