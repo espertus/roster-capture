@@ -18,6 +18,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts.*
 import androidx.core.content.ContextCompat
@@ -217,12 +218,7 @@ class AddStudentFragment : Fragment() {
     }
 
     private fun deletePhoto() {
-        binding.apply {
-            capturedPhoto.visibility = View.GONE
-            photoPlaceholder.visibility = View.VISIBLE
-            btnTakePhoto.visibility = View.VISIBLE
-            btnRetakePhoto.visibility = View.GONE
-        }
+        deletePhotoUI()
         deletePhotoFile()
     }
 
@@ -237,6 +233,15 @@ class AddStudentFragment : Fragment() {
             "${requireContext().packageName}.fileprovider",
             file
         )
+
+    private fun deletePhotoUI() {
+        binding.apply {
+            capturedPhoto.visibility = View.GONE
+            photoPlaceholder.visibility = View.VISIBLE
+            btnTakePhoto.visibility = View.VISIBLE
+            btnRetakePhoto.visibility = View.GONE
+        }
+    }
 
     private fun deletePhotoFile() {
         uriToFile(photoUri)?.let { file ->
@@ -334,17 +339,23 @@ class AddStudentFragment : Fragment() {
     }
 
     private fun deleteRecording() {
+        deleteAudioUI()
+        deleteAudioFile()
+    }
+
+    private fun deleteAudioUI() {
         binding.apply {
             audioPlaceholder.visibility = View.VISIBLE
             capturedAudio.visibility = View.GONE
             btnRecord.text = "Record name"
         }
-        deleteAudioFile()
     }
 
     private fun deleteAudioFile() {
-        audioUri?.let {
-            uriToFile(it)?.delete()
+        uriToFile(audioUri)?.let { file ->
+            if (file.exists()) {
+                file.delete()
+            }
         }
         audioUri = null
     }
@@ -397,18 +408,21 @@ class AddStudentFragment : Fragment() {
             etFirstName.text?.clear()
             etLastName.text?.clear()
             rgPronouns.clearCheck()
+            scrollView.smoothScrollTo(0, 0)
         }
         deletePhoto()
         deleteRecording()
     }
 
+    private fun EditText.hasText() = text?.isNotEmpty() == true
+
     private fun requiredFieldsComplete() =
-        binding.etNuid.text?.isNotEmpty() == true &&
-                binding.etFirstName.text?.isNotEmpty() == true &&
-                binding.etLastName.text?.isNotEmpty() == true &&
+        binding.etNuid.hasText() &&
+                binding.etFirstName.hasText() &&
+                binding.etLastName.hasText() &&
                 binding.rgPronouns.checkedRadioButtonId != -1 &&
                 (binding.rgPronouns.checkedRadioButtonId != R.id.rbOther ||
-                        binding.etOtherPronouns.text?.isNotEmpty() == true)
+                        binding.etOtherPronouns.hasText())
 
     // Check if all required fields have been completed.
     private fun validateForm() {
@@ -497,73 +511,71 @@ class AddStudentFragment : Fragment() {
         pronouns: String,
         photoUri: Uri?,
         audioUri: Uri?
-    ): Boolean {
-        return try {
-            val db = FirebaseFirestore.getInstance()
-            val storage = FirebaseStorage.getInstance()
-            val storageRef = storage.reference
+    ) = try {
+        val db = FirebaseFirestore.getInstance()
+        val storage = FirebaseStorage.getInstance()
+        val storageRef = storage.reference
 
-            // Set required fields.
-            val studentMap = mutableMapOf(
-                "nuid" to nuid,
-                "crn" to crn,
-                "firstName" to firstName,
-                "lastName" to lastName,
-                "pronouns" to pronouns
-            )
+        // Set required fields.
+        val studentMap = mutableMapOf(
+            "nuid" to nuid,
+            "crn" to crn,
+            "firstName" to firstName,
+            "lastName" to lastName,
+            "pronouns" to pronouns
+        )
 
-            // Set option fields if present.
-            preferredName?.let {
-                studentMap.put("preferredName", it)
-            }
-            if (photoUri != null) {
-                val selfiePath = "userdata/$SPECIAL_NUID/selfies/$nuid.jpg"
-                storageRef.child(selfiePath).putFile(photoUri).await()
-                studentMap.put("selfiePath", selfiePath)
-            }
-            if (audioUri != null) {
-                val audioPath = "userdata/$SPECIAL_NUID/audio/$nuid.m4a"
-                storageRef.child(audioPath).putFile(audioUri).await()
-                studentMap.put("audioPath", audioPath)
-            }
-
-            db.collection(STUDENTS_RAW_COLLECTION)
-                .document("$SPECIAL_NUID-$crn-$nuid")
-                .set(studentMap)
-                .await()
-
-            Log.d(TAG, "Student added successfully with NUID: $nuid")
-            true
-
-        } catch (e: Exception) {
-            Log.e(TAG, "Error in writeToFirebase", e)
-            false
+        // Set option fields if present.
+        preferredName?.let {
+            studentMap.put("preferredName", it)
         }
+        if (photoUri != null) {
+            val selfiePath = "userdata/$SPECIAL_NUID/selfies/$nuid.jpg"
+            storageRef.child(selfiePath).putFile(photoUri).await()
+            studentMap["selfiePath"] = selfiePath
+        }
+        if (audioUri != null) {
+            val audioPath = "userdata/$SPECIAL_NUID/audio/$nuid.m4a"
+            storageRef.child(audioPath).putFile(audioUri).await()
+            studentMap["audioPath"] = audioPath
+        }
+
+        db.collection(STUDENTS_RAW_COLLECTION)
+            .document("$SPECIAL_NUID-$nuid")
+            .set(studentMap)
+            .await()
+
+        Log.d(TAG, "Student added successfully with NUID: $nuid")
+        true
+
+    } catch (e: Exception) {
+        Log.e(TAG, "Error in writeToFirebase", e)
+        false
     }
 
-    private fun showPermissionDeniedMessage(permission: String) {
-        Toast.makeText(
-            requireContext(),
-            "$permission permission is required for this feature",
-            Toast.LENGTH_LONG
-        ).show()
-    }
+private fun showPermissionDeniedMessage(permission: String) {
+    Toast.makeText(
+        requireContext(),
+        "$permission permission is required for this feature",
+        Toast.LENGTH_LONG
+    ).show()
+}
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        mediaRecorder?.release()
-        recordingHandler.removeCallbacksAndMessages(null)
+override fun onDestroyView() {
+    super.onDestroyView()
+    mediaRecorder?.release()
+    recordingHandler.removeCallbacksAndMessages(null)
 
-        deletePhotoFile()
-        deleteAudioFile()
+    deletePhotoFile()
+    deleteAudioFile()
 
-        _binding = null
-    }
+    _binding = null
+}
 
-    companion object {
-        private const val TAG = "AddStudentFragment"
-        private const val SPECIAL_NUID = "0"
-        private const val MILLIS_PER_SECOND = 1000
-        private const val SECONDS_PER_MINUTE = 60
-    }
+companion object {
+    private const val TAG = "AddStudentFragment"
+    private const val SPECIAL_NUID = "0"
+    private const val MILLIS_PER_SECOND = 1000
+    private const val SECONDS_PER_MINUTE = 60
+}
 }
