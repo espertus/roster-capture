@@ -23,9 +23,15 @@ import androidx.activity.result.contract.ActivityResultContracts.*
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.ellenspertus.qroster.databinding.FragmentAddStudentBinding
+import com.ellenspertus.qroster.model.Student
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.launch
 import java.io.File
+import kotlinx.coroutines.tasks.await
 
 private const val MILLIS_PER_SECOND = 1000
 private const val SECONDS_PER_MINUTE = 60
@@ -374,8 +380,7 @@ class AddStudentFragment : Fragment() {
         }
 
         binding.btnSave.setOnClickListener {
-            saveStudentInfo()
-            clearForm()
+            saveButtonHandler()
         }
     }
 
@@ -394,19 +399,43 @@ class AddStudentFragment : Fragment() {
         deleteRecording()
     }
 
-    // Form validation
-    private fun validateForm() {
-        val isValid = binding.etNuid.text?.isNotEmpty() == true &&
+    private fun requiredFieldsComplete() =
+        binding.etNuid.text?.isNotEmpty() == true &&
                 binding.etFirstName.text?.isNotEmpty() == true &&
                 binding.etLastName.text?.isNotEmpty() == true &&
                 binding.rgPronouns.checkedRadioButtonId != -1 &&
                 (binding.rgPronouns.checkedRadioButtonId != R.id.rbOther ||
                         binding.etOtherPronouns.text?.isNotEmpty() == true)
 
-        binding.btnSave.isEnabled = isValid
+    // Check if all required fields have been completed.
+    private fun validateForm() {
+        binding.btnSave.isEnabled = requiredFieldsComplete()
     }
 
-    // Save student info
+    private fun saveButtonHandler() {
+        // We should be able to get here only if the form has been validated, but make sure.
+        if (!requiredFieldsComplete()) {
+            Toast.makeText(requireContext(), "Please complete required fields.", Toast.LENGTH_LONG).show()
+            Log.e(TAG, "saveButtonHandler() reached with invalid form")
+            return
+        }
+        val missingFiles = mutableListOf<String>()
+        if (audioFilePath == null) {
+            missingFiles.add("name recording")
+        }
+        if (photoFile == null) {
+            missingFiles.add("selfie")
+        }
+        if (missingFiles.isEmpty()) {
+            saveStudentInfo()
+        } else {
+            val missingItems = missingFiles.joinToString(separator = " and ")
+            val prompt =
+                String.format("Are you sure you want to save without providing a $missingItems?")
+            promptForConfirmation(prompt, ::saveStudentInfo)
+        }
+    }
+
     private fun saveStudentInfo() {
         val nuid = binding.etNuid.text.toString()
         val firstName = binding.etFirstName.text.toString()
@@ -421,12 +450,83 @@ class AddStudentFragment : Fragment() {
             else -> ""
         }
 
-        // TODO: Save to your database/repository
-        // For now, just show success message
-        Toast.makeText(requireContext(), "Student information saved!", Toast.LENGTH_SHORT).show()
+        lifecycleScope.launch {
+            val success = writeToFirebase(
+                nuid = nuid,
+                firstName = firstName,
+                lastName = lastName,
+                preferredName = preferredName?.ifEmpty { null },
+                pronouns = pronouns,
+                photoUri = photoUri,
+                audioFilePath = audioFilePath
+            )
 
-        // Navigate back
-        findNavController().navigateUp()
+            if (success) {
+                Toast.makeText(requireContext(), "Student saved successfully!", Toast.LENGTH_SHORT).show()
+                clearForm()
+            } else {
+                Toast.makeText(requireContext(), "Failed to save student", Toast.LENGTH_SHORT).show()
+                binding.btnSave.isEnabled = true
+            }
+        }
+    }
+
+    private suspend fun writeToFirebase(
+        nuid: String,
+        firstName: String,
+        lastName: String,
+        preferredName: String?,
+        pronouns: String,
+        photoUri: Uri?,
+        audioFilePath: String?
+    ): Boolean {
+        return try {
+            val db = FirebaseFirestore.getInstance()
+            val storage = FirebaseStorage.getInstance()
+            val storageRef = storage.reference
+
+            val selfiePath = if (photoUri != null) "userdata/$SPECIAL_NUID/selfies/$nuid.jpg" else null
+            val audioPath = if (audioFilePath != null) "userdata/$SPECIAL_NUID/audio/$nuid.m4a" else null
+
+            val studentMap = mutableMapOf(
+                "nuid" to nuid,
+                "crn" to crn,
+                "firstName" to firstName,
+                "lastName" to lastName,
+                "pronouns" to pronouns
+            )
+            preferredName?.let {
+                studentMap.put("preferredName", it)
+            }
+
+            // Upload photo if exists.
+            if (photoUri != null && selfiePath != null) {
+                val photoRef = storageRef.child(selfiePath)
+                photoRef.putFile(photoUri).await()
+                studentMap.put("selfiePath", selfiePath)
+            }
+
+            // Upload audio if exists.
+            if (audioFilePath != null && audioPath != null) {
+                val audioFile = File(audioFilePath)
+                val audioUri = Uri.fromFile(audioFile)
+                val audioRef = storageRef.child(audioPath)
+                audioRef.putFile(audioUri).await()
+                studentMap.put("audioPath", audioPath)
+            }
+
+            db.collection(STUDENTS_RAW_COLLECTION)
+                .document("$SPECIAL_NUID-$crn-$nuid")
+                .set(studentMap)
+                .await()
+
+            Log.d(TAG, "Student added successfully with NUID: $nuid")
+            true
+
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in writeToFirebase", e)
+            false
+        }
     }
 
     private fun showPermissionDeniedMessage(permission: String) {
@@ -450,5 +550,6 @@ class AddStudentFragment : Fragment() {
 
     companion object {
         const val TAG = "AddStudentFragment"
+        const val SPECIAL_NUID = "0"
     }
 }
