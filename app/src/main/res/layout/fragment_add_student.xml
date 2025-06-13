@@ -258,13 +258,6 @@
                             android:contentDescription="Camera icon"
                             android:src="@drawable/camera_account"
                             app:tint="?attr/colorOnSurfaceVariant" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:textColor="?attr/colorOnSurfaceVariant" />
-
                     </LinearLayout>
 
                 </FrameLayout>
