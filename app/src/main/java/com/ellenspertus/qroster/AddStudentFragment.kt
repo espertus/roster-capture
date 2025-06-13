@@ -36,7 +36,8 @@ class AddStudentFragment : Fragment() {
     private val binding get() = _binding!!
 
     // Photo capture
-    private lateinit var photoUri: Uri
+    private var photoUri: Uri? = null
+    private var photoFile: File? = null
     private val takePictureLauncher = registerForActivityResult(
         StartActivityForResult()
     ) { result ->
@@ -116,17 +117,19 @@ class AddStudentFragment : Fragment() {
         }
     }
 
-    // There is currently no delete button.
-    private fun promptToDeleteRecording() {
+    private fun promptForConfirmation(message: String, action: () -> Unit) {
         AlertDialog.Builder(requireContext())
-            .setMessage("Do you really want to delete the recording?")
-            .setPositiveButton("Yes") { _, _ ->
-                deleteRecording()
-            }
+            .setMessage(message)
+            .setPositiveButton("Yes") { _, _ -> action() }
             .setNegativeButton("No") { dialog, _ ->
                 dialog.dismiss()
             }
             .show()
+    }
+
+    @Suppress("unused") // currently no Delete button
+    private fun promptToDeleteRecording() {
+        promptForConfirmation("Do you really want to delete the recording?", ::deleteRecording)
     }
 
     private fun recordOrStop() {
@@ -165,19 +168,9 @@ class AddStudentFragment : Fragment() {
         binding.etOtherPronouns.addTextChangedListener(textWatcher)
     }
 
-    private fun setupActionButtons() {
-        // TODO: Restrict access
-        binding.btnExit.setOnClickListener {
-            findNavController().navigateUp()
-        }
-
-        binding.btnSave.setOnClickListener {
-            saveStudentInfo()
-        }
-    }
-
     // Photo capture methods
     private fun checkCameraPermissionAndLaunch() {
+        deletePhotoFile()
         when {
             ContextCompat.checkSelfPermission(
                 requireContext(),
@@ -193,30 +186,56 @@ class AddStudentFragment : Fragment() {
     }
 
     private fun launchCamera() {
-        val photoFile =
+        deletePhotoFile()
+        photoFile =
             File(requireContext().filesDir, "student_photo_${System.currentTimeMillis()}.jpg")
-        photoUri = FileProvider.getUriForFile(
-            requireContext(),
-            "${requireContext().packageName}.fileprovider",
-            photoFile
-        )
-
-        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
-            putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
-            putExtra("android.intent.extras.CAMERA_FACING", 1)
-            putExtra("android.intent.extras.LENS_FACING_FRONT", 1)
-            putExtra("android.intent.extra.USE_FRONT_CAMERA", true)
+        photoFile?.let {
+            photoUri = FileProvider.getUriForFile(
+                requireContext(),
+                "${requireContext().packageName}.fileprovider",
+                it
+            )
         }
 
-        takePictureLauncher.launch(intent)
+        photoUri?.let {
+            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
+                putExtra(MediaStore.EXTRA_OUTPUT, it)
+                putExtra("android.intent.extras.CAMERA_FACING", 1)
+                putExtra("android.intent.extras.LENS_FACING_FRONT", 1)
+                putExtra("android.intent.extra.USE_FRONT_CAMERA", true)
+            }
+            takePictureLauncher.launch(intent)
+        }
     }
 
     private fun displayCapturedPhoto() {
-        binding.capturedPhoto.setImageURI(photoUri)
-        binding.capturedPhoto.visibility = View.VISIBLE
-        binding.photoPlaceholder.visibility = View.GONE
-        binding.btnTakePhoto.visibility = View.GONE
-        binding.btnRetakePhoto.visibility = View.VISIBLE
+        binding.apply {
+            capturedPhoto.setImageURI(photoUri)
+            capturedPhoto.visibility = View.VISIBLE
+            photoPlaceholder.visibility = View.GONE
+            btnTakePhoto.visibility = View.GONE
+            btnRetakePhoto.visibility = View.VISIBLE
+        }
+    }
+
+    private fun deletePhoto() {
+        binding.apply {
+            capturedPhoto.visibility = View.GONE
+            photoPlaceholder.visibility = View.VISIBLE
+            btnTakePhoto.visibility = View.VISIBLE
+            btnRetakePhoto.visibility = View.GONE
+        }
+        deletePhotoFile()
+    }
+
+    private fun deletePhotoFile() {
+        photoFile?.let { file ->
+            if (file.exists()) {
+                file.delete()
+                photoFile = null
+                photoUri = null
+            }
+        }
     }
 
     // Audio recording methods
@@ -237,9 +256,7 @@ class AddStudentFragment : Fragment() {
 
     private fun startRecording() {
         try {
-            audioFilePath?.let { path ->
-                File(path).delete()
-            }
+            deleteRecording()
 
             // Create audio file
             val audioFile =
@@ -307,21 +324,23 @@ class AddStudentFragment : Fragment() {
         return String.format("%d:%02d", minutes, seconds)
     }
 
-    // There is currently no Delete button.
     private fun deleteRecording() {
-        // Delete file
+        binding.apply {
+            audioPlaceholder.visibility = View.VISIBLE
+            capturedAudio.visibility = View.GONE
+            btnRecord.text = "Record name"
+        }
+        deleteAudioFile()
+    }
+
+    private fun deleteAudioFile() {
         audioFilePath?.let { path ->
             File(path).delete()
         }
         audioFilePath = null
-
-        // Reset UI
-        binding.audioPlaceholder.visibility = View.VISIBLE
-        binding.capturedAudio.visibility = View.GONE
-        binding.btnRecord.text = "Record name"
     }
 
-    // There is currently no Play button.
+    @Suppress("unused") // currently no Play button
     private fun playRecording() {
         if (audioFilePath == null) {
             Log.e(TAG, "playRecording() called but no recording")
@@ -341,6 +360,38 @@ class AddStudentFragment : Fragment() {
             Log.e(TAG, "Unable to play media file: $e")
             // binding.btnPlay.isEnabled = true
         }
+    }
+
+    // Action buttons: Clear, Exit, Save
+    private fun setupActionButtons() {
+        // TODO: Restrict access
+        binding.btnExit.setOnClickListener {
+            findNavController().navigateUp()
+        }
+
+        binding.btnClear.setOnClickListener {
+            promptToClearForm()
+        }
+
+        binding.btnSave.setOnClickListener {
+            saveStudentInfo()
+            clearForm()
+        }
+    }
+
+    private fun promptToClearForm() {
+        promptForConfirmation("Do you really want to clear the form?", ::clearForm)
+    }
+
+    private fun clearForm() {
+        binding.apply {
+            etNuid.text?.clear()
+            etFirstName.text?.clear()
+            etLastName.text?.clear()
+            rgPronouns.clearCheck()
+        }
+        deletePhoto()
+        deleteRecording()
     }
 
     // Form validation
@@ -390,6 +441,10 @@ class AddStudentFragment : Fragment() {
         super.onDestroyView()
         mediaRecorder?.release()
         recordingHandler.removeCallbacksAndMessages(null)
+
+        deletePhotoFile()
+        deleteAudioFile()
+
         _binding = null
     }
 
