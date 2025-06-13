@@ -279,15 +279,6 @@
                         android:layout_height="wrap_content"
                         android:text="Record name"
                         app:icon="@drawable/microphone_outline" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnPlay"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="Play"
-                        android:visibility="gone"
-                        app:icon="@drawable/play_circle_outline" />
                 </LinearLayout>
 
             </LinearLayout>

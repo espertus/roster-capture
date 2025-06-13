@@ -19,7 +19,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.*
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -115,14 +114,9 @@ class AddStudentFragment : Fragment() {
         binding.btnRecord.setOnClickListener {
             recordOrStop()
         }
-        binding.btnPlay.setOnClickListener {
-            playRecording()
-        }
-//        binding.btnDelete.setOnClickListener {
-//            promptToDeleteRecording()
-//        }
     }
 
+    // There is currently no delete button.
     private fun promptToDeleteRecording() {
         AlertDialog.Builder(requireContext())
             .setMessage("Do you really want to delete the recording?")
@@ -243,6 +237,10 @@ class AddStudentFragment : Fragment() {
 
     private fun startRecording() {
         try {
+            audioFilePath?.let { path ->
+                File(path).delete()
+            }
+
             // Create audio file
             val audioFile =
                 File(requireContext().filesDir, "student_audio_${System.currentTimeMillis()}.m4a")
@@ -287,13 +285,8 @@ class AddStudentFragment : Fragment() {
             recordingHandler.removeCallbacksAndMessages(null)
 
             // Update UI
-//            binding.tilRecordedName.hint = "Name recording complete"
             binding.capturedAudio.text = String.format("Name recorded (%s)", makeDurationString())
-
-            binding.btnRecord.visibility = View.GONE
-            binding.btnPlay.visibility = View.VISIBLE
-//            binding.btnDelete.visibility = View.VISIBLE
-
+            binding.btnRecord.text = "Re-record name"
         } catch (e: Exception) {
             Toast.makeText(requireContext(), "Failed to stop recording", Toast.LENGTH_SHORT).show()
             Log.e(TAG, "Stop recording failed", e)
@@ -302,7 +295,6 @@ class AddStudentFragment : Fragment() {
 
     private fun updateRecordingDuration() {
         if (isRecording) {
-            // TODO: Change background color?
             binding.capturedAudio.text = String.format("Recording %s...", makeDurationString())
             recordingHandler.postDelayed({ updateRecordingDuration() }, 100)
         }
@@ -315,6 +307,7 @@ class AddStudentFragment : Fragment() {
         return String.format("%d:%02d", minutes, seconds)
     }
 
+    // There is currently no Delete button.
     private fun deleteRecording() {
         // Delete file
         audioFilePath?.let { path ->
@@ -325,28 +318,28 @@ class AddStudentFragment : Fragment() {
         // Reset UI
         binding.audioPlaceholder.visibility = View.VISIBLE
         binding.capturedAudio.visibility = View.GONE
-        binding.btnRecord.visibility = View.VISIBLE
-        binding.btnPlay.visibility = View.GONE
+        binding.btnRecord.text = "Record name"
     }
 
+    // There is currently no Play button.
     private fun playRecording() {
         if (audioFilePath == null) {
             Log.e(TAG, "playRecording() called but no recording")
             return
         }
         try {
-            binding.btnPlay.isEnabled = false
+            // binding.btnPlay.isEnabled = false
             MediaPlayer().apply {
                 setDataSource(audioFilePath)
                 setOnCompletionListener {
-                    binding.btnPlay.isEnabled = true
+                    // binding.btnPlay.isEnabled = true
                 }
                 prepare()
                 start()
             }
         } catch (e: Exception) {
             Log.e(TAG, "Unable to play media file: $e")
-            binding.btnPlay.isEnabled = true
+            // binding.btnPlay.isEnabled = true
         }
     }
 
