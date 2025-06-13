@@ -238,26 +238,23 @@
                     android:layout_width="200dp"
                     android:layout_height="40dp"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="20dp"
-                    android:background="@drawable/dashed_border">
+                    android:layout_marginTop="20dp">
 
                     <LinearLayout
                         android:id="@+id/audioPlaceholder"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:background="@drawable/dashed_border"
                         android:gravity="center"
                         android:orientation="vertical">
 
-                        <ImageView
+                        <TextView
                             android:id="@+id/capturedAudio"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:layout_gravity="center"
-                            android:contentDescription="Captured audio"
-                            android:visibility="gone"
-                            android:scaleType="centerInside"
-                            android:src="@drawable/chat_cropped"
-                            />
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/solid_border"
+                            android:gravity="center"
+                            android:visibility="gone" />
 
                         <ImageView
                             android:id="@+id/noAudio"

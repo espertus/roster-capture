@@ -39,7 +39,7 @@ class AddStudentFragment : Fragment() {
     // Photo capture
     private lateinit var photoUri: Uri
     private val takePictureLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
+        StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             displayCapturedPhoto()
@@ -129,8 +129,8 @@ class AddStudentFragment : Fragment() {
             .setPositiveButton("Yes") { _, _ ->
                 deleteRecording()
             }
-            .setNegativeButton("No") {
-                dialog, _ -> dialog.dismiss()
+            .setNegativeButton("No") { dialog, _ ->
+                dialog.dismiss()
             }
             .show()
     }
@@ -191,6 +191,7 @@ class AddStudentFragment : Fragment() {
             ) == PackageManager.PERMISSION_GRANTED -> {
                 launchCamera()
             }
+
             else -> {
                 cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
             }
@@ -198,7 +199,8 @@ class AddStudentFragment : Fragment() {
     }
 
     private fun launchCamera() {
-        val photoFile = File(requireContext().filesDir, "student_photo_${System.currentTimeMillis()}.jpg")
+        val photoFile =
+            File(requireContext().filesDir, "student_photo_${System.currentTimeMillis()}.jpg")
         photoUri = FileProvider.getUriForFile(
             requireContext(),
             "${requireContext().packageName}.fileprovider",
@@ -232,6 +234,7 @@ class AddStudentFragment : Fragment() {
             ) == PackageManager.PERMISSION_GRANTED -> {
                 startRecording()
             }
+
             else -> {
                 audioPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
             }
@@ -241,7 +244,8 @@ class AddStudentFragment : Fragment() {
     private fun startRecording() {
         try {
             // Create audio file
-            val audioFile = File(requireContext().filesDir, "student_audio_${System.currentTimeMillis()}.m4a")
+            val audioFile =
+                File(requireContext().filesDir, "student_audio_${System.currentTimeMillis()}.m4a")
             audioFilePath = audioFile.absolutePath
 
             // Initialize MediaRecorder
@@ -258,6 +262,8 @@ class AddStudentFragment : Fragment() {
             recordingStartTime = System.currentTimeMillis()
 
             // Update UI
+            binding.capturedAudio.visibility = View.VISIBLE
+            binding.noAudio.visibility = View.GONE
             binding.btnRecord.text = "Stop recording"
             binding.btnRecord.setIconResource(R.drawable.stop_circle_outline)
 
@@ -282,8 +288,8 @@ class AddStudentFragment : Fragment() {
 
             // Update UI
 //            binding.tilRecordedName.hint = "Name recording complete"
-            binding.capturedAudio.visibility = View.VISIBLE
-            binding.noAudio.visibility = View.GONE
+            binding.capturedAudio.text = String.format("Name recorded (%s)", makeDurationString())
+
             binding.btnRecord.visibility = View.GONE
             binding.btnPlay.visibility = View.VISIBLE
 //            binding.btnDelete.visibility = View.VISIBLE
@@ -294,15 +300,19 @@ class AddStudentFragment : Fragment() {
         }
     }
 
-    // This currently doesn't do anything.
     private fun updateRecordingDuration() {
         if (isRecording) {
             // TODO: Change background color?
-            val duration = System.currentTimeMillis() - recordingStartTime
-            val seconds = (duration / MILLIS_PER_SECOND) % SECONDS_PER_MINUTE
-            val minutes = (duration / MILLIS_PER_SECOND) / SECONDS_PER_MINUTE
-           recordingHandler.postDelayed({ updateRecordingDuration() }, 100)
+            binding.capturedAudio.text = String.format("Recording %s...", makeDurationString())
+            recordingHandler.postDelayed({ updateRecordingDuration() }, 100)
         }
+    }
+
+    private fun makeDurationString(): String {
+        val duration = System.currentTimeMillis() - recordingStartTime
+        val seconds = (duration / MILLIS_PER_SECOND) % SECONDS_PER_MINUTE
+        val minutes = (duration / MILLIS_PER_SECOND) / SECONDS_PER_MINUTE
+        return String.format("%d:%02d", minutes, seconds)
     }
 
     private fun deleteRecording() {
@@ -313,6 +323,7 @@ class AddStudentFragment : Fragment() {
         audioFilePath = null
 
         // Reset UI
+        binding.audioPlaceholder.visibility = View.VISIBLE
         binding.capturedAudio.visibility = View.GONE
         binding.btnRecord.visibility = View.VISIBLE
         binding.btnPlay.visibility = View.GONE
