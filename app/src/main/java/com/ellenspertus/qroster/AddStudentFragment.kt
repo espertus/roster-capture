@@ -32,9 +32,6 @@ import kotlinx.coroutines.launch
 import java.io.File
 import kotlinx.coroutines.tasks.await
 
-private const val MILLIS_PER_SECOND = 1000
-private const val SECONDS_PER_MINUTE = 60
-
 class AddStudentFragment : Fragment() {
     private lateinit var crn: String
     private var _binding: FragmentAddStudentBinding? = null
@@ -42,7 +39,6 @@ class AddStudentFragment : Fragment() {
 
     // Photo capture
     private var photoUri: Uri? = null
-    private var photoFile: File? = null
     private val takePictureLauncher = registerForActivityResult(
         StartActivityForResult()
     ) { result ->
@@ -53,7 +49,7 @@ class AddStudentFragment : Fragment() {
 
     // Audio recording
     private var mediaRecorder: MediaRecorder? = null
-    private var audioFilePath: String? = null
+    private var audioUri: Uri? = null
     private var isRecording = false
     private var recordingStartTime = 0L
     private val recordingHandler = Handler(Looper.getMainLooper())
@@ -192,25 +188,22 @@ class AddStudentFragment : Fragment() {
 
     private fun launchCamera() {
         deletePhotoFile()
-        photoFile =
-            File(requireContext().filesDir, "student_photo_${System.currentTimeMillis()}.jpg")
-        photoFile?.let {
-            photoUri = FileProvider.getUriForFile(
-                requireContext(),
-                "${requireContext().packageName}.fileprovider",
-                it
-            )
-        }
 
-        photoUri?.let {
-            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
-                putExtra(MediaStore.EXTRA_OUTPUT, it)
-                putExtra("android.intent.extras.CAMERA_FACING", 1)
-                putExtra("android.intent.extras.LENS_FACING_FRONT", 1)
-                putExtra("android.intent.extra.USE_FRONT_CAMERA", true)
-            }
-            takePictureLauncher.launch(intent)
+        val photoFile =
+            File(requireContext().filesDir, "student_photo_${System.currentTimeMillis()}.jpg")
+        photoUri = FileProvider.getUriForFile(
+            requireContext(),
+            "${requireContext().packageName}.fileprovider",
+            photoFile
+        )
+
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
+            putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
+            putExtra("android.intent.extras.CAMERA_FACING", 1)
+            putExtra("android.intent.extras.LENS_FACING_FRONT", 1)
+            putExtra("android.intent.extra.USE_FRONT_CAMERA", true)
         }
+        takePictureLauncher.launch(intent)
     }
 
     private fun displayCapturedPhoto() {
@@ -233,11 +226,22 @@ class AddStudentFragment : Fragment() {
         deletePhotoFile()
     }
 
+    private fun uriToFile(uri: Uri?): File? =
+        uri?.lastPathSegment?.let { fileName ->
+            File(requireContext().filesDir, fileName)
+        }
+
+    private fun fileToUri(file: File): Uri =
+        FileProvider.getUriForFile(
+            requireContext(),
+            "${requireContext().packageName}.fileprovider",
+            file
+        )
+
     private fun deletePhotoFile() {
-        photoFile?.let { file ->
+        uriToFile(photoUri)?.let { file ->
             if (file.exists()) {
                 file.delete()
-                photoFile = null
                 photoUri = null
             }
         }
@@ -266,14 +270,14 @@ class AddStudentFragment : Fragment() {
             // Create audio file
             val audioFile =
                 File(requireContext().filesDir, "student_audio_${System.currentTimeMillis()}.m4a")
-            audioFilePath = audioFile.absolutePath
+            audioUri = fileToUri(audioFile)
 
             // Initialize MediaRecorder
             mediaRecorder = MediaRecorder(requireContext()).apply {
                 setAudioSource(MediaRecorder.AudioSource.MIC)
                 setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
                 setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
-                setOutputFile(audioFilePath)
+                setOutputFile(audioFile.absolutePath)
                 prepare()
                 start()
             }
@@ -339,31 +343,31 @@ class AddStudentFragment : Fragment() {
     }
 
     private fun deleteAudioFile() {
-        audioFilePath?.let { path ->
-            File(path).delete()
+        audioUri?.let {
+            uriToFile(it)?.delete()
         }
-        audioFilePath = null
+        audioUri = null
     }
 
     @Suppress("unused") // currently no Play button
     private fun playRecording() {
-        if (audioFilePath == null) {
-            Log.e(TAG, "playRecording() called but no recording")
-            return
-        }
-        try {
-            // binding.btnPlay.isEnabled = false
-            MediaPlayer().apply {
-                setDataSource(audioFilePath)
-                setOnCompletionListener {
-                    // binding.btnPlay.isEnabled = true
+        audioUri?.let {
+            try {
+                // binding.btnPlay.isEnabled = false
+                MediaPlayer().apply {
+                    setDataSource(uriToFile(it)?.absolutePath)
+                    setOnCompletionListener {
+                        // binding.btnPlay.isEnabled = true
+                    }
+                    prepare()
+                    start()
                 }
-                prepare()
-                start()
+            } catch (e: Exception) {
+                Log.e(TAG, "Unable to play media file: $e")
+                // binding.btnPlay.isEnabled = true
             }
-        } catch (e: Exception) {
-            Log.e(TAG, "Unable to play media file: $e")
-            // binding.btnPlay.isEnabled = true
+        } ?: run {
+            Log.e(TAG, "playRecording() called but no recording")
         }
     }
 
@@ -414,15 +418,20 @@ class AddStudentFragment : Fragment() {
     private fun saveButtonHandler() {
         // We should be able to get here only if the form has been validated, but make sure.
         if (!requiredFieldsComplete()) {
-            Toast.makeText(requireContext(), "Please complete required fields.", Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                requireContext(),
+                "Please complete required fields.",
+                Toast.LENGTH_LONG
+            )
+                .show()
             Log.e(TAG, "saveButtonHandler() reached with invalid form")
             return
         }
         val missingFiles = mutableListOf<String>()
-        if (audioFilePath == null) {
+        if (audioUri == null) {
             missingFiles.add("name recording")
         }
-        if (photoFile == null) {
+        if (photoUri == null) {
             missingFiles.add("selfie")
         }
         if (missingFiles.isEmpty()) {
@@ -457,14 +466,24 @@ class AddStudentFragment : Fragment() {
                 preferredName = preferredName?.ifEmpty { null },
                 pronouns = pronouns,
                 photoUri = photoUri,
-                audioFilePath = audioFilePath
+                audioUri = audioUri,
             )
 
             if (success) {
-                Toast.makeText(requireContext(), "Student saved successfully!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    "Student saved successfully!",
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
                 clearForm()
             } else {
-                Toast.makeText(requireContext(), "Failed to save student", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    "Failed to save student",
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
                 binding.btnSave.isEnabled = true
             }
         }
@@ -477,7 +496,7 @@ class AddStudentFragment : Fragment() {
         preferredName: String?,
         pronouns: String,
         photoUri: Uri?,
-        audioFilePath: String?
+        audioUri: Uri?
     ): Boolean {
         return try {
             val db = FirebaseFirestore.getInstance()
@@ -497,18 +516,14 @@ class AddStudentFragment : Fragment() {
             preferredName?.let {
                 studentMap.put("preferredName", it)
             }
-
             if (photoUri != null) {
                 val selfiePath = "userdata/$SPECIAL_NUID/selfies/$nuid.jpg"
                 storageRef.child(selfiePath).putFile(photoUri).await()
                 studentMap.put("selfiePath", selfiePath)
             }
-
-            if (audioFilePath != null) {
-                val audioUri = Uri.fromFile(File(audioFilePath))
+            if (audioUri != null) {
                 val audioPath = "userdata/$SPECIAL_NUID/audio/$nuid.m4a"
-                val audioRef = storageRef.child(audioPath)
-                audioRef.putFile(audioUri).await()
+                storageRef.child(audioPath).putFile(audioUri).await()
                 studentMap.put("audioPath", audioPath)
             }
 
@@ -546,7 +561,9 @@ class AddStudentFragment : Fragment() {
     }
 
     companion object {
-        const val TAG = "AddStudentFragment"
-        const val SPECIAL_NUID = "0"
+        private const val TAG = "AddStudentFragment"
+        private const val SPECIAL_NUID = "0"
+        private const val MILLIS_PER_SECOND = 1000
+        private const val SECONDS_PER_MINUTE = 60
     }
 }
