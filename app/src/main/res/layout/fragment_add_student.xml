@@ -92,8 +92,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="16dp">
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal">
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/tilPreferredName"
@@ -111,60 +111,6 @@
 
                     </com.google.android.material.textfield.TextInputLayout>
 
-                </LinearLayout>
-
-
-                <!-- Recording -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="16dp">
-
-                    <ImageButton
-                        android:id="@+id/btnRecord"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:contentDescription="Record audio"
-                        android:src="@drawable/microphone_outline" />
-
-                    <ImageButton
-                        android:id="@+id/btnPlay"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:contentDescription="Play audio"
-                        android:visibility="gone"
-                        android:src="@drawable/play_circle_outline" />
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/tilRecordedName"
-                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="8dp"
-                        android:hint="@string/record_name_request" >
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etRecordedName"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:imeOptions="actionNext"
-                            android:enabled="false"
-                            android:inputType="textPersonName" />
-
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <ImageButton
-                        android:id="@+id/btnDelete"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:visibility="gone"
-                        android:contentDescription="Delete audio"
-                        android:src="@drawable/delete_forever" />
                 </LinearLayout>
 
                 <!-- Pronouns Section -->
@@ -259,7 +205,6 @@
                             android:src="@drawable/camera_account"
                             app:tint="?attr/colorOnSurfaceVariant" />
                     </LinearLayout>
-
                 </FrameLayout>
 
                 <LinearLayout
@@ -273,7 +218,7 @@
                         android:id="@+id/btnTakePhoto"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Take Selfie"
+                        android:text="Take selfie"
                         app:icon="@drawable/camera_account" />
 
                     <com.google.android.material.button.MaterialButton
@@ -287,11 +232,71 @@
                         app:icon="@drawable/camera_retake_outline" />
                 </LinearLayout>
 
+                <!-- Audio -->
+                <FrameLayout
+                    android:id="@+id/audioContainer"
+                    android:layout_width="200dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/dashed_border">
+
+                    <LinearLayout
+                        android:id="@+id/audioPlaceholder"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:id="@+id/capturedAudio"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_gravity="center"
+                            android:contentDescription="Captured audio"
+                            android:visibility="gone"
+                            android:scaleType="centerInside"
+                            android:src="@drawable/chat_cropped"
+                            />
+
+                        <ImageView
+                            android:id="@+id/noAudio"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:contentDescription="Microphone icon"
+                            android:src="@drawable/microphone_outline"
+                            app:tint="?attr/colorOnSurfaceVariant" />
+                    </LinearLayout>
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnRecord"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Record name"
+                        app:icon="@drawable/microphone_outline" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnPlay"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="Play"
+                        android:visibility="gone"
+                        app:icon="@drawable/play_circle_outline" />
+                </LinearLayout>
 
             </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-
-        </com.google.android.material.card.MaterialCardView><!-- Action Buttons -->
+        <!-- Action Buttons -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

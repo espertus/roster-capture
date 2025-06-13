@@ -118,9 +118,9 @@ class AddStudentFragment : Fragment() {
         binding.btnPlay.setOnClickListener {
             playRecording()
         }
-        binding.btnDelete.setOnClickListener {
-            promptToDeleteRecording()
-        }
+//        binding.btnDelete.setOnClickListener {
+//            promptToDeleteRecording()
+//        }
     }
 
     private fun promptToDeleteRecording() {
@@ -258,8 +258,8 @@ class AddStudentFragment : Fragment() {
             recordingStartTime = System.currentTimeMillis()
 
             // Update UI
-            binding.btnRecord.setImageResource(R.drawable.stop_circle_outline)
-            binding.tilRecordedName.hint = "Recording..."
+            binding.btnRecord.text = "Stop recording"
+            binding.btnRecord.setIconResource(R.drawable.stop_circle_outline)
 
             // Start duration updates
             updateRecordingDuration()
@@ -281,10 +281,12 @@ class AddStudentFragment : Fragment() {
             recordingHandler.removeCallbacksAndMessages(null)
 
             // Update UI
-            binding.tilRecordedName.hint = "Name recording complete"
+//            binding.tilRecordedName.hint = "Name recording complete"
+            binding.capturedAudio.visibility = View.VISIBLE
+            binding.noAudio.visibility = View.GONE
             binding.btnRecord.visibility = View.GONE
             binding.btnPlay.visibility = View.VISIBLE
-            binding.btnDelete.visibility = View.VISIBLE
+//            binding.btnDelete.visibility = View.VISIBLE
 
         } catch (e: Exception) {
             Toast.makeText(requireContext(), "Failed to stop recording", Toast.LENGTH_SHORT).show()
@@ -292,13 +294,14 @@ class AddStudentFragment : Fragment() {
         }
     }
 
+    // This currently doesn't do anything.
     private fun updateRecordingDuration() {
         if (isRecording) {
+            // TODO: Change background color?
             val duration = System.currentTimeMillis() - recordingStartTime
             val seconds = (duration / MILLIS_PER_SECOND) % SECONDS_PER_MINUTE
             val minutes = (duration / MILLIS_PER_SECOND) / SECONDS_PER_MINUTE
-            binding.tilRecordedName.hint = String.format("Recording in progress (%d:%02d)", minutes, seconds)
-            recordingHandler.postDelayed({ updateRecordingDuration() }, 100)
+           recordingHandler.postDelayed({ updateRecordingDuration() }, 100)
         }
     }
 
@@ -310,10 +313,8 @@ class AddStudentFragment : Fragment() {
         audioFilePath = null
 
         // Reset UI
-        binding.tilRecordedName.hint = getString(R.string.record_name_request)
-        binding.btnRecord.setImageResource(R.drawable.microphone_outline)
+        binding.capturedAudio.visibility = View.GONE
         binding.btnRecord.visibility = View.VISIBLE
-        binding.btnDelete.visibility = View.GONE
         binding.btnPlay.visibility = View.GONE
     }
 
