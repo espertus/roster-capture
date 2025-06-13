@@ -98,17 +98,14 @@ class AddStudentFragment : Fragment() {
     }
 
     private fun setupPhotoSection() {
-        // Photo container click listener
         binding.photoContainer.setOnClickListener {
             checkCameraPermissionAndLaunch()
         }
 
-        // Take photo button
         binding.btnTakePhoto.setOnClickListener {
             checkCameraPermissionAndLaunch()
         }
 
-        // Retake photo button
         binding.btnRetakePhoto.setOnClickListener {
             checkCameraPermissionAndLaunch()
         }
@@ -222,6 +219,7 @@ class AddStudentFragment : Fragment() {
         binding.capturedPhoto.setImageURI(photoUri)
         binding.capturedPhoto.visibility = View.VISIBLE
         binding.photoPlaceholder.visibility = View.GONE
+        binding.btnTakePhoto.visibility = View.GONE
         binding.btnRetakePhoto.visibility = View.VISIBLE
     }
 
