@@ -280,6 +280,15 @@
                         android:layout_height="wrap_content"
                         android:text="Record name"
                         app:icon="@drawable/microphone_outline" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnRerecord"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Re-record name"
+                        android:visibility="gone"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        app:icon="@drawable/microphone_outline" />
                 </LinearLayout>
 
             </LinearLayout>

@@ -117,6 +117,10 @@ class AddStudentFragment : Fragment() {
         binding.btnRecord.setOnClickListener {
             recordOrStop()
         }
+
+        binding.btnRerecord.setOnClickListener {
+            recordOrStop()
+        }
     }
 
     private fun promptForConfirmation(message: String, action: () -> Unit) {
@@ -270,7 +274,7 @@ class AddStudentFragment : Fragment() {
 
     private fun startRecording() {
         try {
-            deleteRecording()
+            deleteAudioFile()
 
             // Create audio file
             val audioFile =
@@ -291,10 +295,16 @@ class AddStudentFragment : Fragment() {
             recordingStartTime = System.currentTimeMillis()
 
             // Update UI
-            binding.capturedAudio.visibility = View.VISIBLE
-            binding.noAudio.visibility = View.GONE
-            binding.btnRecord.text = "Stop recording"
-            binding.btnRecord.setIconResource(R.drawable.stop_circle_outline)
+            binding.apply {
+                capturedAudio.visibility = View.VISIBLE
+                noAudio.visibility = View.GONE
+                // Always use the Record button for Stop Recording
+                // because it is weighted more heavily than Rerecord.
+                btnRecord.text = "Stop recording"
+                btnRecord.setIconResource(R.drawable.stop_circle_outline)
+                btnRecord.visibility = View.VISIBLE
+                btnRerecord.visibility = View.GONE
+            }
 
             // Start duration updates
             updateRecordingDuration()
@@ -316,8 +326,17 @@ class AddStudentFragment : Fragment() {
             recordingHandler.removeCallbacksAndMessages(null)
 
             // Update UI
-            binding.capturedAudio.text = String.format("Name recorded (%s)", makeDurationString())
-            binding.btnRecord.text = "Re-record name"
+            binding.apply {
+                capturedAudio.text = String.format("Name recorded (%s)", makeDurationString())
+
+                btnRecord.visibility = View.GONE
+                // Restore text and icon in case button is shown again later.
+                btnRecord.text = "Record name"
+                btnRecord.setIconResource(R.drawable.microphone_outline)
+
+                btnRerecord.visibility = View.VISIBLE
+            }
+
         } catch (e: Exception) {
             Toast.makeText(requireContext(), "Failed to stop recording", Toast.LENGTH_SHORT).show()
             Log.e(TAG, "Stop recording failed", e)
@@ -345,9 +364,10 @@ class AddStudentFragment : Fragment() {
 
     private fun deleteAudioUI() {
         binding.apply {
-            audioPlaceholder.visibility = View.VISIBLE
             capturedAudio.visibility = View.GONE
-            btnRecord.text = "Record name"
+            noAudio.visibility = View.VISIBLE
+            btnRecord.visibility = View.VISIBLE
+            btnRerecord.visibility = View.GONE
         }
     }
 
@@ -553,29 +573,29 @@ class AddStudentFragment : Fragment() {
         false
     }
 
-private fun showPermissionDeniedMessage(permission: String) {
-    Toast.makeText(
-        requireContext(),
-        "$permission permission is required for this feature",
-        Toast.LENGTH_LONG
-    ).show()
-}
+    private fun showPermissionDeniedMessage(permission: String) {
+        Toast.makeText(
+            requireContext(),
+            "$permission permission is required for this feature",
+            Toast.LENGTH_LONG
+        ).show()
+    }
 
-override fun onDestroyView() {
-    super.onDestroyView()
-    mediaRecorder?.release()
-    recordingHandler.removeCallbacksAndMessages(null)
+    override fun onDestroyView() {
+        super.onDestroyView()
+        mediaRecorder?.release()
+        recordingHandler.removeCallbacksAndMessages(null)
 
-    deletePhotoFile()
-    deleteAudioFile()
+        deletePhotoFile()
+        deleteAudioFile()
 
-    _binding = null
-}
+        _binding = null
+    }
 
-companion object {
-    private const val TAG = "AddStudentFragment"
-    private const val SPECIAL_NUID = "0"
-    private const val MILLIS_PER_SECOND = 1000
-    private const val SECONDS_PER_MINUTE = 60
-}
+    companion object {
+        private const val TAG = "AddStudentFragment"
+        private const val SPECIAL_NUID = "0"
+        private const val MILLIS_PER_SECOND = 1000
+        private const val SECONDS_PER_MINUTE = 60
+    }
 }
