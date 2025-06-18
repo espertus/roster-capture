@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.navigation.safe.args)
-    alias(libs.plugins.google.services)
 }
 
 android {
@@ -45,23 +44,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.auth.ktx)
-    implementation(libs.firebase.database.ktx)
-    implementation(libs.firebase.storage.ktx)
-    implementation(libs.firebase.ui.auth)
-    implementation(libs.firebase.ui.database)
-    implementation(libs.play.services.auth)
-    implementation(libs.firebase.firestore.ktx)
-    implementation(libs.glide)
-    implementation(libs.viewpager2)
-    implementation(libs.swipe.refresh.layout)
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.ui)
     implementation(libs.anki.android)
-
-    // Test dependencies
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
 }
