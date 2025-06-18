@@ -13,10 +13,10 @@ class AnkiBackend(private val context: Context): Backend {
     private var deckId = 0L
 
     init {
-        api.findModelId(MODEL, true)?.let {
+        api.findModelId(ROSTER_MODEL, true)?.let {
             modelId = it
         } ?: Log.e(TAG, "Unable to retrieve modelId")
-        api.findDeckIdByName(DECK_NAME, true)?.let {
+        api.findDeckIdByName(ROSTER_DECK_NAME, true)?.let {
             deckId = it
         } ?: Log.e(TAG, "Unable to retrieve deckId")
         if (modelId == 0L || deckId == 0L) {
@@ -38,20 +38,20 @@ class AnkiBackend(private val context: Context): Backend {
         photoUri: Uri?,
         audioUri: Uri?
     ): Boolean {
-        val fields: Array<String?> = Array(FIELDS.size) { "" }
+        val fields: Array<String?> = Array(ROSTER_FIELDS.size) { "" }
 
-        require(FIELDS[0] == NAME_FIELD)
+        require(ROSTER_FIELDS[0] == ROSTER_NAME_FIELD)
         fields[0] = if (preferredName != null)
             "$preferredName ($firstName) $lastName"
         else
             "$firstName $lastName"
 
-        require(FIELDS[1] == SELFIE_FIELD)
+        require(ROSTER_FIELDS[1] == ROSTER_SELFIE_FIELD)
         fields[1] = photoUri?.let {
             addImageToAnki(it)
         }
 
-        require(FIELDS[2] == AUDIO_FIELD)
+        require(ROSTER_FIELDS[2] == ROSTER_AUDIO_FIELD)
         // TODO: Add audio
 
         // TODO: Remove duplicates
@@ -100,32 +100,30 @@ class AnkiBackend(private val context: Context): Backend {
     companion object {
         private const val TAG = "AnkiWrapper"
 
-        private const val ADD_PERM_REQUEST = 0 // arbitrary constant
-
-        private const val DECK_NAME = "roster" // a deck is a group of cards
-        private const val MODEL_NAME = "com.ellenspertus"
-        private const val NAME_FIELD = "name"
-        private const val SELFIE_FIELD = "selfiePath"
-        private const val AUDIO_FIELD = "audioPath"
-        private const val SORT_FIELD = 0 // name
-        private const val CARD_NAME = "Photo->Name"
+        private const val ROSTER_DECK_NAME = "Roster"
+        private const val ROSTER_MODEL_NAME = "com.ellenspertus.roster"
+        private const val ROSTER_NAME_FIELD = "name"
+        private const val ROSTER_SELFIE_FIELD = "selfiePath"
+        private const val ROSTER_AUDIO_FIELD = "audioPath"
+        private const val ROSTER_SORT_FIELD = 0 // name
+        private const val ROSTER_CARD_NAME = "Photo->Name"
         private val CSS: String? = null
-        private const val QUESTION_FORMAT = "{{selfiePath}}"
-        private const val ANSWER_FORMAT = "{{name}}"
-        private val FIELDS = arrayOf(NAME_FIELD, SELFIE_FIELD, AUDIO_FIELD)
-        private val CARD_NAMES = arrayOf(CARD_NAME)
-        private val QUESTION_FORMATS = arrayOf(QUESTION_FORMAT)
-        private val ANSWER_FORMATS = arrayOf(ANSWER_FORMAT)
+        private const val ROSTER_QUESTION_FORMAT = "{{selfiePath}}"
+        private const val ROSTER_ANSWER_FORMAT = "{{name}}"
+        private val ROSTER_FIELDS = arrayOf(ROSTER_NAME_FIELD, ROSTER_SELFIE_FIELD, ROSTER_AUDIO_FIELD)
+        private val ROSTER_CARD_NAMES = arrayOf(ROSTER_CARD_NAME)
+        private val ROSTER_QUESTION_FORMATS = arrayOf(ROSTER_QUESTION_FORMAT)
+        private val ROSTER_ANSWER_FORMATS = arrayOf(ROSTER_ANSWER_FORMAT)
 
-        private val MODEL = AnkiWrapper.Model(
-            name = MODEL_NAME,
-            fields = FIELDS,
-            cardNames = CARD_NAMES,
-            questionFormats = QUESTION_FORMATS,
-            answerFormats = ANSWER_FORMATS,
+        private val ROSTER_MODEL = AnkiWrapper.Model(
+            name = ROSTER_MODEL_NAME,
+            fields = ROSTER_FIELDS,
+            cardNames = ROSTER_CARD_NAMES,
+            questionFormats = ROSTER_QUESTION_FORMATS,
+            answerFormats = ROSTER_ANSWER_FORMATS,
             css = CSS,
             deckId = null,
-            sortField = SORT_FIELD
+            sortField = ROSTER_SORT_FIELD
         )
     }
 }

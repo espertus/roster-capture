@@ -40,16 +40,20 @@ class AnkiWrapper(
     fun findModelId(model: Model, createIfAbsent: Boolean): Long? =
         api.getModelList().entries.firstOrNull {
             it.value == model.name
-        }?.key ?: api.addNewCustomModel(
-            model.name,
-            model.fields,
-            model.cardNames,
-            model.questionFormats,
-            model.answerFormats,
-            model.css,
-            model.deckId,
-            model.sortField
-        )
+        }?.key ?: if (createIfAbsent) {
+            api.addNewCustomModel(
+                model.name,
+                model.fields,
+                model.cardNames,
+                model.questionFormats,
+                model.answerFormats,
+                model.css,
+                model.deckId,
+                model.sortField
+            )
+        } else {
+            null
+        }
 
     fun findDeckIdByName(deckName: String, createIfAbsent: Boolean): Long? =
         api.deckList?.let {
