@@ -23,36 +23,6 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-    flavorDimensions += "environment"
-    productFlavors {
-        create("firebaseEmulator") {
-            dimension = "environment"
-            buildConfigField("boolean", "USE_ANKI", "false")
-            buildConfigField("boolean", "USE_FIREBASE", "true")
-            buildConfigField("boolean", "USE_FIREBASE_EMULATOR", "true")
-        }
-        create("firebaseCloud") {
-            dimension = "environment"
-            buildConfigField("boolean", "USE_ANKI", "false")
-            buildConfigField("boolean", "USE_FIREBASE", "true")
-            buildConfigField("boolean", "USE_FIREBASE_EMULATOR", "false")
-        }
-        create("ankiDroid") {
-            dimension = "environment"
-            buildConfigField("boolean", "USE_ANKI", "true")
-            buildConfigField("boolean", "USE_FIREBASE", "false")
-            buildConfigField("boolean", "USE_FIREBASE_EMULATOR", "false")
-        }
-    }
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11

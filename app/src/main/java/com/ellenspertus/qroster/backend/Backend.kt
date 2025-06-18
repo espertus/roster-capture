@@ -14,6 +14,4 @@ interface Backend {
         photoUri: Uri?,
         audioUri: Uri?
     ): Boolean
-
-    suspend fun retrieveCourses(): List<Course>
 }

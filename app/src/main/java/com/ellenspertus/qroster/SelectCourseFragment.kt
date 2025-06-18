@@ -35,19 +35,10 @@ class SelectCourseFragment : Fragment() {
 
 //        (activity as MainActivity).verifyAuthentication()
         viewLifecycleOwner.lifecycleScope.launch {
-            val courses: List<Course> = try {
-                val backend = (requireActivity() as MainActivity).backend
-                backend?.run {
-                    retrieveCourses()
-                } ?: run {
-                    Log.e(TAG, "backend was null?!")
-                    emptyList()
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error retrieving courses", e)
-                emptyList()
-            }
-
+            // TODO: Manage courses
+            val courses: List<Course> = listOf(
+                Course(crn = "12345", id = "6.001", name = "SICP")
+            )
             if (courses.isEmpty()) {
                 Log.e(TAG, "No courses retrieved")
             } else {
@@ -77,11 +68,6 @@ class SelectCourseFragment : Fragment() {
             course.let {
                 courseIdText.text = it.id
                 courseNameText.text = it.name
-                courseCountText.text = String.format(
-                    getString(R.string.students_ratio),
-                    course.studentsCount,
-                    course.enrollmentsCount
-                )
 
                 root.setOnClickListener { view ->
                     courseCards.forEach { card ->
@@ -105,13 +91,6 @@ class SelectCourseFragment : Fragment() {
             modeToggleGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
                 if (isChecked) {
                     val action = when (checkedId) {
-                        R.id.quizButton -> SelectCourseFragmentDirections.actionSelectCourseFragmentToQuizFragment(
-                            course.crn
-                        )
-
-                        R.id.browseButton -> SelectCourseFragmentDirections.actionSelectCourseFragmentToBrowseFragment(
-                            course.crn
-                        )
 
                         R.id.addStudentButton -> SelectCourseFragmentDirections.actionSelectCourseFragmentToAddStudentFragment(
                             course.crn

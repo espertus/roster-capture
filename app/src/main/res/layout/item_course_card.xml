@@ -52,18 +52,6 @@
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:textSize="14sp"
                 tools:text="Programming Principles" />
-
-            <TextView
-                android:id="@+id/courseCountText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:textColor="?attr/colorOnSurfaceVariant"
-                android:textSize="14sp"
-                tools:text="1/20 students" />
-
         </LinearLayout>
 
     </LinearLayout>
