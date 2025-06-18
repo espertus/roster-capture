@@ -74,7 +74,9 @@ class AnkiBackend(private val context: Context): Backend {
     }
 
     override suspend fun retrieveCourses(): List<Course> {
-        TODO("Not yet implemented")
+        // TODO: Use real data
+        val course = Course(crn = "12345", id = "6.001", name = "SICP")
+        return listOf(course)
     }
 
     fun addImageToAnki(uri: Uri): String? {
