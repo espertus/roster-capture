@@ -9,7 +9,6 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
-        mavenCentral()
     }
 }
 dependencyResolutionManagement {
@@ -17,6 +16,9 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven { url = uri("https://jitpack.io") }
+        maven { url = uri("https://github.com/ankidroid/Anki-Android/raw/master/api/repository") }
+
     }
 }
 

@@ -27,13 +27,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.ellenspertus.qroster.databinding.FragmentAddStudentBinding
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.launch
 import java.io.File
-import kotlinx.coroutines.tasks.await
 
-class AddStudentFragment : Fragment() {
+class AddStudentFragment() : Fragment() {
     private lateinit var crn: String
     private var _binding: FragmentAddStudentBinding? = null
     private val binding get() = _binding!!
@@ -493,7 +490,9 @@ class AddStudentFragment : Fragment() {
         }
 
         lifecycleScope.launch {
-            val success = writeToFirebase(
+            val backend = (requireActivity() as MainActivity).backend
+            val success = backend?.writeStudent(
+                crn = crn,
                 nuid = nuid,
                 firstName = firstName,
                 lastName = lastName,
@@ -503,7 +502,7 @@ class AddStudentFragment : Fragment() {
                 audioUri = audioUri,
             )
 
-            if (success) {
+            if (success == true) {
                 Toast.makeText(
                     requireContext(),
                     "Student saved successfully!",
@@ -523,55 +522,7 @@ class AddStudentFragment : Fragment() {
         }
     }
 
-    private suspend fun writeToFirebase(
-        nuid: String,
-        firstName: String,
-        lastName: String,
-        preferredName: String?,
-        pronouns: String,
-        photoUri: Uri?,
-        audioUri: Uri?
-    ) = try {
-        val db = FirebaseFirestore.getInstance()
-        val storage = FirebaseStorage.getInstance()
-        val storageRef = storage.reference
 
-        // Set required fields.
-        val studentMap = mutableMapOf(
-            "nuid" to nuid,
-            "crn" to crn,
-            "firstName" to firstName,
-            "lastName" to lastName,
-            "pronouns" to pronouns
-        )
-
-        // Set option fields if present.
-        preferredName?.let {
-            studentMap.put("preferredName", it)
-        }
-        if (photoUri != null) {
-            val selfiePath = "userdata/$SPECIAL_NUID/selfies/$nuid.jpg"
-            storageRef.child(selfiePath).putFile(photoUri).await()
-            studentMap["selfiePath"] = selfiePath
-        }
-        if (audioUri != null) {
-            val audioPath = "userdata/$SPECIAL_NUID/audio/$nuid.m4a"
-            storageRef.child(audioPath).putFile(audioUri).await()
-            studentMap["audioPath"] = audioPath
-        }
-
-        db.collection(STUDENTS_RAW_COLLECTION)
-            .document("$SPECIAL_NUID-$nuid")
-            .set(studentMap)
-            .await()
-
-        Log.d(TAG, "Student added successfully with NUID: $nuid")
-        true
-
-    } catch (e: Exception) {
-        Log.e(TAG, "Error in writeToFirebase", e)
-        false
-    }
 
     private fun showPermissionDeniedMessage(permission: String) {
         Toast.makeText(
@@ -594,7 +545,6 @@ class AddStudentFragment : Fragment() {
 
     companion object {
         private const val TAG = "AddStudentFragment"
-        private const val SPECIAL_NUID = "0"
         private const val MILLIS_PER_SECOND = 1000
         private const val SECONDS_PER_MINUTE = 60
     }

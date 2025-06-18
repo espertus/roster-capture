@@ -1,12 +1,3 @@
-buildscript {
-    repositories {
-        google()
-    }
-    dependencies {
-        classpath(libs.androidx.navigation.safe.args.gradle.plugin)
-    }
-}
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -34,12 +25,22 @@ android {
     }
     flavorDimensions += "environment"
     productFlavors {
-        create("emulator") {
+        create("firebaseEmulator") {
             dimension = "environment"
+            buildConfigField("boolean", "USE_ANKI", "false")
+            buildConfigField("boolean", "USE_FIREBASE", "true")
             buildConfigField("boolean", "USE_FIREBASE_EMULATOR", "true")
         }
-        create("firebase") {
+        create("firebaseCloud") {
             dimension = "environment"
+            buildConfigField("boolean", "USE_ANKI", "false")
+            buildConfigField("boolean", "USE_FIREBASE", "true")
+            buildConfigField("boolean", "USE_FIREBASE_EMULATOR", "false")
+        }
+        create("ankiDroid") {
+            dimension = "environment"
+            buildConfigField("boolean", "USE_ANKI", "true")
+            buildConfigField("boolean", "USE_FIREBASE", "false")
             buildConfigField("boolean", "USE_FIREBASE_EMULATOR", "false")
         }
     }
@@ -87,6 +88,7 @@ dependencies {
     implementation(libs.swipe.refresh.layout)
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.ui)
+    implementation(libs.anki.android)
 
     // Test dependencies
     testImplementation(libs.junit)

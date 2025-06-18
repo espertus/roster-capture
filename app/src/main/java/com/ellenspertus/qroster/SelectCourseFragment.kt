@@ -11,16 +11,11 @@ import androidx.navigation.fragment.findNavController
 import com.ellenspertus.qroster.databinding.FragmentSelectCourseBinding
 import com.ellenspertus.qroster.databinding.ItemCourseCardBinding
 import com.ellenspertus.qroster.model.Course
-import com.google.firebase.firestore.firestore
-import com.google.firebase.Firebase
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 
 class SelectCourseFragment : Fragment() {
     private var _binding: FragmentSelectCourseBinding? = null
     private val binding get() = _binding!!
-    private val firestore by lazy { Firebase.firestore }
 
     // These cards are created programmatically.
     private val courseCards = mutableListOf<ItemCourseCardBinding>()
@@ -36,11 +31,29 @@ class SelectCourseFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (activity as MainActivity).verifyAuthentication()
-        viewLifecycleOwner.lifecycleScope.launch {
-            solicitCourse(retrieveCourses().sortedBy { it.id })
-        }
         binding.modeToggle.bottomControlsCard.visibility = View.INVISIBLE
+
+//        (activity as MainActivity).verifyAuthentication()
+        viewLifecycleOwner.lifecycleScope.launch {
+            val courses: List<Course> = try {
+                val backend = (requireActivity() as MainActivity).backend
+                backend?.run {
+                    retrieveCourses()
+                } ?: run {
+                    Log.e(TAG, "backend was null?!")
+                    emptyList()
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error retrieving courses", e)
+                emptyList()
+            }
+
+            if (courses.isEmpty()) {
+                Log.e(TAG, "No courses retrieved")
+            } else {
+                solicitCourse(courses.sortedBy { it.id })
+            }
+        }
     }
 
     private fun solicitCourse(courses: List<Course>) {
@@ -52,33 +65,6 @@ class SelectCourseFragment : Fragment() {
             textWelcome.text = getString(R.string.select_a_course)
             courses.forEach { addCourseToUI(it) }
             coursesContainer.visibility = View.VISIBLE
-        }
-    }
-
-    private suspend fun retrieveCourses(): List<Course> = coroutineScope {
-        try {
-            val snapshot = firestore.collection(COURSES_COLLECTION)
-                .get()
-                .await()
-
-            val courses = snapshot.documents.mapNotNull { document ->
-                try {
-                    document.toObject(Course::class.java)?.also {
-                        it.crn = document.id
-                    } ?: throw Exception("documentToObject() returned null")
-                } catch (e: Exception) {
-                    Log.e(TAG, "Error converting document ${document.id}", e)
-                    null
-                }
-            }
-            if (courses.isEmpty()) {
-                Log.e(TAG, "No courses retrieved")
-            }
-
-            courses
-        } catch (exception: Exception) {
-            Log.e(TAG, "Error getting documents", exception)
-            emptyList()
         }
     }
 
