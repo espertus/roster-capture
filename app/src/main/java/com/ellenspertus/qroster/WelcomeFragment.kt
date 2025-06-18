@@ -7,14 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 
+// TODO: Eliminate.
 /**
- * The initial fragment, which signs in the user and directs to [SelectCourseFragment].
+ * The initial fragment, which directs to [SelectCourseFragment].
  */
 class WelcomeFragment : Fragment() {
     override fun onStart() {
         super.onStart()
 
-        // User already signed in, navigate immediately
         findNavController().navigate(R.id.action_welcomeFragment_to_selectCourseFragment)
     }
 

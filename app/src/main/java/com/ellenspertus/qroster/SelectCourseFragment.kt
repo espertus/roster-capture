@@ -20,10 +20,7 @@ class SelectCourseFragment : Fragment() {
     private var _binding: FragmentSelectCourseBinding? = null
     private val binding get() = _binding!!
 
-    // These cards are created programmatically.
     private val courseCards = mutableListOf<ItemCourseCardBinding>()
-
-    // ViewModel for managing courses
     private val coursesViewModel: CoursesViewModel by viewModels()
 
     override fun onCreateView(
@@ -37,17 +34,15 @@ class SelectCourseFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.modeToggle.bottomControlsCard.visibility = View.INVISIBLE
 
-        // Set up FAB click listener
         binding.fabAddCourse.setOnClickListener {
+            // TODO: Handle case with duplicate CRN.
             AddCourseDialogFragment().show(childFragmentManager, AddCourseDialogFragment.TAG)
         }
 
         // Observe courses from DataStore
         viewLifecycleOwner.lifecycleScope.launch {
             coursesViewModel.courses.collect { courses ->
-                // Clear existing UI courses
                 binding.coursesContainer.removeAllViews()
                 courseCards.clear()
 
@@ -59,15 +54,6 @@ class SelectCourseFragment : Fragment() {
                 }
             }
         }
-
-        // Example: Add a sample course if none exist (remove this in production)
-        // viewLifecycleOwner.lifecycleScope.launch {
-        //     if (coursesViewModel.courses.value.isEmpty()) {
-        //         coursesViewModel.addCourse(
-        //             Course(crn = "12345", id = "6.001", name = "SICP")
-        //         )
-        //     }
-        // }
     }
 
     private fun solicitCourse(courses: List<Course>) {
@@ -93,47 +79,22 @@ class SelectCourseFragment : Fragment() {
                 courseNameText.text = it.name
 
                 root.setOnClickListener { view ->
+                    // TODO: Navigate to AddStudentFragment
                     courseCards.forEach { card ->
                         val wasClicked = card.root == view
                         card.root.isChecked = wasClicked
                         card.root.isSelected = wasClicked
                     }
-                    enableToggleButtons(course)
                 }
 
-                // Add long click to delete course (optional)
                 root.setOnLongClickListener {
-                    // You might want to show a confirmation dialog here
+                    // TODO: Require confirmation
                     coursesViewModel.removeCourse(course.crn)
                     true
                 }
             }
             courseCards.add(this)
             binding.coursesContainer.addView(this.root)
-        }
-    }
-
-    private fun enableToggleButtons(course: Course) {
-        binding.modeToggle.apply {
-            bottomControlsCard.visibility = View.VISIBLE
-            modeToggleGroup.clearChecked()
-            modeToggleGroup.clearOnButtonCheckedListeners()
-            modeToggleGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
-                if (isChecked) {
-                    val action = when (checkedId) {
-
-                        R.id.addStudentButton -> SelectCourseFragmentDirections.actionSelectCourseFragmentToAddStudentFragment(
-                            course.crn
-                        )
-
-                        else -> {
-                            Log.e(TAG, "Unexpected case in enableToggleButtons()")
-                            throw AssertionError("Unreachable code hit in enableToggleButtons()")
-                        }
-                    }
-                    findNavController().navigate(action)
-                }
-            }
         }
     }
 
