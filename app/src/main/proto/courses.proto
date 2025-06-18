@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+option java_package = "com.ellenspertus.qroster.proto";
+option java_multiple_files = true;
+
+message CourseProto {
+  string crn = 1;
+  string id = 2;
+  string name = 3;
+}
+
+message CoursesProto {
+  repeated CourseProto courses = 1;
+}

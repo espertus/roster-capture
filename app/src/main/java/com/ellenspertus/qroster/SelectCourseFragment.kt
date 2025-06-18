@@ -6,11 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.ellenspertus.qroster.databinding.FragmentSelectCourseBinding
 import com.ellenspertus.qroster.databinding.ItemCourseCardBinding
+import com.ellenspertus.qroster.dialog.AddCourseDialogFragment
 import com.ellenspertus.qroster.model.Course
+import com.ellenspertus.qroster.viewmodel.CoursesViewModel
 import kotlinx.coroutines.launch
 
 class SelectCourseFragment : Fragment() {
@@ -19,6 +22,9 @@ class SelectCourseFragment : Fragment() {
 
     // These cards are created programmatically.
     private val courseCards = mutableListOf<ItemCourseCardBinding>()
+
+    // ViewModel for managing courses
+    private val coursesViewModel: CoursesViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,18 +39,35 @@ class SelectCourseFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.modeToggle.bottomControlsCard.visibility = View.INVISIBLE
 
-//        (activity as MainActivity).verifyAuthentication()
+        // Set up FAB click listener
+        binding.fabAddCourse.setOnClickListener {
+            AddCourseDialogFragment().show(childFragmentManager, AddCourseDialogFragment.TAG)
+        }
+
+        // Observe courses from DataStore
         viewLifecycleOwner.lifecycleScope.launch {
-            // TODO: Manage courses
-            val courses: List<Course> = listOf(
-                Course(crn = "12345", id = "6.001", name = "SICP")
-            )
-            if (courses.isEmpty()) {
-                Log.e(TAG, "No courses retrieved")
-            } else {
-                solicitCourse(courses.sortedBy { it.id })
+            coursesViewModel.courses.collect { courses ->
+                // Clear existing UI courses
+                binding.coursesContainer.removeAllViews()
+                courseCards.clear()
+
+                if (courses.isEmpty()) {
+                    Log.e(TAG, "No courses retrieved")
+                    binding.textWelcome.text = getString(R.string.no_courses_found)
+                } else {
+                    solicitCourse(courses.sortedBy { it.id })
+                }
             }
         }
+
+        // Example: Add a sample course if none exist (remove this in production)
+        // viewLifecycleOwner.lifecycleScope.launch {
+        //     if (coursesViewModel.courses.value.isEmpty()) {
+        //         coursesViewModel.addCourse(
+        //             Course(crn = "12345", id = "6.001", name = "SICP")
+        //         )
+        //     }
+        // }
     }
 
     private fun solicitCourse(courses: List<Course>) {
@@ -77,6 +100,13 @@ class SelectCourseFragment : Fragment() {
                     }
                     enableToggleButtons(course)
                 }
+
+                // Add long click to delete course (optional)
+                root.setOnLongClickListener {
+                    // You might want to show a confirmation dialog here
+                    coursesViewModel.removeCourse(course.crn)
+                    true
+                }
             }
             courseCards.add(this)
             binding.coursesContainer.addView(this.root)
@@ -105,6 +135,11 @@ class SelectCourseFragment : Fragment() {
                 }
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     companion object {

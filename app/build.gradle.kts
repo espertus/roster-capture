@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.navigation.safe.args)
+    alias(libs.plugins.google.protobuf)
 }
 
 android {
@@ -36,15 +37,37 @@ android {
     }
 }
 
+// Protobuf configuration
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.24.4"
+    }
+
+    generateProtoTasks {
+        all().forEach { task ->
+            task.builtins {
+                create("java") {
+                    option("lite")
+                }
+            }
+        }
+    }
+}
+
 dependencies {
-    implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity)
-    implementation(libs.material)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
+    implementation(libs.anki.android)
+    implementation(libs.datastore)
+    implementation(libs.fragment.ktx)
+    implementation(libs.kotlinx.coroutines)
+    implementation(libs.lifecycle.viewmodel)
+    implementation(libs.material)
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.ui)
-    implementation(libs.anki.android)
+    implementation(libs.protobuf.javalite)
 }

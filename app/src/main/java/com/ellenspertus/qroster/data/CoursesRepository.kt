@@ -1,0 +1,98 @@
+package com.ellenspertus.qroster.data
+
+import android.content.Context
+import androidx.datastore.core.CorruptionException
+import androidx.datastore.core.DataStore
+import androidx.datastore.core.Serializer
+import androidx.datastore.dataStore
+import com.ellenspertus.qroster.model.Course
+import com.ellenspertus.qroster.proto.CourseProto
+import com.ellenspertus.qroster.proto.CoursesProto
+import com.google.protobuf.InvalidProtocolBufferException
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import java.io.InputStream
+import java.io.OutputStream
+
+// DataStore as a singleton property
+private val Context.coursesDataStore: DataStore<CoursesProto> by dataStore(
+    fileName = "courses.pb",
+    serializer = CoursesSerializer
+)
+
+class CoursesRepository(
+    private val context: Context
+) {
+    // Flow that emits the current list of courses
+    val coursesFlow: Flow<List<Course>> = context.coursesDataStore.data
+        .map { coursesProto ->
+            coursesProto.coursesList.map { courseProto ->
+                Course(
+                    crn = courseProto.crn,
+                    id = courseProto.id,
+                    name = courseProto.name
+                )
+            }
+        }
+
+    // Add a course (won't add duplicates based on CRN)
+    suspend fun addCourse(course: Course) {
+        context.coursesDataStore.updateData { currentCourses ->
+            val existingCourse = currentCourses.coursesList.find { it.crn == course.crn }
+            if (existingCourse != null) {
+                // Course with this CRN already exists, don't add duplicate
+                currentCourses
+            } else {
+                currentCourses.toBuilder()
+                    .addCourses(
+                        CourseProto.newBuilder()
+                            .setCrn(course.crn)
+                            .setId(course.id)
+                            .setName(course.name)
+                            .build()
+                    )
+                    .build()
+            }
+        }
+    }
+
+    // Remove a course by CRN
+    suspend fun removeCourse(crn: String) {
+        context.coursesDataStore.updateData { currentCourses ->
+            val updatedList = currentCourses.coursesList.filter { it.crn != crn }
+            currentCourses.toBuilder()
+                .clearCourses()
+                .addAllCourses(updatedList)
+                .build()
+        }
+    }
+
+    // Clear all courses
+    suspend fun clearAllCourses() {
+        context.coursesDataStore.updateData {
+            it.toBuilder().clearCourses().build()
+        }
+    }
+
+    // Get all courses as a one-time read
+    suspend fun getAllCourses(): List<Course> {
+        return coursesFlow.first()
+    }
+}
+
+object CoursesSerializer : Serializer<CoursesProto> {
+    override val defaultValue: CoursesProto = CoursesProto.getDefaultInstance()
+
+    override suspend fun readFrom(input: InputStream): CoursesProto {
+        try {
+            return CoursesProto.parseFrom(input)
+        } catch (exception: InvalidProtocolBufferException) {
+            throw CorruptionException("Cannot read proto.", exception)
+        }
+    }
+
+    override suspend fun writeTo(t: CoursesProto, output: OutputStream) {
+        t.writeTo(output)
+    }
+}

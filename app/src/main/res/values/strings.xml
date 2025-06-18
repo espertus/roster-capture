@@ -1,21 +1,8 @@
 <resources>
     <string name="app_name">QRoster</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="loading_authentication">Loading authentication...</string>
-    <string name="sign_out">Sign Out</string>
     <string name="select_a_course">Select a course</string>
-    <string name="no_notes_yet">No notes yet</string>
-    <string name="add_note">Add note</string>
-    <string name="edit_note">Edit note</string>
-    <string name="quiz_button_wrong">Again</string>
-    <string name="quiz_button_hard">Hard</string>
-    <string name="quiz_button_good">Good</string>
-    <string name="quiz_button_known">Easy</string>
     <string name="loading">Loading...</string>
-    <string name="browse_students">Browse Students</string>
-    <string name="start_quiz">Start Quiz</string>
-    <string name="students_ratio">%d/%d students</string>
     <string name="record_name_request">Please record your name.</string>
     <string name="no_courses_found">No courses found.</string>
+    <string name="add_course">Add Course</string>
 </resources>
