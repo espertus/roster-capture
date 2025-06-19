@@ -32,26 +32,28 @@ class AnkiBackend(private val context: Context) {
         firstName: String,
         lastName: String,
         preferredName: String?,
-        pronouns: String,
+        pronouns: String?,
         photoUri: Uri?,
         audioUri: Uri?
     ): Boolean {
         val fields: Array<String?> = Array(FIELDS.size) { "" }
 
-        require(FIELDS[0] == NAME_FIELD)
-        fields[0] = if (preferredName != null)
-            "$preferredName ($firstName) $lastName"
-        else
-            "$firstName $lastName"
-
-        require(FIELDS[1] == SELFIE_FIELD)
-        fields[1] = photoUri?.let {
-            addImageToAnki(it)
-        }
-
-        require(FIELDS[2] == AUDIO_FIELD)
-        fields[2] = audioUri?.let {
-            addAudioToAnki(it)
+        for (i in fields.indices) {
+            fields[i] = when (FIELDS[i]) {
+                NAME_FIELD -> if (preferredName != null)
+                    "$firstName ($preferredName) $lastName"
+                else
+                    "$firstName $lastName"
+                SELFIE_FIELD -> photoUri?.let { addImageToAnki(it) }
+                AUDIO_FIELD -> audioUri?.let { addAudioToAnki(it) }
+                ID_FIELD -> nuid
+                PRONOUN_FIELD -> pronouns
+                else -> run {
+                    Log.e(TAG, "Illegal field name ${FIELDS[i]}")
+                    showToast("Internal Error")
+                    return false
+                }
+            }
         }
 
         // TODO: Remove duplicates
@@ -98,12 +100,15 @@ class AnkiBackend(private val context: Context) {
         private const val NAME_FIELD = "name"
         private const val SELFIE_FIELD = "selfiePath"
         private const val AUDIO_FIELD = "audioPath"
+        private const val ID_FIELD = "id"
+        private const val PRONOUN_FIELD = "pronouns"
         private const val SORT_FIELD = 0 // name
         private const val CARD_NAME = "Photo->Name"
         private val CSS: String? = null
-        private const val QUESTION_FORMAT = "{{selfiePath}}"
-        private const val ANSWER_FORMAT = "{{name}} {{audioPath}}"
-        private val FIELDS = arrayOf(NAME_FIELD, SELFIE_FIELD, AUDIO_FIELD)
+        private const val QUESTION_FORMAT = "{{$SELFIE_FIELD}}"
+        private const val ANSWER_FORMAT =
+            "{{$NAME_FIELD}} {{$AUDIO_FIELD}}<br/>{{$PRONOUN_FIELD}}<br/>{{$ID_FIELD}}"
+        private val FIELDS = arrayOf(NAME_FIELD, SELFIE_FIELD, AUDIO_FIELD, ID_FIELD, PRONOUN_FIELD)
         private val CARD_NAMES = arrayOf(CARD_NAME)
         private val QUESTION_FORMATS = arrayOf(QUESTION_FORMAT)
         private val ANSWER_FORMATS = arrayOf(ANSWER_FORMAT)
