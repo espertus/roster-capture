@@ -1,5 +1,6 @@
 package com.ellenspertus.qroster
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -83,13 +84,28 @@ class SelectCourseFragment : Fragment() {
                 }
 
                 root.setOnLongClickListener {
-                    // TODO: Require confirmation
-                    coursesViewModel.removeCourse(course.crn)
+                    promptToRemoveCourse(course)
                     true
                 }
             }
             courseCards.add(this)
             binding.coursesContainer.addView(this.root)
+        }
+    }
+
+    private fun promptForConfirmation(message: String, action: () -> Unit) {
+        AlertDialog.Builder(requireContext())
+            .setMessage(message)
+            .setPositiveButton("Yes") { _, _ -> action() }
+            .setNegativeButton("No") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    private fun promptToRemoveCourse(course: Course) {
+        promptForConfirmation("Do you really want to delete ${course.name}?") {
+            coursesViewModel.removeCourse(course.crn)
         }
     }
 
