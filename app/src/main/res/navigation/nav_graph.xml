@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/welcomeFragment">
+    app:startDestination="@id/selectCourseFragment">
 
     <fragment
         android:id="@+id/selectCourseFragment"
@@ -13,15 +13,6 @@
         <action
             android:id="@+id/action_selectCourseFragment_to_addStudentFragment"
             app:destination="@id/addStudentFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/welcomeFragment"
-        android:name="com.ellenspertus.qroster.WelcomeFragment"
-        android:label="fragment_welcome"
-        tools:layout="@layout/fragment_welcome" >
-        <action
-            android:id="@+id/action_welcomeFragment_to_selectCourseFragment"
-            app:destination="@id/selectCourseFragment" />
     </fragment>
     <fragment
         android:id="@+id/addStudentFragment"
