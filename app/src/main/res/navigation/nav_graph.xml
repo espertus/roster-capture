@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/selectCourseFragment">
+    app:startDestination="@id/startFragment">
 
     <fragment
         android:id="@+id/selectCourseFragment"
@@ -22,4 +22,26 @@
             android:name="crn"
             app:argType="string" />
     </fragment>
+    <fragment
+        android:id="@+id/failureFragment"
+        android:name="com.ellenspertus.qroster.FailureFragment"
+        android:label="fragment_failure"
+        tools:layout="@layout/fragment_failure" >
+        <argument
+            android:name="exception"
+            app:argType="com.ellenspertus.qroster.AppException" />
+    </fragment>
+    <fragment
+        android:id="@+id/startFragment"
+        android:name="com.ellenspertus.qroster.StartFragment"
+        android:label="fragment_start"
+        tools:layout="@layout/fragment_start" >
+        <action
+            android:id="@+id/action_startFragment_to_selectCourseFragment"
+            app:destination="@id/selectCourseFragment" />
+        <action
+            android:id="@+id/action_startFragment_to_failureFragment"
+            app:destination="@id/failureFragment" />
+    </fragment>
+
 </navigation>

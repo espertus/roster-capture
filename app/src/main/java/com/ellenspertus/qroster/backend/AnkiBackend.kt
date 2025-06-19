@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
+import com.ellenspertus.qroster.AppException.AppInternalException
 
 class AnkiBackend(private val context: Context) {
     private val api = AnkiWrapper(context)
@@ -18,7 +19,7 @@ class AnkiBackend(private val context: Context) {
             deckId = it
         } ?: Log.e(TAG, "Unable to retrieve deckId")
         if (modelId == 0L || deckId == 0L) {
-            showToast("Error accessing Anki API")
+            throw AppInternalException("Error accessing Anki API.")
         }
     }
 
@@ -66,11 +67,9 @@ class AnkiBackend(private val context: Context) {
         )
 
         if (numAdded == 0) {
-            Log.e(TAG, "Failure adding notes")
-            showToast("Student was NOT added")
+            Log.e(TAG, "Failure adding student")
         } else {
             Log.d(TAG, "Added student")
-            showToast("Added student")
         }
         return numAdded == 1
     }

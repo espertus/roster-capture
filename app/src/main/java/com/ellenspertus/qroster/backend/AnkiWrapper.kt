@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
+import androidx.fragment.app.Fragment
 import com.ichi2.anki.FlashCardsContract.READ_WRITE_PERMISSION
 import com.ichi2.anki.api.AddContentApi
 
@@ -30,8 +31,8 @@ class AnkiWrapper(
     fun shouldRequestPermission() =
         appContext.checkSelfPermission(READ_WRITE_PERMISSION) != PackageManager.PERMISSION_GRANTED
 
-    fun requestPermission(callbackActivity: Activity, callbackCode: Int) {
-        callbackActivity.requestPermissions(
+    fun requestPermission(fragment: Fragment, callbackCode: Int) {
+        fragment.requestPermissions(
             arrayOf(AddContentApi.READ_WRITE_PERMISSION),
             callbackCode
         )
