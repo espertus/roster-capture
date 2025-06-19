@@ -38,14 +38,15 @@ class SelectCourseFragment : Fragment() {
                 binding.coursesContainer.removeAllViews()
                 courseCards.clear()
 
+                binding.fabAddCourse.setOnClickListener {
+                    AddCourseDialogFragment(courses).show(childFragmentManager, AddCourseDialogFragment.TAG)
+                }
                 if (courses.isEmpty()) {
                     binding.textWelcome.text = getString(R.string.no_courses_found)
                 } else {
-                    binding.fabAddCourse.setOnClickListener {
-                        AddCourseDialogFragment(courses).show(childFragmentManager, AddCourseDialogFragment.TAG)
-                    }
                     solicitCourse(courses.sortedBy { it.id })
                 }
+
             }
         }
     }
