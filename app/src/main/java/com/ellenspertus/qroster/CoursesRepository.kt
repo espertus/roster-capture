@@ -55,7 +55,6 @@ class CoursesRepository(
         }
     }
 
-    // Remove a course by CRN
     suspend fun removeCourse(crn: String) {
         context.coursesDataStore.updateData { currentCourses ->
             val updatedList = currentCourses.coursesList.filter { it.crn != crn }
@@ -66,14 +65,12 @@ class CoursesRepository(
         }
     }
 
-    // Clear all courses
     suspend fun clearAllCourses() {
         context.coursesDataStore.updateData {
             it.toBuilder().clearCourses().build()
         }
     }
 
-    // Get all courses as a one-time read
     suspend fun getAllCourses(): List<Course> {
         return coursesFlow.first()
     }

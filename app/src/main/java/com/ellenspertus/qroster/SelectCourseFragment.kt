@@ -12,9 +12,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.ellenspertus.qroster.databinding.FragmentSelectCourseBinding
 import com.ellenspertus.qroster.databinding.ItemCourseCardBinding
-import com.ellenspertus.qroster.AddCourseDialogFragment
-import com.ellenspertus.qroster.Course
-import com.ellenspertus.qroster.CoursesViewModel
 import kotlinx.coroutines.launch
 
 class SelectCourseFragment : Fragment() {
@@ -75,6 +72,7 @@ class SelectCourseFragment : Fragment() {
             course.let {
                 courseIdText.text = it.id
                 courseNameText.text = it.name
+                courseCrn.text = it.crn
 
                 root.setOnClickListener { view ->
                     findNavController().navigate(SelectCourseFragmentDirections.actionSelectCourseFragmentToAddStudentFragment(course.crn))

@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="20dp"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="20sp"
+            android:textSize="28sp"
             android:textStyle="bold"
             tools:text="CS 1000" />
 
@@ -50,8 +50,17 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:textColor="?attr/colorOnSurfaceVariant"
-                android:textSize="14sp"
+                android:textSize="12sp"
                 tools:text="Programming Principles" />
+
+            <TextView
+                android:id="@+id/course_crn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="10sp"
+                tools:text="CRN" />
         </LinearLayout>
 
     </LinearLayout>
