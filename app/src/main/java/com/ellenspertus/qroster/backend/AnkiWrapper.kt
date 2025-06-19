@@ -85,8 +85,7 @@ class AnkiWrapper(
     fun addMediaToAnki(uri: Uri, mimeType: String): String? {
         val fileName = System.currentTimeMillis().toString() + ".jpg"
 
-        // See if this works
-        val shareableUri: Uri = uri //prepareUriForSharing(imageUri)
+        val shareableUri: Uri = uri
 
         // Grant AnkiDroid temporary read permission
         grantReadPermission(shareableUri)

@@ -192,7 +192,7 @@ class AddStudentFragment() : Fragment() {
         deletePhotoFile()
 
         val photoFile =
-            File(requireContext().filesDir, "student_photo_${System.currentTimeMillis()}.jpg")
+            File(requireContext().cacheDir, "student_photo_${System.currentTimeMillis()}.jpg")
         photoUri = FileProvider.getUriForFile(
             requireContext(),
             "${requireContext().packageName}.fileprovider",
@@ -275,7 +275,7 @@ class AddStudentFragment() : Fragment() {
 
             // Create audio file
             val audioFile =
-                File(requireContext().filesDir, "student_audio_${System.currentTimeMillis()}.m4a")
+                File(requireContext().cacheDir, "student_audio_${System.currentTimeMillis()}.m4a")
             audioUri = fileToUri(audioFile)
 
             // Initialize MediaRecorder
@@ -424,6 +424,7 @@ class AddStudentFragment() : Fragment() {
             etNuid.text?.clear()
             etFirstName.text?.clear()
             etLastName.text?.clear()
+            etPreferredName.text?.clear()
             rgPronouns.clearCheck()
             scrollView.smoothScrollTo(0, 0)
         }
@@ -521,8 +522,6 @@ class AddStudentFragment() : Fragment() {
             }
         }
     }
-
-
 
     private fun showPermissionDeniedMessage(permission: String) {
         Toast.makeText(

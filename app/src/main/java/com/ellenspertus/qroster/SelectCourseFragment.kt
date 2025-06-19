@@ -39,7 +39,6 @@ class SelectCourseFragment : Fragment() {
                 courseCards.clear()
 
                 if (courses.isEmpty()) {
-                    Log.e(TAG, "No courses retrieved")
                     binding.textWelcome.text = getString(R.string.no_courses_found)
                 } else {
                     binding.fabAddCourse.setOnClickListener {
