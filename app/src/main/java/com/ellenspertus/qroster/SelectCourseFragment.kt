@@ -79,12 +79,7 @@ class SelectCourseFragment : Fragment() {
                 courseNameText.text = it.name
 
                 root.setOnClickListener { view ->
-                    // TODO: Navigate to AddStudentFragment
-                    courseCards.forEach { card ->
-                        val wasClicked = card.root == view
-                        card.root.isChecked = wasClicked
-                        card.root.isSelected = wasClicked
-                    }
+                    findNavController().navigate(SelectCourseFragmentDirections.actionSelectCourseFragmentToAddStudentFragment(course.crn))
                 }
 
                 root.setOnLongClickListener {
