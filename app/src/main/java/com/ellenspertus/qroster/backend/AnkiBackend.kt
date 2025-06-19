@@ -50,7 +50,9 @@ class AnkiBackend(private val context: Context) {
         }
 
         require(FIELDS[2] == AUDIO_FIELD)
-        // TODO: Add audio
+        fields[2] = audioUri?.let {
+            addAudioToAnki(it)
+        }
 
         // TODO: Remove duplicates
 
@@ -88,7 +90,6 @@ class AnkiBackend(private val context: Context) {
         }
     }
 
-
     companion object {
         private const val TAG = "AnkiWrapper"
 
@@ -101,7 +102,7 @@ class AnkiBackend(private val context: Context) {
         private const val CARD_NAME = "Photo->Name"
         private val CSS: String? = null
         private const val QUESTION_FORMAT = "{{selfiePath}}"
-        private const val ANSWER_FORMAT = "{{name}}"
+        private const val ANSWER_FORMAT = "{{name}} {{audioPath}}"
         private val FIELDS = arrayOf(NAME_FIELD, SELFIE_FIELD, AUDIO_FIELD)
         private val CARD_NAMES = arrayOf(CARD_NAME)
         private val QUESTION_FORMATS = arrayOf(QUESTION_FORMAT)

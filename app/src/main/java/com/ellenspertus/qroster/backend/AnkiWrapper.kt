@@ -83,7 +83,7 @@ class AnkiWrapper(
     }
 
     fun addMediaToAnki(uri: Uri, mimeType: String): String? {
-        val fileName = System.currentTimeMillis().toString() + ".jpg"
+        val fileName = System.currentTimeMillis().toString()
 
         val shareableUri: Uri = uri
 
