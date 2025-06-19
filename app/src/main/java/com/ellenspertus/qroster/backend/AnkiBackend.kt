@@ -1,13 +1,11 @@
-package com.ellenspertus.qroster.backend.anki
+package com.ellenspertus.qroster.backend
 
 import android.content.Context
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
-import com.ellenspertus.qroster.backend.Backend
-import com.ellenspertus.qroster.model.Course
 
-class AnkiBackend(private val context: Context): Backend {
+class AnkiBackend(private val context: Context) {
     private val api = AnkiWrapper(context)
     private var modelId = 0L
     private var deckId = 0L
@@ -28,7 +26,7 @@ class AnkiBackend(private val context: Context): Backend {
         Toast.makeText(context, message, Toast.LENGTH_LONG).show()
     }
 
-    override suspend fun writeStudent(
+    suspend fun writeStudent(
         crn: String,
         nuid: String,
         firstName: String,

@@ -12,9 +12,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.ellenspertus.qroster.databinding.FragmentSelectCourseBinding
 import com.ellenspertus.qroster.databinding.ItemCourseCardBinding
-import com.ellenspertus.qroster.dialog.AddCourseDialogFragment
-import com.ellenspertus.qroster.model.Course
-import com.ellenspertus.qroster.viewmodel.CoursesViewModel
+import com.ellenspertus.qroster.AddCourseDialogFragment
+import com.ellenspertus.qroster.Course
+import com.ellenspertus.qroster.CoursesViewModel
 import kotlinx.coroutines.launch
 
 class SelectCourseFragment : Fragment() {

@@ -5,12 +5,11 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
-import com.ellenspertus.qroster.backend.Backend
-import com.ellenspertus.qroster.backend.anki.AnkiBackend
-import com.ellenspertus.qroster.backend.anki.AnkiWrapper
+import com.ellenspertus.qroster.backend.AnkiBackend
+import com.ellenspertus.qroster.backend.AnkiWrapper
 
 class MainActivity : FragmentActivity() {
-    var backend: Backend? = null
+    var backend: AnkiBackend? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

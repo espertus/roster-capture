@@ -1,10 +1,8 @@
-package com.ellenspertus.qroster.viewmodel
+package com.ellenspertus.qroster
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.ellenspertus.qroster.data.CoursesRepository
-import com.ellenspertus.qroster.model.Course
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -18,7 +16,7 @@ class CoursesViewModel(application: Application) : AndroidViewModel(application)
     val courses: StateFlow<List<Course>> = coursesRepository.coursesFlow
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
+            started = SharingStarted.Companion.WhileSubscribed(5000),
             initialValue = emptyList()
         )
 

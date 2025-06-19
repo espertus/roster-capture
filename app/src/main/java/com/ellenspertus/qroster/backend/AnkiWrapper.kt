@@ -1,4 +1,4 @@
-package com.ellenspertus.qroster.backend.anki
+package com.ellenspertus.qroster.backend
 
 import android.app.Activity
 import android.content.Context
