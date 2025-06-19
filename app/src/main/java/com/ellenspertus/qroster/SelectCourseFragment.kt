@@ -36,12 +36,6 @@ class SelectCourseFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.fabAddCourse.setOnClickListener {
-            // TODO: Handle case with duplicate CRN.
-            AddCourseDialogFragment().show(childFragmentManager, AddCourseDialogFragment.TAG)
-        }
-
-        // Observe courses from DataStore
         viewLifecycleOwner.lifecycleScope.launch {
             coursesViewModel.courses.collect { courses ->
                 binding.coursesContainer.removeAllViews()
@@ -51,6 +45,9 @@ class SelectCourseFragment : Fragment() {
                     Log.e(TAG, "No courses retrieved")
                     binding.textWelcome.text = getString(R.string.no_courses_found)
                 } else {
+                    binding.fabAddCourse.setOnClickListener {
+                        AddCourseDialogFragment(courses).show(childFragmentManager, AddCourseDialogFragment.TAG)
+                    }
                     solicitCourse(courses.sortedBy { it.id })
                 }
             }

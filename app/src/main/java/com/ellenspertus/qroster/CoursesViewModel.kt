@@ -12,7 +12,6 @@ class CoursesViewModel(application: Application) : AndroidViewModel(application)
 
     private val coursesRepository = CoursesRepository(application)
 
-    // StateFlow that emits the current list of courses
     val courses: StateFlow<List<Course>> = coursesRepository.coursesFlow
         .stateIn(
             scope = viewModelScope,

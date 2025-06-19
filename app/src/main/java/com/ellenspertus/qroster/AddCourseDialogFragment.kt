@@ -7,10 +7,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.ellenspertus.qroster.databinding.DialogAddCourseBinding
-import com.ellenspertus.qroster.Course
-import com.ellenspertus.qroster.CoursesViewModel
 
-class AddCourseDialogFragment : DialogFragment() {
+class AddCourseDialogFragment(private val courses: List<Course>) : DialogFragment() {
 
     private val coursesViewModel: CoursesViewModel by activityViewModels()
 
@@ -26,9 +24,17 @@ class AddCourseDialogFragment : DialogFragment() {
                 val name = binding.courseNameEditText.text.toString().trim()
 
                 if (crn.isNotEmpty() && id.isNotEmpty() && name.isNotEmpty()) {
-                    coursesViewModel.addCourse(
-                        Course(crn = crn, id = id, name = name)
-                    )
+                    if (courses.any { it.crn == crn }) {
+                        Toast.makeText(
+                            requireContext(),
+                            "A course with CRN $crn already exists",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    } else {
+                        coursesViewModel.addCourse(
+                            Course(crn = crn, id = id, name = name)
+                        )
+                    }
                 } else {
                     Toast.makeText(
                         requireContext(),

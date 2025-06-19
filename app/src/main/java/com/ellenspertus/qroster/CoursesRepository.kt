@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.map
 import java.io.InputStream
 import java.io.OutputStream
 
-// DataStore as a singleton property
 private val Context.coursesDataStore: DataStore<CoursesProto> by dataStore(
     fileName = "courses.pb",
     serializer = CoursesSerializer
@@ -23,7 +22,9 @@ private val Context.coursesDataStore: DataStore<CoursesProto> by dataStore(
 class CoursesRepository(
     private val context: Context
 ) {
-    // Flow that emits the current list of courses
+    class DuplicateCourseException() :
+        Exception("A course with that CRN already exists")
+
     val coursesFlow: Flow<List<Course>> = context.coursesDataStore.data
         .map { coursesProto ->
             coursesProto.coursesList.map { courseProto ->
@@ -35,13 +36,11 @@ class CoursesRepository(
             }
         }
 
-    // Add a course (won't add duplicates based on CRN)
     suspend fun addCourse(course: Course) {
         context.coursesDataStore.updateData { currentCourses ->
             val existingCourse = currentCourses.coursesList.find { it.crn == course.crn }
             if (existingCourse != null) {
-                // Course with this CRN already exists, don't add duplicate
-                currentCourses
+                throw DuplicateCourseException()
             } else {
                 currentCourses.toBuilder()
                     .addCourses(
