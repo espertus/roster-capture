@@ -1,21 +1,33 @@
 package com.ellenspertus.qroster.backend
 
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
-import androidx.activity.result.ActivityResultLauncher
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import com.ichi2.anki.FlashCardsContract.READ_WRITE_PERMISSION
 import com.ichi2.anki.api.AddContentApi
 
+/**
+ * The interface between the rest of this app and [AddContentApi].
+ *
+ * @see [AnkiBackend]
+ */
 class AnkiWrapper(
-    context: Context,
-    private val appContext: Context = context.applicationContext,
-    private val api: AddContentApi = AddContentApi(appContext)
+    private val context: Context,
+    private val api: AddContentApi = AddContentApi(context)
 ) {
+    enum class PermissionStatus {
+        GRANTED,
+        DENIED_CAN_ASK_AGAIN,
+        UNKNOWN_TRY_REQUEST,
+        PERMANENTLY_DENIED
+    }
+
     data class Model(
         val name: String,
         val fields: Array<String>,
@@ -26,9 +38,7 @@ class AnkiWrapper(
         var deckId: Long?,  // null for default deck
         val sortField: Int?,
     )
-
-    fun isApiAvailable(context: Context) = AddContentApi.getAnkiDroidPackageName(context) != null
-
+    
     fun findModelId(model: Model, createIfAbsent: Boolean): Long? =
         api.getModelList().entries.firstOrNull {
             it.value == model.name
@@ -67,11 +77,11 @@ class AnkiWrapper(
         api.addNotes(modelId, deckId, listOf(fields), listOf(tags))
 
     fun grantReadPermission(uri: Uri) {
-        appContext.grantUriPermission(PACKAGE, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        context.grantUriPermission(PACKAGE, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
     }
 
     fun revokeReadPermission(uri: Uri) {
-        appContext.revokeUriPermission(PACKAGE, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        context.revokeUriPermission(PACKAGE, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
     }
 
     fun addMediaToAnki(uri: Uri, mimeType: String): String? {
@@ -100,5 +110,50 @@ class AnkiWrapper(
         const val TAG = "AnkiWrapper"
 
         const val PACKAGE = "com.ichi2.anki"
+        private const val ANKI_WEB_URL =
+            "https://play.google.com/store/apps/details?id=com.ichi2.anki"
+        private const val ANKI_MARKET_URL = "market://details?id=com.ichi2.anki"
+        const val REQUIRED_PERMISSION = READ_WRITE_PERMISSION
+
+        /**
+         * Tests whether the API is available (i.e., if AnkiDroid is installed).
+         */
+        fun isApiAvailable(context: Context) = AddContentApi.getAnkiDroidPackageName(context) != null
+
+        /**
+         * Opens the Google Play Store or a web page where the user can choose to
+         * install AnkiDroid.
+         */
+        fun offerToInstallAnkiDroid(activity: Activity) {
+            try {
+                val intent = Intent(Intent.ACTION_VIEW).apply {
+                    data = ANKI_MARKET_URL.toUri()
+                    setPackage("com.android.vending")
+                }
+                activity.startActivity(intent)
+            } catch (e: ActivityNotFoundException) {
+                val intent = Intent(Intent.ACTION_VIEW).apply {
+                    data = Uri.parse(ANKI_WEB_URL)
+                }
+                activity.startActivity(intent)
+            }
+        }
+
+        fun checkPermissionStatus(fragment: Fragment): PermissionStatus {
+            return when {
+                fragment.requireContext().checkSelfPermission(READ_WRITE_PERMISSION) == PackageManager.PERMISSION_GRANTED -> {
+                    PermissionStatus.GRANTED
+                }
+
+                fragment.shouldShowRequestPermissionRationale(READ_WRITE_PERMISSION) -> {
+                    PermissionStatus.DENIED_CAN_ASK_AGAIN
+                }
+
+                else -> {
+                    // Either first time or permanently denied
+                    PermissionStatus.UNKNOWN_TRY_REQUEST
+                }
+            }
+        }
     }
 }

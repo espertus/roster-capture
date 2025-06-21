@@ -1,13 +1,19 @@
 package com.ellenspertus.qroster.backend
 
-import android.content.Context
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import com.ellenspertus.qroster.AppException.AppInternalException
+import com.ellenspertus.qroster.MainActivity
 
-class AnkiBackend(private val context: Context) {
-    private val api = AnkiWrapper(context)
+/**
+ * An encapsulation of the AnkiDroid model and data communicated through it.
+ *
+ * @see [AnkiWrapper]
+ * @throws [AppInternalException] if the model and deck can't be retrieved or created
+ */
+class AnkiBackend(private val mainActivity: MainActivity) {
+    private val api = AnkiWrapper(mainActivity)
     private var modelId = 0L
     private var deckId = 0L
 
@@ -24,7 +30,7 @@ class AnkiBackend(private val context: Context) {
     }
 
     private fun showToast(message: String) {
-        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+        Toast.makeText(mainActivity, message, Toast.LENGTH_LONG).show()
     }
 
     suspend fun writeStudent(
@@ -45,6 +51,7 @@ class AnkiBackend(private val context: Context) {
                     "$firstName ($preferredName) $lastName"
                 else
                     "$firstName $lastName"
+
                 SELFIE_FIELD -> photoUri?.let { addImageToAnki(it) }
                 AUDIO_FIELD -> audioUri?.let { addAudioToAnki(it) }
                 ID_FIELD -> nuid
