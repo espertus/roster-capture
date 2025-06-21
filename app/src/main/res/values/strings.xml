@@ -1,8 +1,9 @@
 <resources>
-    <string name="app_name">QRoster</string>
+    <string name="app_name">RosterCapture</string>
     <string name="select_a_course">Select a course</string>
     <string name="loading">Loading...</string>
     <string name="record_name_request">Please record your name.</string>
     <string name="no_courses_found">No courses found.</string>
     <string name="add_course">Add Course</string>
+    <string name="permissions_rejection">You declined to grant RosterCapture the required permission to share data with AnkiDroid. If you would like to do so now, you can rerun the app, but Android may not allow us to ask again, in which case you will need to uninstall and reinstall RosterCapture.</string>
 </resources>
