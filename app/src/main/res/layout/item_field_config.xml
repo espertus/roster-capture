@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="4dp"
+    app:cardElevation="2dp"
+    app:cardCornerRadius="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:id="@+id/fieldNameText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Field Name"
+                android:textSize="16sp"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textStyle="bold" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/renameButton"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text="Rename"
+                android:textSize="14sp"
+                android:layout_marginStart="8dp"
+                app:icon="@drawable/ic_edit_24"
+                app:iconSize="18dp"
+                app:iconPadding="4dp"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+        <RadioGroup
+            android:id="@+id/fieldStatusGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/requiredRadio"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Required"
+                android:textSize="14sp" />
+
+            <RadioButton
+                android:id="@+id/optionalRadio"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Optional"
+                android:textSize="14sp" />
+
+            <RadioButton
+                android:id="@+id/notSolicitedRadio"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Not Used"
+                android:textSize="14sp" />
+
+        </RadioGroup>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

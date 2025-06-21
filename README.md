@@ -24,6 +24,7 @@ This app uses AnkiDroid's
   * stop_circle_outline.xml
 * Material Design icons
   * ic_add_24.xml
+  * ic_edit_24.xml
   * outline_app_blocking_24.xml
   * outline_error_24.xml
 * Claude.ai

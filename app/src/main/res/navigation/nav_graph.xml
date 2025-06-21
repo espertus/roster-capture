@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/startFragment">
+    app:startDestination="@id/fieldConfigFragment">
 
     <fragment
         android:id="@+id/selectCourseFragment"
@@ -43,5 +43,9 @@
             android:id="@+id/action_startFragment_to_failureFragment"
             app:destination="@id/failureFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/fieldConfigFragment"
+        android:name="com.ellenspertus.qroster.configuration.FieldConfigFragment"
+        android:label="FieldConfigFragment" />
 
 </navigation>
