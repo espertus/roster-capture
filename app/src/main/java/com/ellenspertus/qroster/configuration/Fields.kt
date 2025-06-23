@@ -17,13 +17,3 @@ enum class FieldStatus {
     OPTIONAL,
     NOT_SOLICITED
 }
-
-val studentFields = listOf(
-    StudentField("First name", isMandatory = true),
-    StudentField("Last name", isMandatory = true),
-    StudentField("Selfie", isMandatory = true),
-    StudentField("ID", isRenameable = true),
-    StudentField("Preferred name"),
-    StudentField("Pronouns"),
-    StudentField("Name recording")
-)

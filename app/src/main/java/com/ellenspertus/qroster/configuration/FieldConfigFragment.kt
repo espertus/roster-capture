@@ -1,21 +1,21 @@
 package com.ellenspertus.qroster.configuration
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ellenspertus.qroster.databinding.FragmentFieldConfigBinding
-import com.google.android.material.snackbar.Snackbar
 
 class FieldConfigFragment : Fragment() {
     private var _binding: FragmentFieldConfigBinding? = null
     private val binding get() = _binding!!
     private lateinit var adapter: FieldConfigAdapter
-    private val studentFields = mutableListOf<StudentField>()
+    private val fieldConfigViewModel: FieldConfigViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,7 +42,7 @@ class FieldConfigFragment : Fragment() {
 
     private fun setupRecyclerView() {
         adapter = FieldConfigAdapter(
-            studentFields,
+            fieldConfigViewModel.getConfigurableFields(),
             onFieldStatusChanged = { _, _ -> },
             onFieldRename = { _, _ -> }
         )
@@ -61,21 +61,8 @@ class FieldConfigFragment : Fragment() {
     }
 
     private fun saveConfiguration() {
-        // Save the configuration to SharedPreferences or database
-        val sharedPrefs =
-            requireContext().getSharedPreferences("field_config", Context.MODE_PRIVATE)
-        val editor = sharedPrefs.edit()
-
-        studentFields.forEach { field ->
-            editor.putString(field.name, field.status.name)
-            if (field.isRenameable) {
-                editor.putString("${field.name}_display", field.displayName)
-            }
-        }
-
-        editor.apply()
-
-        Snackbar.make(binding.root, "Configuration saved", Snackbar.LENGTH_SHORT).show()
+        fieldConfigViewModel.saveConfiguration(requireContext())
+        Toast.makeText(requireContext(), "Configuration saved", Toast.LENGTH_SHORT).show()
 
         // Navigate back using Navigation Component
         findNavController().navigateUp()
