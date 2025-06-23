@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.ellenspertus.qroster.databinding.FragmentSelectCourseBinding
 import com.ellenspertus.qroster.databinding.ItemCourseCardBinding
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 
 class SelectCourseFragment : Fragment() {

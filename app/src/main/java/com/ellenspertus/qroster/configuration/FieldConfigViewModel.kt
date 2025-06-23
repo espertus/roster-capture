@@ -16,6 +16,9 @@ class FieldConfigViewModel : ViewModel() {
     val studentFields: List<StudentField>
         get() = _studentFields.toList() // defensive copy
 
+    fun hasConfiguration(context: Context) =
+        context.getSharedPreferences(FIELD_CONFIG_KEY, Context.MODE_PRIVATE).all.isNotEmpty()
+
     fun updateFieldStatus(fieldName: String, newStatus: FieldStatus) {
         _studentFields.find { it.name == fieldName }?.status = newStatus
     }

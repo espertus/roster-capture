@@ -63,9 +63,7 @@ class FieldConfigFragment : Fragment() {
     private fun saveConfiguration() {
         fieldConfigViewModel.saveConfiguration(requireContext())
         Toast.makeText(requireContext(), "Configuration saved", Toast.LENGTH_SHORT).show()
-
-        // Navigate back using Navigation Component
-        findNavController().navigateUp()
+        findNavController().navigate(FieldConfigFragmentDirections.actionFieldConfigFragmentToStartFragment())
     }
 
     override fun onDestroyView() {

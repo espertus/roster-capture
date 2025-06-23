@@ -35,6 +35,21 @@
         app:layout_constraintTop_toBottomOf="@id/tvWelcome" />
 
     <TextView
+        android:id="@+id/tvConfigure"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="32dp"
+        android:gravity="center"
+        android:lineSpacingExtra="4dp"
+        android:text="You need to configure Roster Capture to specify what information to collect from students."
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvIntro" />
+
+    <TextView
         android:id="@+id/tvAnki"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -47,7 +62,7 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvIntro" />
+        app:layout_constraintTop_toBottomOf="@id/tvConfigure" />
 
     <TextView
         android:id="@+id/tvPermissions"
@@ -91,5 +106,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/button_proceed" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

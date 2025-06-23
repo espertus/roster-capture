@@ -7,12 +7,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.ellenspertus.qroster.backend.AnkiWrapper
 import com.ellenspertus.qroster.databinding.FragmentStartBinding
 import kotlin.system.exitProcess
 import com.ellenspertus.qroster.backend.AnkiBackend
 import com.ellenspertus.qroster.backend.AnkiWrapper.PermissionStatus
+import com.ellenspertus.qroster.configuration.FieldConfigViewModel
 
 /**
  * An invisible fragment that verifies that the API is accessible
@@ -25,6 +27,7 @@ class StartFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var mainActivity: MainActivity
+    private val fieldConfigViewModel: FieldConfigViewModel by activityViewModels()
 
     // This needs to be at the top level because registerForActivityResult()
     // can be called only during a Fragment's creation.
@@ -45,15 +48,24 @@ class StartFragment : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onResume() {
+        super.onResume()
 
         mainActivity = (requireActivity() as MainActivity)
+
+        // Requirement 1: AnkiDroid is installed.
         if (!isAnkiDroidInstalled()) {
             requestAnkiDroid()
             return
         }
 
+        // Requirement 2: Fields are configured.
+        if (!fieldConfigViewModel.hasConfiguration(requireContext())) {
+            requestConfiguration()
+            return
+        }
+
+        // Requirement 3: Permissions are granted.
         if (mainActivity.backend == null) {
             // This will instantiate a backend if permissions are granted.
             checkAnkiPermissions()
@@ -70,6 +82,12 @@ class StartFragment : Fragment() {
     private fun navigateToSelectCourseFragment() {
         findNavController().navigate(
             StartFragmentDirections.actionStartFragmentToSelectCourseFragment()
+        )
+    }
+
+    private fun navigateToFieldConfigFragment() {
+        findNavController().navigate(
+            StartFragmentDirections.actionStartFragmentToFieldConfigFragment()
         )
     }
 
@@ -96,6 +114,20 @@ class StartFragment : Fragment() {
                 }
             }
             showExitButton()
+        }
+    }
+
+    private fun requestConfiguration() {
+        binding.apply {
+            tvConfigure.visibility = View.VISIBLE
+            buttonProceed.let {
+                it.visibility = View.VISIBLE
+                it.text = "Configure RosterCapture"
+                it.setOnClickListener {
+                    navigateToFieldConfigFragment()
+                }
+                tvConfigure.visibility = View.GONE
+            }
         }
     }
 
