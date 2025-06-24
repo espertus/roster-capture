@@ -6,5 +6,5 @@
     <string name="no_courses_found">No courses found.</string>
     <string name="add_course">Add Course</string>
     <string name="permissions_rejection">You declined to grant RosterCapture the required permission to share data with AnkiDroid. If you would like to do so now, you can rerun the app, but Android may not allow us to ask again, in which case you will need to uninstall and reinstall RosterCapture.</string>
-    <string name="solicit_field_info">Students are required to provide their <b>first name</b>, <b>last name</b>, and a <b>selfie</b>. You may specify whether to solicit the below fields.</string>
+    <string name="solicit_field_info">Specify which types of information you would like to collect and if you would like to rename the prompts.</string>
 </resources>

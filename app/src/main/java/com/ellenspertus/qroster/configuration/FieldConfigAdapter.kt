@@ -20,8 +20,8 @@ class FieldConfigAdapter(
 
         fun bind(field: StudentField) {
             with(binding) {
-                // Hide the entire card if field is mandatory and required
-                if (field.isMandatory && field.status == FieldStatus.REQUIRED) {
+                // Hide the entire card if field is mandatory and can't be renamed.
+                if (field.isMandatory && !field.isRenameable) {
                     root.visibility = View.GONE
                     root.layoutParams = RecyclerView.LayoutParams(0, 0)
                     return
@@ -37,15 +37,16 @@ class FieldConfigAdapter(
 
                 fieldNameText.text = field.displayName
 
-                // Show rename button for renameable fields
-                renameButton.visibility = if (field.isRenameable) View.VISIBLE else View.GONE
-
-                // Handle rename button click
-                renameButton.setOnClickListener {
-                    showRenameDialog(field)
+                if (field.isRenameable) {
+                    renameButton.visibility = View.VISIBLE
+                    renameButton.setOnClickListener {
+                        showRenameDialog(field)
+                    }
+                } else {
+                    renameButton.visibility = View.GONE
                 }
 
-                // Disable radio buttons for mandatory fields
+                // Disable radio buttons for mandatory fields.
                 if (field.isMandatory) {
                     requiredRadio.isEnabled = false
                     optionalRadio.isEnabled = false

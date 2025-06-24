@@ -8,15 +8,16 @@ import androidx.core.content.edit
 class FieldConfigViewModel : ViewModel() {
     private val _studentFields = originalFields
 
+    // currently not used
     val studentFields: List<StudentField>
-        get() = _studentFields.toList() // defensive copy
+        get() = _studentFields.map { it.copy() }
 
     fun hasConfiguration(context: Context) =
         context.getSharedPreferences(FIELD_CONFIG_KEY, Context.MODE_PRIVATE).all.isNotEmpty()
 
     fun getConfigurableFields() =
         _studentFields.filter {
-            !(it.isMandatory && it.status == FieldStatus.REQUIRED)
+            !it.isMandatory || it.isRenameable
         }
 
     fun updateFieldStatus(field: StudentField, newStatus: FieldStatus) {
@@ -27,9 +28,17 @@ class FieldConfigViewModel : ViewModel() {
         getFieldByName(field.name).overrideName = newDisplayName
     }
 
-    fun getFieldByName(name: String) =
+    private fun getFieldByName(name: String) =
         _studentFields.find { it.name == name }
-            ?: throw AppException.AppInternalException("Unable to find field ${name}")
+            ?: throw AppException.AppInternalException("Unable to find field $name")
+
+    fun getIdField() = getFieldByName(ID_FIELD)
+    fun getFirstNameField() = getFieldByName(FIRST_NAME)
+    fun getLastNameField() = getFieldByName(LAST_NAME)
+    fun getPreferredNameField() = getFieldByName(PREFERRED_NAME_FIELD)
+    fun getPronounsField() = getFieldByName(PRONOUNS_FIELD_NAME)
+    fun getSelfieField() = getFieldByName(SELFIE_NAME)
+    fun getRecordingField() = getFieldByName(RECORDING_FIELD_NAME)
 
     fun loadConfiguration(context: Context) {
         val sharedPrefs = context.getSharedPreferences(FIELD_CONFIG_KEY, Context.MODE_PRIVATE)
@@ -58,14 +67,22 @@ class FieldConfigViewModel : ViewModel() {
     companion object {
         private const val FIELD_CONFIG_KEY = "field_config"
 
+        private const val ID_FIELD = "ID"
+        private const val FIRST_NAME = "First name"
+        private const val LAST_NAME = "Last name"
+        private const val SELFIE_NAME = "Take selfie"
+        private const val PREFERRED_NAME_FIELD = "Preferred name"
+        private const val PRONOUNS_FIELD_NAME = "Pronouns"
+        private const val RECORDING_FIELD_NAME = "Name recording"
+
         private val originalFields = listOf(
-            StudentField("First name", isMandatory = true),
-            StudentField("Last name", isMandatory = true),
-            StudentField("Selfie", isMandatory = true),
-            StudentField("ID", isRenameable = true),
-            StudentField("Preferred name"),
-            StudentField("Pronouns"),
-            StudentField("Name recording")
+            StudentField(FIRST_NAME, isMandatory = true, isRenameable = true),
+            StudentField(LAST_NAME, isMandatory = true, isRenameable = true),
+            StudentField(SELFIE_NAME, isMandatory = true, isRenameable = true),
+            StudentField(ID_FIELD, isRenameable = true),
+            StudentField(PREFERRED_NAME_FIELD, isRenameable = true),
+            StudentField(PRONOUNS_FIELD_NAME, isRenameable = true),
+            StudentField(RECORDING_FIELD_NAME, isRenameable = true)
         )
     }
 }

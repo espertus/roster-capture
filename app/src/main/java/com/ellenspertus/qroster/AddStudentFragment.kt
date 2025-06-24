@@ -29,6 +29,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.ellenspertus.qroster.configuration.FieldConfigViewModel
+import com.ellenspertus.qroster.configuration.FieldStatus
+import com.ellenspertus.qroster.configuration.StudentField
 import com.ellenspertus.qroster.databinding.FragmentAddStudentBinding
 import kotlinx.coroutines.launch
 import java.io.File
@@ -41,6 +43,11 @@ class AddStudentFragment() : Fragment() {
     private val binding get() = _binding!!
 
     private val fieldConfigViewModel: FieldConfigViewModel by activityViewModels()
+
+    // initialized when view is created
+    data class Requirement(val name: String, val check: () -> Boolean)
+
+    private val requirements: MutableList<Requirement> = mutableListOf()
 
     // Photo capture
     private var photoUri: Uri? = null
@@ -96,6 +103,8 @@ class AddStudentFragment() : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        fieldConfigViewModel.loadConfiguration(requireContext())
         setupPhotoSection()
         setupAudioSection()
         setupFormSection()
@@ -103,6 +112,10 @@ class AddStudentFragment() : Fragment() {
     }
 
     private fun setupPhotoSection() {
+        // Photos are always required.
+        requirements.add(Requirement(fieldConfigViewModel.getSelfieField().displayName) { photoUri != null })
+        binding.btnTakePhoto.text = fieldConfigViewModel.getSelfieField().displayName
+
         binding.photoContainer.setOnClickListener {
             checkCameraPermissionAndLaunch()
         }
@@ -117,6 +130,17 @@ class AddStudentFragment() : Fragment() {
     }
 
     private fun setupAudioSection() {
+        val field = fieldConfigViewModel.getRecordingField()
+        if (field.status == FieldStatus.NOT_SOLICITED) {
+            binding.recordingSection.visibility = View.GONE
+            return
+        }
+
+        if (field.status == FieldStatus.REQUIRED) {
+            requirements.add(Requirement(field.displayName) { audioUri != null })
+        }
+        binding.btnRerecord.text = field.displayNameWithIndicator
+
         binding.btnRecord.setOnClickListener {
             recordOrStop()
         }
@@ -159,22 +183,93 @@ class AddStudentFragment() : Fragment() {
             }
         }
 
-        binding.etNuid.addTextChangedListener(textWatcher)
-        binding.etFirstName.addTextChangedListener(textWatcher)
-        binding.etLastName.addTextChangedListener(textWatcher)
+        setupNameFields(textWatcher)
+        setupIdField(textWatcher)
+        setupPronounsSection(textWatcher)
+    }
 
-        // Pronouns radio group
+    private fun setupNameFields(textWatcher: TextWatcher) {
+        // First and last name fields are always required but can be renamed.
+        fieldConfigViewModel.getFirstNameField().also {
+            val name = it.displayNameWithIndicator
+            binding.tilFirstName.hint = name
+            binding.etFirstName.addTextChangedListener(textWatcher)
+            requirements.add(Requirement(it.displayName) {
+                binding.etFirstName.text?.isNotEmpty() == true
+            })
+        }
+        fieldConfigViewModel.getLastNameField().also {
+            binding.tilLastName.hint = it.displayNameWithIndicator
+            binding.etLastName.addTextChangedListener(textWatcher)
+            requirements.add(Requirement(it.displayName) {
+                binding.etLastName.text?.isNotEmpty() == true
+            })
+        }
+
+        fieldConfigViewModel.getPreferredNameField().apply {
+            when (status) {
+                FieldStatus.NOT_SOLICITED -> {
+                    binding.etPreferredName.visibility = View.GONE
+                    return
+                }
+
+                FieldStatus.REQUIRED -> {
+                    requirements.add(Requirement(displayName) {
+                        binding.etPreferredName.text?.isNotEmpty() == true
+                    })
+                    binding.etPreferredName.addTextChangedListener(textWatcher)
+                }
+
+                FieldStatus.OPTIONAL -> {}
+            }
+
+            binding.tilPreferredName.hint = displayNameWithIndicator
+        }
+    }
+
+    private fun setupIdField(textWatcher: TextWatcher) {
+        val field = fieldConfigViewModel.getIdField()
+        if (field.status == FieldStatus.NOT_SOLICITED) {
+            binding.tilId.visibility = View.GONE
+            return
+        }
+        if (field.status == FieldStatus.REQUIRED) {
+            requirements.add(Requirement(field.displayName) {
+                binding.etId.text?.isNotEmpty() == true
+            })
+            binding.etId.addTextChangedListener(textWatcher)
+        }
+
+        binding.tilId.hint = field.displayNameWithIndicator
+    }
+
+    private fun setupPronounsSection(textWatcher: TextWatcher) {
+        val field = fieldConfigViewModel.getPronounsField()
+        if (field.status == FieldStatus.NOT_SOLICITED) {
+            binding.pronounsSection.visibility = View.GONE
+            return
+        }
+
+        if (field.status == FieldStatus.REQUIRED) {
+            requirements.add(Requirement(field.displayName) {
+                binding.rgPronouns.checkedRadioButtonId != -1 &&
+                        (binding.rgPronouns.checkedRadioButtonId != R.id.rbOther ||
+                                binding.etOtherPronouns.hasText())
+            })
+            binding.etOtherPronouns.addTextChangedListener(textWatcher)
+        }
+
+        binding.pronounsLabel.text = field.displayNameWithIndicator
         binding.rgPronouns.setOnCheckedChangeListener { _, checkedId ->
             binding.tilOtherPronouns.visibility = if (checkedId == R.id.rbOther) {
                 View.VISIBLE
             } else {
                 View.GONE
             }
-            validateForm()
+            if (field.status == FieldStatus.REQUIRED) {
+                validateForm()
+            }
         }
-
-        // Other pronouns field
-        binding.etOtherPronouns.addTextChangedListener(textWatcher)
     }
 
     // Photo capture methods
@@ -427,7 +522,7 @@ class AddStudentFragment() : Fragment() {
 
     private fun clearForm() {
         binding.apply {
-            etNuid.text?.clear()
+            etId.text?.clear()
             etFirstName.text?.clear()
             etLastName.text?.clear()
             etPreferredName.text?.clear()
@@ -441,12 +536,10 @@ class AddStudentFragment() : Fragment() {
     private fun EditText.hasText() = text?.isNotEmpty() == true
 
     private fun requiredFieldsComplete() =
-        binding.etNuid.hasText() &&
-                binding.etFirstName.hasText() &&
-                binding.etLastName.hasText() &&
-                binding.rgPronouns.checkedRadioButtonId != -1 &&
-                (binding.rgPronouns.checkedRadioButtonId != R.id.rbOther ||
-                        binding.etOtherPronouns.hasText())
+        requirements.all { it.check() }
+
+    private fun getMissingFieldNames() =
+        requirements.mapNotNull { if (it.check()) null else it.name.lowercase() }
 
     // Check if all required fields have been completed.
     private fun validateForm() {
@@ -458,32 +551,18 @@ class AddStudentFragment() : Fragment() {
         if (!requiredFieldsComplete()) {
             Toast.makeText(
                 requireContext(),
-                "Please complete required fields.",
+                "Please complete required fields (indicated with ${StudentField.REQUIRED_INDICATOR}).",
                 Toast.LENGTH_LONG
             )
                 .show()
             Log.e(TAG, "saveButtonHandler() reached with invalid form")
             return
         }
-        val missingFiles = mutableListOf<String>()
-        if (audioUri == null) {
-            missingFiles.add("name recording")
-        }
-        if (photoUri == null) {
-            missingFiles.add("selfie")
-        }
-        if (missingFiles.isEmpty()) {
-            saveStudentInfo()
-        } else {
-            val missingItems = missingFiles.joinToString(separator = " and ")
-            val prompt =
-                String.format("Are you sure you want to save without providing a $missingItems?")
-            promptForConfirmation(prompt, ::saveStudentInfo)
-        }
+        saveStudentInfo()
     }
 
     private fun saveStudentInfo() {
-        val nuid = binding.etNuid.text.toString()
+        val nuid = binding.etId.text.toString()
         val firstName = binding.etFirstName.text.toString()
         val lastName = binding.etLastName.text.toString()
         val preferredName = binding.etPreferredName.text.toString().ifEmpty { null }

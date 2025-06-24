@@ -36,20 +36,18 @@
                     android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
                     android:textColor="?attr/colorPrimary" />
 
-                <!-- NUID Field -->
+                <!-- ID Field -->
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tilNuid"
+                    android:id="@+id/tilId"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="NUID *">
+                    android:hint="ID *">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etNuid"
+                        android:id="@+id/etId"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="number"
-                        android:maxLength="9" />
+                        android:layout_height="wrap_content" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -114,66 +112,75 @@
 
                 </LinearLayout>
 
-                <!-- Pronouns Section -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:layout_marginBottom="8dp"
-                    android:text="Pronouns *"
-                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
-
-                <RadioGroup
-                    android:id="@+id/rgPronouns"
+                <!-- Pronouns Section Container -->
+                <LinearLayout
+                    android:id="@+id/pronounsSection"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <com.google.android.material.radiobutton.MaterialRadioButton
-                        android:id="@+id/rbSheHer"
+                    <TextView
+                        android:id="@+id/pronounsLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="she/her/hers" />
+                        android:layout_marginTop="24dp"
+                        android:layout_marginBottom="8dp"
+                        android:text="Pronouns *"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
-                    <com.google.android.material.radiobutton.MaterialRadioButton
-                        android:id="@+id/rbHeHim"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="he/him/his" />
-
-                    <com.google.android.material.radiobutton.MaterialRadioButton
-                        android:id="@+id/rbTheyThem"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="they/them/theirs" />
-
-                    <com.google.android.material.radiobutton.MaterialRadioButton
-                        android:id="@+id/rbOther"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="other (please specify)" />
-
-                </RadioGroup>
-
-                <!-- Other Pronouns -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tilOtherPronouns"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="32dp"
-                    android:layout_marginTop="8dp"
-                    android:hint="Please specify"
-                    android:visibility="gone">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etOtherPronouns"
+                    <RadioGroup
+                        android:id="@+id/rgPronouns"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:imeOptions="actionDone"
-                        android:inputType="text" />
+                        android:orientation="vertical">
 
-                </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.radiobutton.MaterialRadioButton
+                            android:id="@+id/rbSheHer"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="she/her/hers" />
+
+                        <com.google.android.material.radiobutton.MaterialRadioButton
+                            android:id="@+id/rbHeHim"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="he/him/his" />
+
+                        <com.google.android.material.radiobutton.MaterialRadioButton
+                            android:id="@+id/rbTheyThem"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="they/them/theirs" />
+
+                        <com.google.android.material.radiobutton.MaterialRadioButton
+                            android:id="@+id/rbOther"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="other (please specify)" />
+
+                    </RadioGroup>
+
+                    <!-- Other Pronouns -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilOtherPronouns"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="32dp"
+                        android:layout_marginTop="8dp"
+                        android:hint="Please specify"
+                        android:visibility="gone">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etOtherPronouns"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:imeOptions="actionDone"
+                            android:inputType="text" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
 
                 <!-- Selfie -->
                 <FrameLayout
@@ -234,63 +241,71 @@
                 </LinearLayout>
 
                 <!-- Audio -->
-                <FrameLayout
-                    android:id="@+id/audioContainer"
-                    android:layout_width="200dp"
-                    android:layout_height="40dp"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="20dp">
+                <LinearLayout
+                    android:id="@+id/recordingSection"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-                    <LinearLayout
-                        android:id="@+id/audioPlaceholder"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@drawable/dashed_border"
-                        android:gravity="center"
-                        android:orientation="vertical">
+                    <FrameLayout
+                        android:id="@+id/audioContainer"
+                        android:layout_width="200dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="20dp">
 
-                        <TextView
-                            android:id="@+id/capturedAudio"
+                        <LinearLayout
+                            android:id="@+id/audioPlaceholder"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:background="@drawable/solid_border"
+                            android:background="@drawable/dashed_border"
                             android:gravity="center"
-                            android:visibility="gone" />
+                            android:orientation="vertical">
 
-                        <ImageView
-                            android:id="@+id/noAudio"
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:contentDescription="Microphone icon"
-                            android:src="@drawable/microphone_outline"
-                            app:tint="?attr/colorOnSurfaceVariant" />
+                            <TextView
+                                android:id="@+id/capturedAudio"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@drawable/solid_border"
+                                android:gravity="center"
+                                android:visibility="gone" />
+
+                            <ImageView
+                                android:id="@+id/noAudio"
+                                android:layout_width="32dp"
+                                android:layout_height="32dp"
+                                android:contentDescription="Microphone icon"
+                                android:src="@drawable/microphone_outline"
+                                app:tint="?attr/colorOnSurfaceVariant" />
+                        </LinearLayout>
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:id="@+id/audioButtons"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="16dp"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnRecord"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Record name"
+                            app:icon="@drawable/microphone_outline" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnRerecord"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Re-record name"
+                            android:visibility="gone"
+                            app:icon="@drawable/microphone_outline" />
                     </LinearLayout>
-                </FrameLayout>
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="16dp"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnRecord"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Record name"
-                        app:icon="@drawable/microphone_outline" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnRerecord"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Re-record name"
-                        android:visibility="gone"
-                        style="@style/Widget.Material3.Button.OutlinedButton"
-                        app:icon="@drawable/microphone_outline" />
                 </LinearLayout>
-
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -307,17 +322,17 @@
                 style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginEnd="8dp"
+                android:layout_weight="1"
                 android:text="Clear" />
 
             <com.google.android.material.button.MaterialButton
-                style="@style/Widget.Material3.Button.OutlinedButton"
                 android:id="@+id/btnExit"
+                style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginHorizontal="8dp"
+                android:layout_weight="1"
                 android:text="Exit" />
 
             <com.google.android.material.button.MaterialButton
@@ -325,8 +340,8 @@
                 style="@style/Widget.Material3.Button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginStart="8dp"
+                android:layout_weight="1"
                 android:enabled="false"
                 android:text="Save" />
         </LinearLayout>
