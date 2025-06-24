@@ -31,13 +31,7 @@ class FieldConfigFragment : Fragment() {
 
         setupRecyclerView()
         setupSaveButton()
-        setupToolbar()
-    }
-
-    private fun setupToolbar() {
-        binding.toolbar.setNavigationOnClickListener {
-            findNavController().navigateUp()
-        }
+        setupCancelButton()
     }
 
     private fun setupRecyclerView() {
@@ -62,6 +56,17 @@ class FieldConfigFragment : Fragment() {
     private fun setupSaveButton() {
         binding.saveButton.setOnClickListener {
             saveConfiguration()
+        }
+    }
+
+    private fun setupCancelButton() {
+        if (fieldConfigViewModel.hasConfiguration(requireContext())) {
+            binding.cancelButton.apply {
+                visibility = View.VISIBLE
+                setOnClickListener {
+                    findNavController().navigateUp()
+                }
+            }
         }
     }
 

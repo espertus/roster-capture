@@ -49,6 +49,11 @@ class SelectCourseFragment : Fragment() {
                 }
             }
         }
+        binding.settingsButton.setOnClickListener {
+            findNavController().navigate(
+                SelectCourseFragmentDirections.actionSelectCourseFragmentToFieldConfigFragment()
+            )
+        }
     }
 
     private fun solicitCourse(courses: List<Course>) {

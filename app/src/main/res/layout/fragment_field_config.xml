@@ -54,6 +54,16 @@
                 android:text="Save Configuration"
                 app:cornerRadius="8dp" />
 
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:id="@+id/cancelButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Cancel"
+                android:visibility="gone"
+                app:cornerRadius="8dp" />
+
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>

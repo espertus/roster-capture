@@ -25,6 +25,7 @@ This app uses AnkiDroid's
 * Material Design icons
   * ic_add_24.xml
   * ic_edit_24.xml
+  * is_settings_24.xml
   * outline_app_blocking_24.xml
   * outline_error_24.xml
 * Claude.ai

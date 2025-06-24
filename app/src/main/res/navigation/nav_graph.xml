@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_selectCourseFragment_to_addStudentFragment"
             app:destination="@id/addStudentFragment" />
+        <action
+            android:id="@+id/action_selectCourseFragment_to_fieldConfigFragment"
+            app:destination="@id/fieldConfigFragment" />
     </fragment>
     <fragment
         android:id="@+id/addStudentFragment"
