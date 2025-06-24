@@ -43,8 +43,12 @@ class FieldConfigFragment : Fragment() {
     private fun setupRecyclerView() {
         adapter = FieldConfigAdapter(
             fieldConfigViewModel.getConfigurableFields(),
-            onFieldStatusChanged = { _, _ -> },
-            onFieldRename = { _, _ -> }
+            onFieldStatusChanged = { field, status ->
+                fieldConfigViewModel.updateFieldStatus(field, status)
+            },
+            onFieldRename = { field, name ->
+                fieldConfigViewModel.updateFieldDisplayName(field, name)
+            }
         )
 
         binding.fieldsRecyclerView.apply {
