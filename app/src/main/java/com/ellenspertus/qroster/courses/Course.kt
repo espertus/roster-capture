@@ -1,4 +1,4 @@
-package com.ellenspertus.qroster
+package com.ellenspertus.qroster.courses
 
 data class Course(
     var crn: String = "",

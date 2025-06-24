@@ -19,7 +19,7 @@ import com.ellenspertus.qroster.configuration.FieldConfigViewModel
 /**
  * An invisible fragment that verifies that the API is accessible
  * and that required permissions are granted. Depending on the result,
- * it navigates to [SelectCourseFragment] or [FailureFragment] or
+ * it navigates to [com.ellenspertus.qroster.courses.SelectCourseFragment] or [FailureFragment] or
  * exits.
  */
 class StartFragment : Fragment() {

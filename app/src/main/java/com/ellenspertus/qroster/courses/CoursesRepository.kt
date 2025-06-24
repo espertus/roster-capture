@@ -1,4 +1,4 @@
-package com.ellenspertus.qroster
+package com.ellenspertus.qroster.courses
 
 import android.content.Context
 import androidx.datastore.core.CorruptionException

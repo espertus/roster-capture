@@ -1,8 +1,7 @@
-package com.ellenspertus.qroster
+package com.ellenspertus.qroster.courses
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,9 +9,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.ellenspertus.qroster.R
 import com.ellenspertus.qroster.databinding.FragmentSelectCourseBinding
 import com.ellenspertus.qroster.databinding.ItemCourseCardBinding
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 
 class SelectCourseFragment : Fragment() {
