@@ -44,20 +44,16 @@ class SelectCourseFragment : Fragment() {
                 }
                 if (courses.isEmpty()) {
                     binding.textWelcome.text = getString(R.string.no_courses_found)
+                    binding.textInstruct.visibility = View.VISIBLE
                 } else {
                     solicitCourse(courses.sortedBy { it.id })
                 }
-
             }
         }
     }
 
     private fun solicitCourse(courses: List<Course>) {
         binding.apply {
-            if (courses.isEmpty()) {
-                textWelcome.text = getString(R.string.no_courses_found)
-                return
-            }
             textWelcome.text = getString(R.string.select_a_course)
             courses.forEach { addCourseToUI(it) }
             coursesContainer.visibility = View.VISIBLE
@@ -70,6 +66,7 @@ class SelectCourseFragment : Fragment() {
             binding.coursesContainer,
             false
         ).apply {
+            binding.textInstruct.visibility = View.INVISIBLE
             course.let {
                 courseIdText.text = it.id
                 courseNameText.text = it.name
