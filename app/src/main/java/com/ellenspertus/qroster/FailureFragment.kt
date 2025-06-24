@@ -8,13 +8,17 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.navArgs
 import com.ellenspertus.qroster.databinding.FragmentFailureBinding
+import kotlin.getValue
 import kotlin.system.exitProcess
 
 /**
  * A fragment displaying information about why the program cannot continue.
  */
 class FailureFragment : Fragment() {
+    private val args: FailureFragmentArgs by navArgs()
+
     private var _binding: FragmentFailureBinding? = null
     private val binding get() = _binding!!
 
@@ -28,22 +32,25 @@ class FailureFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val exception = FailureFragmentArgs.fromBundle(requireArguments()).exception
-        binding.apply {
-            textMessage.text = exception.message
-            imageIcon.setImageResource(
-                when (exception) {
-                    is AppException.AppUserException -> R.drawable.outline_app_blocking_24
-                    is AppException.AppInternalException -> R.drawable.outline_error_24
-                })
-            buttonExit.setOnClickListener {
-                endProcess()
-            }
-            if (exception.restartable) {
-                buttonRestart.let {
-                    it.visibility = View.VISIBLE
-                    it.setOnClickListener {
-                        scheduleRestart(requireContext())
+
+        args.exception.let { exception ->
+            binding.apply {
+                textMessage.text = exception.message
+                imageIcon.setImageResource(
+                    when (exception) {
+                        is AppException.AppUserException -> R.drawable.outline_app_blocking_24
+                        is AppException.AppInternalException -> R.drawable.outline_error_24
+                    }
+                )
+                buttonExit.setOnClickListener {
+                    endProcess()
+                }
+                if (exception.restartable) {
+                    buttonRestart.let {
+                        it.visibility = View.VISIBLE
+                        it.setOnClickListener {
+                            scheduleRestart(requireContext())
+                        }
                     }
                 }
             }

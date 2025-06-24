@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.MediaPlayer
 import android.media.MediaRecorder
+import androidx.navigation.fragment.navArgs
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -24,16 +25,22 @@ import androidx.activity.result.contract.ActivityResultContracts.*
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.ellenspertus.qroster.configuration.FieldConfigViewModel
 import com.ellenspertus.qroster.databinding.FragmentAddStudentBinding
 import kotlinx.coroutines.launch
 import java.io.File
+import kotlin.getValue
 
 class AddStudentFragment() : Fragment() {
+    private val args: AddStudentFragmentArgs by navArgs()
     private lateinit var crn: String
     private var _binding: FragmentAddStudentBinding? = null
     private val binding get() = _binding!!
+
+    private val fieldConfigViewModel: FieldConfigViewModel by activityViewModels()
 
     // Photo capture
     private var photoUri: Uri? = null
@@ -75,9 +82,8 @@ class AddStudentFragment() : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            crn = AddStudentFragmentArgs.fromBundle(it).crn
-        } ?: throw IllegalStateException("No CRN passed to $TAG")
+
+        crn = args.crn
     }
 
     override fun onCreateView(
