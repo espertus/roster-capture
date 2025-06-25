@@ -12,6 +12,7 @@
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_marginTop="120dp"
+        android:contentDescription="@string/error_indicator_content_description"
         app:tint="?attr/colorError"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,7 +23,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="Something went wrong"
+        android:text="@string/something_went_wrong"
         android:textSize="24sp"
         android:textStyle="bold"
         android:textColor="?android:attr/textColorPrimary"
@@ -39,7 +40,7 @@
         android:layout_marginEnd="32dp"
         android:gravity="center"
         android:lineSpacingExtra="4dp"
-        android:text="Error message goes here"
+        tools:text="Error message goes here"
         android:textSize="16sp"
         android:textColor="?android:attr/textColorSecondary"
         app:layout_constraintEnd_toEndOf="parent"
@@ -64,7 +65,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="56dp"
-            android:text="Exit App"
+            android:text="@string/exit_app_button"
             android:textAllCaps="false"
             app:cornerRadius="28dp" />
 
@@ -74,7 +75,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="56dp"
-            android:text="Restart App"
+            android:text="@string/restart_app_button"
             android:textAllCaps="false"
             android:visibility="gone"
             app:cornerRadius="28dp" />

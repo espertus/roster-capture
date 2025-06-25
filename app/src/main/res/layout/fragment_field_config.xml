@@ -51,7 +51,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="Save Configuration"
+                android:text="@string/save_configuration_button"
                 app:cornerRadius="8dp" />
 
             <com.google.android.material.button.MaterialButton
@@ -60,7 +60,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="Cancel"
+                android:text="@string/cancel_button"
                 android:visibility="gone"
                 app:cornerRadius="8dp" />
 

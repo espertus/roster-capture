@@ -32,7 +32,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
-                    android:text="Student Information"
+                    android:text="@string/add_student_header"
                     android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
                     android:textColor="?attr/colorPrimary" />
 
@@ -42,7 +42,7 @@
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="ID *">
+                    tools:hint="ID *">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etId"
@@ -58,7 +58,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:hint="First Name *">
+                    tools:hint="First Name *">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etFirstName"
@@ -76,7 +76,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:hint="Last Name *">
+                    tools:hint="Last Name *">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etLastName"
@@ -99,7 +99,7 @@
                         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Preferred Name (if not first name)">
+                        tools:hint="Preferred Name">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etPreferredName"
@@ -125,7 +125,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="24dp"
                         android:layout_marginBottom="8dp"
-                        android:text="Pronouns *"
+                        tools:text="Pronouns *"
                         android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
                     <RadioGroup
@@ -138,25 +138,25 @@
                             android:id="@+id/rbSheHer"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="she/her/hers" />
+                            android:text="@string/feminine_pronouns" />
 
                         <com.google.android.material.radiobutton.MaterialRadioButton
                             android:id="@+id/rbHeHim"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="he/him/his" />
+                            android:text="@string/masculine_pronouns" />
 
                         <com.google.android.material.radiobutton.MaterialRadioButton
                             android:id="@+id/rbTheyThem"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="they/them/theirs" />
+                            android:text="@string/gender_neutral_pronouns" />
 
                         <com.google.android.material.radiobutton.MaterialRadioButton
                             android:id="@+id/rbOther"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="other (please specify)" />
+                            android:text="@string/other_pronouns_prompt" />
 
                     </RadioGroup>
 
@@ -168,7 +168,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="32dp"
                         android:layout_marginTop="8dp"
-                        android:hint="Please specify"
+                        android:hint="@string/please_specify_pronouns_prompt"
                         android:visibility="gone">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -195,7 +195,7 @@
                         android:id="@+id/capturedPhoto"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:contentDescription="Captured selfie"
+                        android:contentDescription="@string/captured_selfie_description"
                         android:scaleType="centerCrop"
                         android:visibility="gone" />
 
@@ -209,7 +209,7 @@
                         <ImageView
                             android:layout_width="48dp"
                             android:layout_height="48dp"
-                            android:contentDescription="Camera icon"
+                            android:contentDescription="@string/camera_icon_description"
                             android:src="@drawable/camera_account"
                             app:tint="?attr/colorOnSurfaceVariant" />
                     </LinearLayout>
@@ -226,7 +226,7 @@
                         android:id="@+id/btnTakePhoto"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Take selfie"
+                        tools:text="Take selfie"
                         app:icon="@drawable/camera_account" />
 
                     <com.google.android.material.button.MaterialButton
@@ -235,7 +235,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:text="Retake"
+                        android:text="@string/retake_photo_button"
                         android:visibility="gone"
                         app:icon="@drawable/camera_retake_outline" />
                 </LinearLayout>
@@ -274,7 +274,7 @@
                                 android:id="@+id/noAudio"
                                 android:layout_width="32dp"
                                 android:layout_height="32dp"
-                                android:contentDescription="Microphone icon"
+                                android:contentDescription="@string/microphone_icon_content_description"
                                 android:src="@drawable/microphone_outline"
                                 app:tint="?attr/colorOnSurfaceVariant" />
                         </LinearLayout>
@@ -292,7 +292,7 @@
                             android:id="@+id/btnRecord"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Record name"
+                            tools:text="Record name"
                             app:icon="@drawable/microphone_outline" />
 
                         <com.google.android.material.button.MaterialButton
@@ -300,7 +300,7 @@
                             style="@style/Widget.Material3.Button.OutlinedButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Re-record name"
+                            android:text="@string/re_record_name_button"
                             android:visibility="gone"
                             app:icon="@drawable/microphone_outline" />
                     </LinearLayout>
@@ -324,7 +324,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_weight="1"
-                android:text="Clear" />
+                android:text="@string/clear_button" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnExit"
@@ -333,7 +333,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="8dp"
                 android:layout_weight="1"
-                android:text="Exit" />
+                android:text="@string/exit_button" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSave"
@@ -343,7 +343,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_weight="1"
                 android:enabled="false"
-                android:text="Save" />
+                android:text="@string/save_button" />
         </LinearLayout>
 
     </LinearLayout>

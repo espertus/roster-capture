@@ -59,7 +59,7 @@
                 android:layout_height="wrap_content"
                 android:maxLines="1"
                 android:textColor="?attr/colorOnSurfaceVariant"
-                android:textSize="10sp"
+                android:textSize="11sp"
                 tools:text="CRN" />
         </LinearLayout>
 

@@ -14,7 +14,7 @@
             android:id="@+id/crnEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="CRN"
+            android:hint="@string/crn_prompt"
             android:inputType="text" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -28,7 +28,7 @@
             android:id="@+id/courseIdEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Course ID (e.g., CS 1000)"
+            android:hint="@string/course_id_prompt"
             android:inputType="text" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -41,7 +41,7 @@
             android:id="@+id/courseNameEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Course Name"
+            android:hint="@string/course_name_prompt"
             android:inputType="text" />
 
     </com.google.android.material.textfield.TextInputLayout>
