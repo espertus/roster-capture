@@ -73,7 +73,7 @@ class FieldConfigViewModel : ViewModel() {
         private const val SELFIE_NAME = "Take selfie"
         private const val PREFERRED_NAME_FIELD = "Preferred name"
         private const val PRONOUNS_FIELD_NAME = "Pronouns"
-        private const val RECORDING_FIELD_NAME = "Name recording"
+        private const val RECORDING_FIELD_NAME = "Record name"
 
         private val originalFields = listOf(
             StudentField(FIRST_NAME, isMandatory = true, isRenameable = true),

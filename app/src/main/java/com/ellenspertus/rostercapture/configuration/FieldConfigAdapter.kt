@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import androidx.recyclerview.widget.RecyclerView
 import com.ellenspertus.rostercapture.databinding.ItemFieldConfigBinding
@@ -89,7 +90,7 @@ class FieldConfigAdapter(
                 setSelection(field.displayName.length)
             }
 
-            AlertDialog.Builder(context)
+            val dialog = AlertDialog.Builder(context)
                 .setTitle("Rename Field")
                 .setView(editText)
                 .setPositiveButton("Save") { _, _ ->
@@ -102,6 +103,30 @@ class FieldConfigAdapter(
                 }
                 .setNegativeButton("Cancel", null)
                 .show()
+
+            editText.apply {
+                setOnEditorActionListener { _, actionId, _ ->
+                    if (actionId == EditorInfo.IME_ACTION_DONE ||
+                        actionId == EditorInfo.IME_ACTION_NEXT ||
+                        actionId == EditorInfo.IME_ACTION_GO) {
+                        val newName = editText.text.toString().trim()
+                        if (newName.isNotEmpty()) {
+                            field.overrideName = newName
+                            onFieldRename(field, newName)
+                            notifyItemChanged(bindingAdapterPosition)
+                            dialog.dismiss()
+                        }
+                        true
+                    } else {
+                        false
+                    }
+                }
+
+                imeOptions = EditorInfo.IME_ACTION_DONE
+                setSingleLine(true)
+            }
+
+            dialog.show()
         }
     }
 

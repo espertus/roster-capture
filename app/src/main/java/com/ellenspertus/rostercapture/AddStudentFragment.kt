@@ -140,10 +140,12 @@ class AddStudentFragment() : Fragment() {
         if (field.status == FieldStatus.REQUIRED) {
             requirements.add(Requirement(field.displayName) { audioUri != null })
         }
-        binding.btnRerecord.text = field.displayNameWithIndicator
 
-        binding.btnRecord.setOnClickListener {
-            recordOrStop()
+        binding.btnRecord.apply {
+            text = field.displayNameWithIndicator
+            setOnClickListener {
+                recordOrStop()
+            }
         }
 
         binding.btnRerecord.setOnClickListener {
