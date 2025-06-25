@@ -1,4 +1,4 @@
-package com.ellenspertus.qroster
+package com.ellenspertus.rostercapture
 
 sealed class AppException(message: String, val restartable: Boolean) : Exception(message) {
     /**

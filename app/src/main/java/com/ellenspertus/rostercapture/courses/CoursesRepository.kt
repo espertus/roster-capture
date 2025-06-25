@@ -1,12 +1,12 @@
-package com.ellenspertus.qroster.courses
+package com.ellenspertus.rostercapture.courses
 
 import android.content.Context
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.Serializer
 import androidx.datastore.dataStore
-import com.ellenspertus.qroster.proto.CourseProto
-import com.ellenspertus.qroster.proto.CoursesProto
+import com.ellenspertus.rostercapture.proto.CourseProto
+import com.ellenspertus.rostercapture.proto.CoursesProto
 import com.google.protobuf.InvalidProtocolBufferException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first

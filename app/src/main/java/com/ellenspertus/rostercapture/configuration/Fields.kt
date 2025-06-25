@@ -1,4 +1,4 @@
-package com.ellenspertus.qroster.configuration
+package com.ellenspertus.rostercapture.configuration
 
 data class StudentField(
     val name: String,

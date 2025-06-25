@@ -1,4 +1,4 @@
-package com.ellenspertus.qroster
+package com.ellenspertus.rostercapture
 
 import android.app.AlarmManager
 import android.app.PendingIntent
@@ -9,7 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.navArgs
-import com.ellenspertus.qroster.databinding.FragmentFailureBinding
+import com.ellenspertus.rostercapture.databinding.FragmentFailureBinding
 import kotlin.getValue
 import kotlin.system.exitProcess
 

@@ -1,4 +1,4 @@
-package com.ellenspertus.qroster.courses
+package com.ellenspertus.rostercapture.courses
 
 import android.app.AlertDialog
 import android.os.Bundle
@@ -9,9 +9,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.ellenspertus.qroster.R
-import com.ellenspertus.qroster.databinding.FragmentSelectCourseBinding
-import com.ellenspertus.qroster.databinding.ItemCourseCardBinding
+import com.ellenspertus.rostercapture.R
+import com.ellenspertus.rostercapture.databinding.FragmentSelectCourseBinding
+import com.ellenspertus.rostercapture.databinding.ItemCourseCardBinding
 import kotlinx.coroutines.launch
 
 class SelectCourseFragment : Fragment() {

@@ -1,4 +1,4 @@
-package com.ellenspertus.qroster.configuration
+package com.ellenspertus.rostercapture.configuration
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.ellenspertus.qroster.databinding.FragmentFieldConfigBinding
+import com.ellenspertus.rostercapture.databinding.FragmentFieldConfigBinding
 
 class FieldConfigFragment : Fragment() {
     private var _binding: FragmentFieldConfigBinding? = null

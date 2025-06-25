@@ -1,8 +1,8 @@
-package com.ellenspertus.qroster.configuration
+package com.ellenspertus.rostercapture.configuration
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
-import com.ellenspertus.qroster.AppException
+import com.ellenspertus.rostercapture.AppException
 import androidx.core.content.edit
 
 class FieldConfigViewModel : ViewModel() {

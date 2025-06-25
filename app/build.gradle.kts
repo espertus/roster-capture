@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.ellenspertus.qroster"
+    namespace = "com.ellenspertus.rostercapture"
     compileSdk = 36
 
     buildFeatures {
@@ -14,7 +14,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.ellenspertus.qroster"
+        applicationId = "com.ellenspertus.rostercapture"
         minSdk = 34
         //noinspection OldTargetApi
         targetSdk = 34

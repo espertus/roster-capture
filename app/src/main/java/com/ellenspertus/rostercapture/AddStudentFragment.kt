@@ -1,4 +1,4 @@
-package com.ellenspertus.qroster
+package com.ellenspertus.rostercapture
 
 import android.Manifest
 import android.app.Activity
@@ -28,10 +28,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.ellenspertus.qroster.configuration.FieldConfigViewModel
-import com.ellenspertus.qroster.configuration.FieldStatus
-import com.ellenspertus.qroster.configuration.StudentField
-import com.ellenspertus.qroster.databinding.FragmentAddStudentBinding
+import com.ellenspertus.rostercapture.configuration.FieldConfigViewModel
+import com.ellenspertus.rostercapture.configuration.FieldStatus
+import com.ellenspertus.rostercapture.configuration.StudentField
+import com.ellenspertus.rostercapture.databinding.FragmentAddStudentBinding
 import kotlinx.coroutines.launch
 import java.io.File
 import kotlin.getValue

@@ -1,4 +1,4 @@
-package com.ellenspertus.qroster.courses
+package com.ellenspertus.rostercapture.courses
 
 data class Course(
     var crn: String = "",

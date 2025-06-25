@@ -1,10 +1,10 @@
-package com.ellenspertus.qroster.backend
+package com.ellenspertus.rostercapture.backend
 
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
-import com.ellenspertus.qroster.AppException.AppInternalException
-import com.ellenspertus.qroster.MainActivity
+import com.ellenspertus.rostercapture.AppException.AppInternalException
+import com.ellenspertus.rostercapture.MainActivity
 
 /**
  * An encapsulation of the AnkiDroid model and data communicated through it.

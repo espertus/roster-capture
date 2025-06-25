@@ -1,8 +1,8 @@
-package com.ellenspertus.qroster
+package com.ellenspertus.rostercapture
 
 import android.os.Bundle
 import androidx.fragment.app.FragmentActivity
-import com.ellenspertus.qroster.backend.AnkiBackend
+import com.ellenspertus.rostercapture.backend.AnkiBackend
 
 class MainActivity : FragmentActivity() {
     var backend: AnkiBackend? = null

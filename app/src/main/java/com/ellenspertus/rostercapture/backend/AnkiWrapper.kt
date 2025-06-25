@@ -1,4 +1,4 @@
-package com.ellenspertus.qroster.backend
+package com.ellenspertus.rostercapture.backend
 
 import android.app.Activity
 import android.content.ActivityNotFoundException

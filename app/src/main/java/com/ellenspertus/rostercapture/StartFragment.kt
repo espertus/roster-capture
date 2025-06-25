@@ -1,4 +1,4 @@
-package com.ellenspertus.qroster
+package com.ellenspertus.rostercapture
 
 import android.os.Bundle
 import android.util.Log
@@ -9,17 +9,17 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import com.ellenspertus.qroster.backend.AnkiWrapper
-import com.ellenspertus.qroster.databinding.FragmentStartBinding
+import com.ellenspertus.rostercapture.backend.AnkiWrapper
+import com.ellenspertus.rostercapture.databinding.FragmentStartBinding
 import kotlin.system.exitProcess
-import com.ellenspertus.qroster.backend.AnkiBackend
-import com.ellenspertus.qroster.backend.AnkiWrapper.PermissionStatus
-import com.ellenspertus.qroster.configuration.FieldConfigViewModel
+import com.ellenspertus.rostercapture.backend.AnkiBackend
+import com.ellenspertus.rostercapture.backend.AnkiWrapper.PermissionStatus
+import com.ellenspertus.rostercapture.configuration.FieldConfigViewModel
 
 /**
  * An invisible fragment that verifies that the API is accessible
  * and that required permissions are granted. Depending on the result,
- * it navigates to [com.ellenspertus.qroster.courses.SelectCourseFragment] or [FailureFragment] or
+ * it navigates to [com.ellenspertus.rostercapture.courses.SelectCourseFragment] or [FailureFragment] or
  * exits.
  */
 class StartFragment : Fragment() {

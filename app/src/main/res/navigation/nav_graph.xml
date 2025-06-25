@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/selectCourseFragment"
-        android:name="com.ellenspertus.qroster.courses.SelectCourseFragment"
+        android:name="com.ellenspertus.rostercapture.courses.SelectCourseFragment"
         android:label="fragment_class_select"
         tools:layout="@layout/fragment_select_course" >
         <action
@@ -19,7 +19,7 @@
     </fragment>
     <fragment
         android:id="@+id/addStudentFragment"
-        android:name="com.ellenspertus.qroster.AddStudentFragment"
+        android:name="com.ellenspertus.rostercapture.AddStudentFragment"
         android:label="AddStudentFragment" >
         <argument
             android:name="crn"
@@ -27,16 +27,16 @@
     </fragment>
     <fragment
         android:id="@+id/failureFragment"
-        android:name="com.ellenspertus.qroster.FailureFragment"
+        android:name="com.ellenspertus.rostercapture.FailureFragment"
         android:label="fragment_failure"
         tools:layout="@layout/fragment_failure" >
         <argument
             android:name="exception"
-            app:argType="com.ellenspertus.qroster.AppException" />
+            app:argType="com.ellenspertus.rostercapture.AppException" />
     </fragment>
     <fragment
         android:id="@+id/startFragment"
-        android:name="com.ellenspertus.qroster.StartFragment"
+        android:name="com.ellenspertus.rostercapture.StartFragment"
         android:label="fragment_start"
         tools:layout="@layout/fragment_start" >
         <action
@@ -51,7 +51,7 @@
     </fragment>
     <fragment
         android:id="@+id/fieldConfigFragment"
-        android:name="com.ellenspertus.qroster.configuration.FieldConfigFragment"
+        android:name="com.ellenspertus.rostercapture.configuration.FieldConfigFragment"
         android:label="FieldConfigFragment" >
         <action
             android:id="@+id/action_fieldConfigFragment_to_startFragment"

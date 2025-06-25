@@ -1,4 +1,4 @@
-package com.ellenspertus.qroster.courses
+package com.ellenspertus.rostercapture.courses
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel

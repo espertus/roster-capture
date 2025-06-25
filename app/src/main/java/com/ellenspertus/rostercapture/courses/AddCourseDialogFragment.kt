@@ -1,4 +1,4 @@
-package com.ellenspertus.qroster.courses
+package com.ellenspertus.rostercapture.courses
 
 import android.app.Dialog
 import android.os.Bundle
@@ -6,7 +6,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import com.ellenspertus.qroster.databinding.DialogAddCourseBinding
+import com.ellenspertus.rostercapture.databinding.DialogAddCourseBinding
 
 class AddCourseDialogFragment(private val courses: List<Course>) : DialogFragment() {
 

@@ -1,4 +1,4 @@
-package com.ellenspertus.qroster.configuration
+package com.ellenspertus.rostercapture.configuration
 
 import android.app.AlertDialog
 import android.view.LayoutInflater
@@ -6,8 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.recyclerview.widget.RecyclerView
-import com.ellenspertus.qroster.databinding.ItemFieldConfigBinding
-import com.ellenspertus.qroster.R
+import com.ellenspertus.rostercapture.databinding.ItemFieldConfigBinding
+import com.ellenspertus.rostercapture.R
 
 class FieldConfigAdapter(
     private val fields: List<StudentField>,
