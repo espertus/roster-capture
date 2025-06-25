@@ -1,49 +1,65 @@
 <resources>
     <string name="app_name">RosterCapture</string>
-    <string name="select_a_course">Select a course</string>
-    <string name="loading">Loading...</string>
-    <string name="record_name_request">Please record your name.</string>
-    <string name="no_courses_found">No courses found.</string>
-    <string name="add_course">Add Course</string>
-    <string name="permissions_rejection">You declined to grant RosterCapture the required permission to share data with AnkiDroid. If you would like to do so now, you can rerun the app, but Android may not allow us to ask again, in which case you will need to uninstall and reinstall RosterCapture.</string>
-    <string name="solicit_field_info">Specify which types of information you would like to collect and if you would like to rename the prompts.</string>
-    <string name="stop_recording">Stop recording</string>
+
+    <!-- Startup -->
+    <string name="welcome_to_rostercapture">Welcome to RosterCapture</string>
+    <string name="intro_to_roster_capture">RosterCapture helps teachers learn the names and faces of their students by creating flashcards that can be viewed in AnkiDroid.</string>
+    <string name="configure_explanation">You need to configure Roster Capture to specify what information to collect from students.</string>
+    <string name="install_ankidroid_explanation">You need to install the free AnkiDroid Flashcards app in order to use RosterCapture.</string>
+    <string name="permission_explanation">RosterCapture needs your permission to share information with AnkiDroid.</string>
     <string name="install_ankidroid">Install AnkiDroid</string>
     <string name="configure_rostercapture">Configure RosterCapture</string>
     <string name="grant_permission">Grant Permission</string>
+    <string name="permissions_rejection">You declined to grant RosterCapture the required permission to share data with AnkiDroid. If you would like to do so now, you can rerun the app, but Android may not allow us to ask again, in which case you will need to uninstall and reinstall RosterCapture.</string>
+    <string name="ok_button">OK</string>
+
+    <!-- Field Configuration -->
+    <string name="solicit_field_info">Specify which types of information you would like to collect and if you would like to rename the prompts.</string>
+    <string name="rename_button">Rename</string>
+    <string name="required_button">Required</string>
+    <string name="optional_button">Optional</string>
+    <string name="not_used_button">Not Used</string>
+    <string name="save_configuration_button">Save Configuration</string>
+    <string name="cancel_button">Cancel</string>
+
+    <!-- Select Course -->
+    <string name="loading">Loading...</string>
+    <string name="no_courses_found">No courses found.</string>
+    <string name="gear_icon_content_description">gear icon</string>
+    <string name="create_first_course_instruction">Create your first course with the + button.</string>
+    <string name="add_course">Add Course</string>
+    <string name="select_a_course">Select a course</string>
+
+    <!-- Add Course -->
     <string name="course_id_prompt">Course ID (e.g., CS 1000)</string>
     <string name="course_name_prompt">Course Name</string>
     <string name="crn_prompt">CRN</string>
+
+    <!-- Add Student -->
     <string name="add_student_header">Student Information</string>
-    <string name="captured_selfie_description">Captured selfie</string>
-    <string name="camera_icon_description">Camera icon</string>
-    <string name="retake_photo_button">Retake</string>
+    <!-- Recordings -->
     <string name="microphone_icon_content_description">Microphone icon</string>
+    <string name="record_name_request">Please record your name.</string>
+    <string name="stop_recording">Stop recording</string>
     <string name="re_record_name_button">Re-record name</string>
-    <string name="clear_button">Clear</string>
-    <string name="exit_button">Exit</string>
-    <string name="save_button">Save</string>
+    <!-- Photo -->
+    <string name="camera_icon_description">Camera icon</string>
+    <string name="captured_selfie_description">Captured selfie</string>
+    <string name="retake_photo_button">Retake</string>
+    <!-- Pronouns -->
     <string name="feminine_pronouns">she/her/hers</string>
     <string name="masculine_pronouns">he/him/his</string>
     <string name="gender_neutral_pronouns">they/them/theirs</string>
     <string name="other_pronouns_prompt">other (please specify)</string>
     <string name="please_specify_pronouns_prompt">Please specify</string>
+    <!-- Buttons -->
+    <string name="clear_button">Clear</string>
+    <string name="exit_button">Exit</string>
+    <string name="save_button">Save</string>
+
+    <!-- Failure -->
     <string name="error_indicator_content_description">error indicator</string>
     <string name="something_went_wrong">Something went wrong</string>
     <string name="exit_app_button">Exit App</string>
     <string name="restart_app_button">Restart App</string>
-    <string name="save_configuration_button">Save Configuration</string>
-    <string name="cancel_button">Cancel</string>
-    <string name="gear_icon_content_description">gear icon</string>
-    <string name="create_first_course_instruction">Create your first course with the + button.</string>
-    <string name="welcome_to_rostercapture">Welcome to RosterCapture</string>
-    <string name="intro_to_roster_capture">RosterCapture helps teachers learn the names and faces of their students by creating flashcards that can be viewed in AnkiDroid.</string>
-    <string name="configure_explanation">You need to configure Roster Capture to specify what information to collect from students.</string>
-    <string name="install_ankidroid_explanation">You need to install the free AnkiDroid Flashcards app in order to use QRoster.</string>
-    <string name="permission_explanation">RosterCapture needs your permission to share information with AnkiDroid.</string>
-    <string name="ok_button">OK</string>
-    <string name="rename_button">Rename</string>
-    <string name="required_button">Required</string>
-    <string name="optional_button">Optional</string>
-    <string name="not_used_button">Not Used</string>
 </resources>
