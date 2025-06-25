@@ -110,8 +110,4 @@ class SelectCourseFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-
-    companion object {
-        const val TAG = "SelectCourseFragment"
-    }
 }

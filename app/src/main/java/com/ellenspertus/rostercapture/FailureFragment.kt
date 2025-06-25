@@ -77,8 +77,4 @@ class FailureFragment : Fragment() {
         requireActivity().finishAffinity()
         exitProcess(0)
     }
-
-    companion object {
-        private const val TAG = "FailureFragment"
-    }
 }

@@ -7,4 +7,8 @@
     <string name="add_course">Add Course</string>
     <string name="permissions_rejection">You declined to grant RosterCapture the required permission to share data with AnkiDroid. If you would like to do so now, you can rerun the app, but Android may not allow us to ask again, in which case you will need to uninstall and reinstall RosterCapture.</string>
     <string name="solicit_field_info">Specify which types of information you would like to collect and if you would like to rename the prompts.</string>
+    <string name="stop_recording">Stop recording</string>
+    <string name="install_ankidroid">Install AnkiDroid</string>
+    <string name="configure_rostercapture">Configure RosterCapture</string>
+    <string name="grant_permission">Grant Permission</string>
 </resources>

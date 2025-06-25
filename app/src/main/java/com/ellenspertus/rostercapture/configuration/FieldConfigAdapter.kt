@@ -97,7 +97,7 @@ class FieldConfigAdapter(
                     if (newName.isNotEmpty()) {
                         field.overrideName = newName
                         onFieldRename(field, newName)
-                        notifyItemChanged(adapterPosition)
+                        notifyItemChanged(bindingAdapterPosition)
                     }
                 }
                 .setNegativeButton("Cancel", null)

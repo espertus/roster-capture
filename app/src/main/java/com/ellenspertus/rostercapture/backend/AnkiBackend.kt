@@ -33,7 +33,7 @@ class AnkiBackend(private val mainActivity: MainActivity) {
         Toast.makeText(mainActivity, message, Toast.LENGTH_LONG).show()
     }
 
-    suspend fun writeStudent(
+    fun writeStudent(
         crn: String,
         nuid: String,
         firstName: String,
@@ -65,19 +65,12 @@ class AnkiBackend(private val mainActivity: MainActivity) {
         }
 
         // TODO: Remove duplicates
-
         val numAdded = api.addNote(
             modelId,
             deckId,
             fields,
             tags = setOf(crn)
         )
-
-        if (numAdded == 0) {
-            Log.e(TAG, "Failure adding student")
-        } else {
-            Log.d(TAG, "Added student")
-        }
         return numAdded == 1
     }
 

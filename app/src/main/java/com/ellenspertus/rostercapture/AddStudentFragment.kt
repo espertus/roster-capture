@@ -34,6 +34,7 @@ import com.ellenspertus.rostercapture.configuration.StudentField
 import com.ellenspertus.rostercapture.databinding.FragmentAddStudentBinding
 import kotlinx.coroutines.launch
 import java.io.File
+import java.util.Locale
 import kotlin.getValue
 
 class AddStudentFragment() : Fragment() {
@@ -398,7 +399,7 @@ class AddStudentFragment() : Fragment() {
                 noAudio.visibility = View.GONE
                 // Always use the Record button for Stop Recording
                 // because it is weighted more heavily than Rerecord.
-                btnRecord.text = "Stop recording"
+                btnRecord.text = getString(R.string.stop_recording)
                 btnRecord.setIconResource(R.drawable.stop_circle_outline)
                 btnRecord.visibility = View.VISIBLE
                 btnRerecord.visibility = View.GONE
@@ -452,7 +453,7 @@ class AddStudentFragment() : Fragment() {
         val duration = System.currentTimeMillis() - recordingStartTime
         val seconds = (duration / MILLIS_PER_SECOND) % SECONDS_PER_MINUTE
         val minutes = (duration / MILLIS_PER_SECOND) / SECONDS_PER_MINUTE
-        return String.format("%d:%02d", minutes, seconds)
+        return String.format(Locale.US, "%d:%02d", minutes, seconds)
     }
 
     private fun deleteRecording() {
@@ -537,9 +538,6 @@ class AddStudentFragment() : Fragment() {
 
     private fun requiredFieldsComplete() =
         requirements.all { it.check() }
-
-    private fun getMissingFieldNames() =
-        requirements.mapNotNull { if (it.check()) null else it.name.lowercase() }
 
     // Check if all required fields have been completed.
     private fun validateForm() {

@@ -10,7 +10,7 @@ class FieldConfigViewModel : ViewModel() {
 
     // currently not used
     val studentFields: List<StudentField>
-        get() = _studentFields.map { it.copy() }
+        get() = _studentFields.map { it.copy() } // defensive copy
 
     fun hasConfiguration(context: Context) =
         context.getSharedPreferences(FIELD_CONFIG_KEY, Context.MODE_PRIVATE).all.isNotEmpty()

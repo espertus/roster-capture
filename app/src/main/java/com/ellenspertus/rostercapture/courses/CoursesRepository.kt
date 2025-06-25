@@ -65,12 +65,7 @@ class CoursesRepository(
         }
     }
 
-    suspend fun clearAllCourses() {
-        context.coursesDataStore.updateData {
-            it.toBuilder().clearCourses().build()
-        }
-    }
-
+    // currently not used
     suspend fun getAllCourses(): List<Course> {
         return coursesFlow.first()
     }

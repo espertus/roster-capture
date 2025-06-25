@@ -40,7 +40,7 @@ class AnkiWrapper(
     )
     
     fun findModelId(model: Model, createIfAbsent: Boolean): Long? =
-        api.getModelList().entries.firstOrNull {
+        api.modelList.entries.firstOrNull {
             it.value == model.name
         }?.key ?: if (createIfAbsent) {
             api.addNewCustomModel(
@@ -131,9 +131,9 @@ class AnkiWrapper(
                     setPackage("com.android.vending")
                 }
                 activity.startActivity(intent)
-            } catch (e: ActivityNotFoundException) {
+            } catch (_: ActivityNotFoundException) {
                 val intent = Intent(Intent.ACTION_VIEW).apply {
-                    data = Uri.parse(ANKI_WEB_URL)
+                    data = ANKI_WEB_URL.toUri()
                 }
                 activity.startActivity(intent)
             }

@@ -11,6 +11,14 @@ android {
 
     buildFeatures {
         buildConfig = true
+        compose = false
+        buildConfig = true
+        viewBinding = true
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
     defaultConfig {
@@ -23,21 +31,16 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
+
     kotlinOptions {
         jvmTarget = "11"
     }
-    buildFeatures {
-        compose = false
-        buildConfig = true
-        viewBinding = true
+
+    lint {
+        disable += "DirectSystemCurrentTimeMillisUsage" // AnkiDroid
     }
 }
 
-// Protobuf configuration
 protobuf {
     protoc {
         artifact = "com.google.protobuf:protoc:3.24.4"

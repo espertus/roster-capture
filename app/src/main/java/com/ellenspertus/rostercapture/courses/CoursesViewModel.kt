@@ -30,10 +30,4 @@ class CoursesViewModel(application: Application) : AndroidViewModel(application)
             coursesRepository.removeCourse(crn)
         }
     }
-
-    fun clearAllCourses() {
-        viewModelScope.launch {
-            coursesRepository.clearAllCourses()
-        }
-    }
 }

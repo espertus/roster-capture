@@ -107,7 +107,7 @@ class StartFragment : Fragment() {
             tvAnki.visibility = View.VISIBLE
             buttonProceed.let {
                 it.visibility = View.VISIBLE
-                it.text = "Install AnkiDroid"
+                it.text = getString(R.string.install_ankidroid)
                 it.setOnClickListener {
                     AnkiWrapper.offerToInstallAnkiDroid(mainActivity)
                     exitProcess(0)
@@ -122,7 +122,7 @@ class StartFragment : Fragment() {
             tvConfigure.visibility = View.VISIBLE
             buttonProceed.let {
                 it.visibility = View.VISIBLE
-                it.text = "Configure RosterCapture"
+                it.text = getString(R.string.configure_rostercapture)
                 it.setOnClickListener {
                     navigateToFieldConfigFragment()
                 }
@@ -155,7 +155,7 @@ class StartFragment : Fragment() {
         binding.apply {
             tvPermissions.visibility = View.VISIBLE
             buttonProceed.visibility = View.VISIBLE
-            buttonProceed.text = "Grant Permission"
+            buttonProceed.text = getString(R.string.grant_permission)
             buttonProceed.setOnClickListener {
                 launchPermissionRequest()
             }

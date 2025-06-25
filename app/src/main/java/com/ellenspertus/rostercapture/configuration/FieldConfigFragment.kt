@@ -35,7 +35,6 @@ class FieldConfigFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        val configurableFields = fieldConfigViewModel.getConfigurableFields()
         adapter = FieldConfigAdapter(
             fieldConfigViewModel.getConfigurableFields(),
             onFieldStatusChanged = { field, status ->
