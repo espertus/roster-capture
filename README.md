@@ -18,12 +18,12 @@ This app uses AnkiDroid's
 ### Image sources
 The app icons were created by Aisha Asgha.
 
-* Pictogrammers
+* [Pictogrammers](https://pictogrammers.com/) ([Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0))
   * camera_account.xml
   * camera_retake_outline.xml
   * microphone_outline.xml
   * stop_circle_outline.xml
-* Material Design icons
+* Material Design icons by Google ([Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0))
   * ic_add_24.xml
   * ic_edit_24.xml
   * is_settings_24.xml
