@@ -16,6 +16,7 @@ This app uses AnkiDroid's
 [Instant-Add API](https://github.com/ankidroid/Anki-Android/wiki/AnkiDroid-API).
 
 ### Image sources
+The app icons were created by Aisha Asgha.
 
 * Pictogrammers
   * camera_account.xml
