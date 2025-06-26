@@ -59,6 +59,7 @@ protobuf {
 
 dependencies {
     implementation(libs.androidx.activity)
+    implementation(libs.androidx.biometric)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

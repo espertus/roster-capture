@@ -19,8 +19,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts.*
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
@@ -31,6 +35,7 @@ import com.ellenspertus.rostercapture.configuration.FieldConfigViewModel
 import com.ellenspertus.rostercapture.configuration.FieldStatus
 import com.ellenspertus.rostercapture.configuration.StudentField
 import com.ellenspertus.rostercapture.databinding.FragmentAddStudentBinding
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.Locale
@@ -39,10 +44,13 @@ import kotlin.getValue
 class AddStudentFragment() : Fragment() {
     private val args: AddStudentFragmentArgs by navArgs()
     private lateinit var crn: String
+
     private var _binding: FragmentAddStudentBinding? = null
     private val binding get() = _binding!!
 
     private val fieldConfigViewModel: FieldConfigViewModel by activityViewModels()
+
+    private var isLocked = false
 
     // initialized when view is created
     data class Requirement(val name: String, val check: () -> Boolean)
@@ -103,12 +111,20 @@ class AddStudentFragment() : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        isLocked = false
 
         fieldConfigViewModel.loadConfiguration(requireContext())
         setupPhotoSection()
         setupAudioSection()
         setupFormSection()
         setupActionButtons()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (!isLocked) {
+            offerToLock()
+        }
     }
 
     private fun setupPhotoSection() {
@@ -150,6 +166,82 @@ class AddStudentFragment() : Fragment() {
         binding.btnRerecord.setOnClickListener {
             recordOrStop()
         }
+    }
+
+    private fun offerToLock() {
+        promptForConfirmation(
+            "Would you like to pin the page so students cannot navigate away from it?"
+        )
+        { lockPage() }
+    }
+
+    private fun isAuthenticationAvailable(): Boolean {
+        val biometricManager = BiometricManager.from(requireContext())
+        return biometricManager.canAuthenticate(
+            BiometricManager.Authenticators.BIOMETRIC_WEAK or
+                    BiometricManager.Authenticators.DEVICE_CREDENTIAL
+        ) == BiometricManager.BIOMETRIC_SUCCESS
+    }
+
+    private fun lockPage() {
+        if (!isAuthenticationAvailable()) {
+            val snackbar = Snackbar.make(
+                binding.root,
+                "The page cannot be pinned because authentication is not available on this device.",
+                Snackbar.LENGTH_INDEFINITE
+            ).apply {
+                // Make action color match text color.
+                val textView = view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+                val messageTextColor = textView.currentTextColor
+                setAction(R.string.ok_button) { }
+                setActionTextColor(messageTextColor)
+                show()
+            }
+            return
+        }
+
+        // App pinning
+        requireActivity().startLockTask()
+
+        // Back button
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    authenticateToLeave()
+                }
+            }
+        )
+
+        // Exit button
+        binding.btnExit.apply {
+            setIconResource(R.drawable.lock)
+        }
+
+        isLocked = true
+    }
+
+    private fun authenticateToLeave() {
+        val biometricPrompt = BiometricPrompt(
+            this,
+            ContextCompat.getMainExecutor(requireContext()),
+            object : BiometricPrompt.AuthenticationCallback() {
+                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                    findNavController().navigateUp()
+                }
+            }
+        )
+
+        val promptInfo = BiometricPrompt.PromptInfo.Builder()
+            .setTitle("Authentication Required")
+            .setSubtitle("Verify to leave this screen")
+            .setAllowedAuthenticators(
+                BiometricManager.Authenticators.BIOMETRIC_WEAK or
+                        BiometricManager.Authenticators.DEVICE_CREDENTIAL
+            )
+            .build()
+
+        biometricPrompt.authenticate(promptInfo)
     }
 
     private fun promptForConfirmation(message: String, action: () -> Unit) {
@@ -481,9 +573,12 @@ class AddStudentFragment() : Fragment() {
     }
 
     private fun setupActionButtons() {
-        // TODO: Restrict access
         binding.btnExit.setOnClickListener {
-            findNavController().navigateUp()
+            if (isLocked) {
+                authenticateToLeave()
+            } else {
+                findNavController().navigateUp()
+            }
         }
 
         binding.btnClear.setOnClickListener {
@@ -600,6 +695,7 @@ class AddStudentFragment() : Fragment() {
         deletePhotoFile()
         deleteAudioFile()
 
+        isLocked = false
         _binding = null
     }
 

@@ -21,6 +21,7 @@ The app icons were created by Aisha Asgha.
 * [Pictogrammers](https://pictogrammers.com/) ([Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0))
   * camera_account.xml
   * camera_retake_outline.xml
+  * lock.xml
   * microphone_outline.xml
   * stop_circle_outline.xml
 * Material Design icons by Google ([Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0))

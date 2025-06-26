@@ -128,6 +128,7 @@
                         tools:text="Pronouns *"
                         android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
+                    <!-- Other Pronouns -->
                     <RadioGroup
                         android:id="@+id/rgPronouns"
                         android:layout_width="match_parent"
@@ -160,7 +161,6 @@
 
                     </RadioGroup>
 
-                    <!-- Other Pronouns -->
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/tilOtherPronouns"
                         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
