@@ -5,7 +5,6 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.media.MediaPlayer
 import android.media.MediaRecorder
 import androidx.navigation.fragment.navArgs
 import android.net.Uri
@@ -481,29 +480,6 @@ class AddStudentFragment() : Fragment() {
         audioUri = null
     }
 
-    @Suppress("unused") // currently no Play button
-    private fun playRecording() {
-        audioUri?.let {
-            try {
-                // binding.btnPlay.isEnabled = false
-                MediaPlayer().apply {
-                    setDataSource(uriToFile(it)?.absolutePath)
-                    setOnCompletionListener {
-                        // binding.btnPlay.isEnabled = true
-                    }
-                    prepare()
-                    start()
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Unable to play media file: $e")
-                // binding.btnPlay.isEnabled = true
-            }
-        } ?: run {
-            Log.e(TAG, "playRecording() called but no recording")
-        }
-    }
-
-    // Action buttons: Clear, Exit, Save
     private fun setupActionButtons() {
         // TODO: Restrict access
         binding.btnExit.setOnClickListener {
