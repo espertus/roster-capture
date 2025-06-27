@@ -41,8 +41,12 @@ for ID information for my students.
 
 ### Is it safe to give students my phone?
 
-The app uses [Android pinning](https://support.google.com/android/answer/9455138?hl=en)
-so students can't leave the Add Student screen.
+When you open the Add Student screen, you are prompted to enable [Android
+pinning](https://support.google.com/android/answer/9455138?hl=en)
+so students can't do anything else with your phone. If pinning is engaged,
+it will show up on your display:
+
+[![image of phone with "App is pinned" notification](images/student-information-pinned-thumbnail.png)](images/student-information-pinned.png)
 
 Students may be able to view incoming notifications. You can protect yourself by:
 * [Disabling lock screen notifications](https://support.google.com/android/answer/9079661)
