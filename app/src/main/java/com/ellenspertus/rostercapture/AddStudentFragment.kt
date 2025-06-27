@@ -52,11 +52,20 @@ class AddStudentFragment() : Fragment() {
     private val fieldConfigViewModel: FieldConfigViewModel by activityViewModels()
 
     private var isLocked = false
+    // If the fragment is not locked, we should offer to lock it only if
+    // the fragment is reached through the navigation graph, not if we
+    // return to the fragment from taking a picture, for example.
+    private var shouldOfferLocking = true
+    val navListener = NavController.OnDestinationChangedListener { _, destination, _ ->
+        if (destination.id == R.id.addStudentFragment) {
+            shouldOfferLocking = true
+        }
+    }
 
-    // initialized when view is created
     data class Requirement(val name: String, val check: () -> Boolean)
-
+    // initialized when view is created
     private val requirements: MutableList<Requirement> = mutableListOf()
+
 
     // Photo capture
     private var photoUri: Uri? = null
@@ -112,8 +121,12 @@ class AddStudentFragment() : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        isLocked = false
 
+        // Handle locking.
+        isLocked = false
+        findNavController().addOnDestinationChangedListener(navListener)
+
+        // Initialize view.
         fieldConfigViewModel.loadConfiguration(requireContext())
         setupPhotoSection()
         setupAudioSection()
@@ -123,8 +136,10 @@ class AddStudentFragment() : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        if (!isLocked) {
+
+        if (!isLocked && shouldOfferLocking) {
             offerToLock()
+            shouldOfferLocking = false
         }
     }
 
@@ -186,7 +201,7 @@ class AddStudentFragment() : Fragment() {
 
     private fun lockPage() {
         if (!isAuthenticationAvailable()) {
-            val snackbar = Snackbar.make(
+            Snackbar.make(
                 binding.root,
                 "The page cannot be pinned because authentication is not available on this device.",
                 Snackbar.LENGTH_INDEFINITE
@@ -524,7 +539,7 @@ class AddStudentFragment() : Fragment() {
 
                 btnRecord.visibility = View.GONE
                 // Restore text and icon in case button is shown again later.
-                btnRecord.text = "Record name"
+                btnRecord.text = fieldConfigViewModel.getRecordingField().displayNameWithIndicator
                 btnRecord.setIconResource(R.drawable.microphone_outline)
 
                 btnRerecord.visibility = View.VISIBLE
@@ -688,14 +703,16 @@ class AddStudentFragment() : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+
+        _binding = null
         mediaRecorder?.release()
         recordingHandler.removeCallbacksAndMessages(null)
 
         deletePhotoFile()
         deleteAudioFile()
 
+        findNavController().removeOnDestinationChangedListener(navListener)
         isLocked = false
-        _binding = null
     }
 
     companion object {
