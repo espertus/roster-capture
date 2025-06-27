@@ -40,6 +40,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.Locale
+import kotlin.collections.mutableListOf
 import kotlin.getValue
 
 class AddStudentFragment() : Fragment() {
@@ -64,7 +65,7 @@ class AddStudentFragment() : Fragment() {
 
     data class Requirement(val name: String, val check: () -> Boolean)
     // initialized when view is created
-    private val requirements: MutableList<Requirement> = mutableListOf()
+    private var requirements: MutableList<Requirement> = mutableListOf()
 
 
     // Photo capture
@@ -74,6 +75,7 @@ class AddStudentFragment() : Fragment() {
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             displayCapturedPhoto()
+            checkForRequiredInputs()
         }
     }
 
@@ -127,6 +129,7 @@ class AddStudentFragment() : Fragment() {
         findNavController().addOnDestinationChangedListener(navListener)
 
         // Initialize view.
+        requirements = mutableListOf()
         fieldConfigViewModel.loadConfiguration(requireContext())
         setupPhotoSection()
         setupAudioSection()
@@ -243,6 +246,7 @@ class AddStudentFragment() : Fragment() {
             ContextCompat.getMainExecutor(requireContext()),
             object : BiometricPrompt.AuthenticationCallback() {
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                    requireActivity().stopLockTask()
                     findNavController().navigateUp()
                 }
             }
@@ -289,7 +293,7 @@ class AddStudentFragment() : Fragment() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
-                validateForm()
+                checkForRequiredInputs()
             }
         }
 
@@ -377,7 +381,7 @@ class AddStudentFragment() : Fragment() {
                 View.GONE
             }
             if (field.status == FieldStatus.REQUIRED) {
-                validateForm()
+                checkForRequiredInputs()
             }
         }
     }
@@ -544,6 +548,7 @@ class AddStudentFragment() : Fragment() {
 
                 btnRerecord.visibility = View.VISIBLE
             }
+            checkForRequiredInputs()
 
         } catch (e: Exception) {
             Toast.makeText(requireContext(), "Failed to stop recording", Toast.LENGTH_SHORT).show()
@@ -627,7 +632,7 @@ class AddStudentFragment() : Fragment() {
         requirements.all { it.check() }
 
     // Check if all required fields have been completed.
-    private fun validateForm() {
+    private fun checkForRequiredInputs() {
         binding.btnSave.isEnabled = requiredFieldsComplete()
     }
 
@@ -707,6 +712,7 @@ class AddStudentFragment() : Fragment() {
         _binding = null
         mediaRecorder?.release()
         recordingHandler.removeCallbacksAndMessages(null)
+        requirements.clear()
 
         deletePhotoFile()
         deleteAudioFile()
