@@ -53,9 +53,9 @@ class AnkiBackend(private val mainActivity: MainActivity) {
                     "$firstName $lastName"
 
                 SELFIE_FIELD -> photoUri?.let { addImageToAnki(it) }
-                AUDIO_FIELD -> audioUri?.let { addAudioToAnki(it) }
-                ID_FIELD -> nuid
-                PRONOUN_FIELD -> pronouns
+                AUDIO_FIELD -> audioUri?.let { addAudioToAnki(it) } ?: ""
+                ID_FIELD -> nuid ?: ""
+                PRONOUN_FIELD -> pronouns ?: ""
                 else -> run {
                     Log.e(TAG, "Illegal field name ${FIELDS[i]}")
                     showToast("Internal Error")
