@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.ellenspertus.rostercapture.R
 import com.ellenspertus.rostercapture.databinding.FragmentSelectCourseBinding
 import com.ellenspertus.rostercapture.databinding.ItemCourseCardBinding
+import com.ellenspertus.rostercapture.extensions.navigateSafe
 import kotlinx.coroutines.launch
 
 class SelectCourseFragment : Fragment() {
@@ -50,7 +51,7 @@ class SelectCourseFragment : Fragment() {
             }
         }
         binding.settingsButton.setOnClickListener {
-            findNavController().navigate(
+            findNavController().navigateSafe(
                 SelectCourseFragmentDirections.actionSelectCourseFragmentToFieldConfigFragment()
             )
         }
@@ -77,7 +78,7 @@ class SelectCourseFragment : Fragment() {
                 courseCrn.text = it.crn
 
                 root.setOnClickListener { view ->
-                    findNavController().navigate(SelectCourseFragmentDirections.actionSelectCourseFragmentToAddStudentFragment(course.crn))
+                    findNavController().navigateSafe(SelectCourseFragmentDirections.actionSelectCourseFragmentToAddStudentFragment(course.crn))
                 }
 
                 root.setOnLongClickListener {

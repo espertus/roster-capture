@@ -10,6 +10,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ellenspertus.rostercapture.databinding.FragmentFieldConfigBinding
+import com.ellenspertus.rostercapture.extensions.navigateSafe
 
 class FieldConfigFragment : Fragment() {
     private var _binding: FragmentFieldConfigBinding? = null
@@ -72,7 +73,7 @@ class FieldConfigFragment : Fragment() {
     private fun saveConfiguration() {
         fieldConfigViewModel.saveConfiguration(requireContext())
         Toast.makeText(requireContext(), "Configuration saved", Toast.LENGTH_SHORT).show()
-        findNavController().navigate(FieldConfigFragmentDirections.actionFieldConfigFragmentToStartFragment())
+        findNavController().navigateSafe(FieldConfigFragmentDirections.actionFieldConfigFragmentToStartFragment())
     }
 
     override fun onDestroyView() {

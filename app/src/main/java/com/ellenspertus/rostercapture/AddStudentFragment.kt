@@ -18,7 +18,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -30,11 +29,13 @@ import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.ellenspertus.rostercapture.configuration.FieldConfigViewModel
 import com.ellenspertus.rostercapture.configuration.FieldStatus
 import com.ellenspertus.rostercapture.configuration.StudentField
 import com.ellenspertus.rostercapture.databinding.FragmentAddStudentBinding
+import com.ellenspertus.rostercapture.extensions.hasText
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.io.File
@@ -606,8 +607,6 @@ class AddStudentFragment() : Fragment() {
         deletePhoto()
         deleteRecording()
     }
-
-    private fun EditText.hasText() = text?.isNotEmpty() == true
 
     private fun requiredFieldsComplete() =
         requirements.all { it.check() }

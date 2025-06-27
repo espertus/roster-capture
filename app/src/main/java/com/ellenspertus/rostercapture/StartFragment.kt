@@ -15,6 +15,7 @@ import kotlin.system.exitProcess
 import com.ellenspertus.rostercapture.backend.AnkiBackend
 import com.ellenspertus.rostercapture.backend.AnkiWrapper.PermissionStatus
 import com.ellenspertus.rostercapture.configuration.FieldConfigViewModel
+import com.ellenspertus.rostercapture.extensions.navigateSafe
 
 /**
  * An invisible fragment that verifies that the API is accessible
@@ -80,20 +81,20 @@ class StartFragment : Fragment() {
     // Transitions to other fragments
 
     private fun navigateToSelectCourseFragment() {
-        findNavController().navigate(
+        findNavController().navigateSafe(
             StartFragmentDirections.actionStartFragmentToSelectCourseFragment()
         )
     }
 
     private fun navigateToFieldConfigFragment() {
-        findNavController().navigate(
+        findNavController().navigateSafe(
             StartFragmentDirections.actionStartFragmentToFieldConfigFragment()
         )
     }
 
     private fun fail(exception: AppException) {
         Log.e(TAG, exception.toString())
-        findNavController().navigate(
+        findNavController().navigateSafe(
             StartFragmentDirections.actionStartFragmentToFailureFragment(
                 exception
             )
