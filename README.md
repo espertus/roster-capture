@@ -13,6 +13,7 @@ desktop or iOS apps. All Anki apps are free and open source.
 
 [![Configure Student Fields](images/configure-student-fields-thumbnail.png)](images/configure-student-fields.png)
 [![Select Course](images/select-course-thumbnail.png)](images/select-course.png)
+
 [![Student Information 1](images/student-information1-thumbnail.png)](images/student-information1.png)
 [![Student Information 2](images/student-information2-thumbnail.png)](images/student-information2.png)
 
