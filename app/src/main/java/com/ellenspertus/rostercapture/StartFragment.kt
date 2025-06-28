@@ -1,7 +1,6 @@
 package com.ellenspertus.rostercapture
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +15,7 @@ import com.ellenspertus.rostercapture.backend.AnkiBackend
 import com.ellenspertus.rostercapture.backend.AnkiWrapper.PermissionStatus
 import com.ellenspertus.rostercapture.configuration.FieldConfigViewModel
 import com.ellenspertus.rostercapture.extensions.navigateSafe
+import com.ellenspertus.rostercapture.extensions.navigateToFailure
 
 /**
  * An invisible fragment that verifies that the API is accessible
@@ -92,15 +92,6 @@ class StartFragment : Fragment() {
         )
     }
 
-    private fun fail(exception: AppException) {
-        Log.e(TAG, exception.toString())
-        findNavController().navigateSafe(
-            StartFragmentDirections.actionStartFragmentToFailureFragment(
-                exception
-            )
-        )
-    }
-
     // Primarily UI methods
 
     private fun requestAnkiDroid() {
@@ -170,7 +161,7 @@ class StartFragment : Fragment() {
 
     private fun handlePermissionDenied() {
         // At this point, we don't know whether we are allowed to ask again.
-        fail(
+        navigateToFailure(
             AppException.AppUserException(
                 getString(R.string.permissions_rejection)
             )
@@ -181,13 +172,13 @@ class StartFragment : Fragment() {
     // permissions granted.
     private fun createBackend() {
         if (!isAnkiDroidInstalled() || AnkiWrapper.checkPermissionStatus(this) != PermissionStatus.GRANTED) {
-            fail(AppException.AppInternalException("Assertion failed in createBackend()"))
+            navigateToFailure(AppException.AppInternalException("Assertion failed in createBackend()"))
         }
         try {
             mainActivity.backend = AnkiBackend(mainActivity)
             navigateToSelectCourseFragment()
         } catch (e: AppException) {
-            fail(e)
+            navigateToFailure(e)
         }
     }
 
