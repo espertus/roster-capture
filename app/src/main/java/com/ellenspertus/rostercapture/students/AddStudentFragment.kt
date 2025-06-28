@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
+import com.ellenspertus.rostercapture.AppException
 import com.ellenspertus.rostercapture.MainActivity
 import com.ellenspertus.rostercapture.R
 import com.ellenspertus.rostercapture.configuration.FieldConfigViewModel
@@ -22,8 +23,10 @@ import com.ellenspertus.rostercapture.configuration.FieldStatus
 import com.ellenspertus.rostercapture.configuration.StudentField
 import com.ellenspertus.rostercapture.databinding.FragmentAddStudentBinding
 import com.ellenspertus.rostercapture.extensions.hasText
+import com.ellenspertus.rostercapture.extensions.navigateToFailure
 import com.ellenspertus.rostercapture.extensions.promptForConfirmation
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
 import java.util.Locale
 
@@ -33,10 +36,12 @@ class AddStudentFragment() : Fragment() {
 
     private var _binding: FragmentAddStudentBinding? = null
     private val binding get() = _binding!!
+    private lateinit var firstEditText: TextInputEditText // initializeFirstEditText()
 
     private val fieldConfigViewModel: FieldConfigViewModel by activityViewModels()
 
     data class Requirement(val name: String, val check: () -> Boolean)
+
     private var requirements: MutableList<Requirement> = mutableListOf()
 
     // Helper classes
@@ -72,6 +77,7 @@ class AddStudentFragment() : Fragment() {
         setupAudioSection()
         setupFormSection()
         setupActionButtons()
+        initializeFirstEditText()
     }
 
     override fun onDestroyView() {
@@ -245,6 +251,13 @@ class AddStudentFragment() : Fragment() {
         }
     }
 
+    private fun initializeFirstEditText() {
+        val editTexts = listOf(binding.etId, binding.etFirstName, binding.etLastName)
+        editTexts.firstOrNull { it.isEnabled }?.let {
+            firstEditText = it
+        } ?: navigateToFailure(AppException.AppInternalException("Could not find enabled edittext"))
+    }
+
     // Locking (pinning)
 
     override fun onResume() {
@@ -407,6 +420,7 @@ class AddStudentFragment() : Fragment() {
         }
         deletePhoto()
         deleteRecording()
+        firstEditText.requestFocus()
     }
 
     private fun requiredFieldsComplete() =
@@ -461,7 +475,7 @@ class AddStudentFragment() : Fragment() {
 
             var message = if (success == true) {
                 clearForm()
-               "Student saved successfully!"
+                "Student saved successfully!"
             } else {
                 binding.btnSave.isEnabled = true
                 "Failed to save student"
