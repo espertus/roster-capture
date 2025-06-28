@@ -47,7 +47,7 @@ class AnkiBackend(private val mainActivity: MainActivity) {
 
         for (i in fields.indices) {
             fields[i] = when (FIELDS[i]) {
-                NAME_FIELD -> if (preferredName != null)
+                NAME_FIELD -> if (preferredName != null && preferredName != firstName)
                     "$firstName ($preferredName) $lastName"
                 else
                     "$firstName $lastName"
