@@ -1,6 +1,5 @@
 package com.ellenspertus.rostercapture.students
 
-import android.app.AlertDialog
 import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
@@ -12,14 +11,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.biometric.BiometricManager
-import androidx.biometric.BiometricPrompt
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavController
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.ellenspertus.rostercapture.MainActivity
 import com.ellenspertus.rostercapture.R
@@ -28,6 +22,7 @@ import com.ellenspertus.rostercapture.configuration.FieldStatus
 import com.ellenspertus.rostercapture.configuration.StudentField
 import com.ellenspertus.rostercapture.databinding.FragmentAddStudentBinding
 import com.ellenspertus.rostercapture.extensions.hasText
+import com.ellenspertus.rostercapture.extensions.promptForConfirmation
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -41,30 +36,18 @@ class AddStudentFragment() : Fragment() {
 
     private val fieldConfigViewModel: FieldConfigViewModel by activityViewModels()
 
-    private var isLocked = false
-
-    // If the fragment is not locked, we should offer to lock it only if
-    // the fragment is reached through the navigation graph, not if we
-    // return to the fragment from taking a picture, for example.
-    private var shouldOfferLocking = true
-    val navListener = NavController.OnDestinationChangedListener { _, destination, _ ->
-        if (destination.id == R.id.addStudentFragment) {
-            shouldOfferLocking = true
-        }
-    }
-
     data class Requirement(val name: String, val check: () -> Boolean)
-
-    // initialized when view is created
     private var requirements: MutableList<Requirement> = mutableListOf()
 
-    // Media
+    // Helper classes
     private var photoManager: PhotoManager? = null
     private var audioManager: AudioManager? = null
+    private var lockManager: LockManager? = null
+
+    // Lifecycle methods
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         crn = args.crn
     }
 
@@ -80,8 +63,7 @@ class AddStudentFragment() : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Handle locking.
-        isLocked = false
-        findNavController().addOnDestinationChangedListener(navListener)
+        lockManager = LockManager(this, ::processLockAttempt)
 
         // Initialize view.
         requirements = mutableListOf()
@@ -92,14 +74,21 @@ class AddStudentFragment() : Fragment() {
         setupActionButtons()
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onDestroyView() {
+        super.onDestroyView()
 
-        if (!isLocked && shouldOfferLocking) {
-            offerToLock()
-            shouldOfferLocking = false
-        }
+        lockManager?.destroy()
+        lockManager = null
+
+        // free memory
+        clearForm() // deletes media files
+        _binding = null
+        requirements.clear()
+        photoManager = null
+        audioManager = null
     }
+
+    // View configuration and requirements creation
 
     private fun setupPhotoSection() {
         // Photos are always required.
@@ -155,99 +144,6 @@ class AddStudentFragment() : Fragment() {
         binding.btnRerecord.setOnClickListener {
             audioManager?.recordOrStop()
         }
-    }
-
-    private fun offerToLock() {
-        promptForConfirmation(
-            "Would you like to pin the page so students cannot navigate away from it?"
-        )
-        { lockPage() }
-    }
-
-    private fun isAuthenticationAvailable(): Boolean {
-        val biometricManager = BiometricManager.from(requireContext())
-        return biometricManager.canAuthenticate(
-            BiometricManager.Authenticators.BIOMETRIC_WEAK or
-                    BiometricManager.Authenticators.DEVICE_CREDENTIAL
-        ) == BiometricManager.BIOMETRIC_SUCCESS
-    }
-
-    private fun lockPage() {
-        if (!isAuthenticationAvailable()) {
-            Snackbar.make(
-                binding.root,
-                "The page cannot be pinned because authentication is not available on this device.",
-                Snackbar.LENGTH_INDEFINITE
-            ).apply {
-                // Make action color match text color.
-                val textView =
-                    view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
-                val messageTextColor = textView.currentTextColor
-                setAction(R.string.ok_button) { }
-                setActionTextColor(messageTextColor)
-                show()
-            }
-            return
-        }
-
-        // App pinning
-        requireActivity().startLockTask()
-
-        // Back button
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    authenticateToLeave()
-                }
-            }
-        )
-
-        // Exit button
-        binding.btnExit.apply {
-            setIconResource(R.drawable.lock)
-        }
-
-        isLocked = true
-    }
-
-    private fun authenticateToLeave() {
-        val biometricPrompt = BiometricPrompt(
-            this,
-            ContextCompat.getMainExecutor(requireContext()),
-            object : BiometricPrompt.AuthenticationCallback() {
-                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                    requireActivity().stopLockTask()
-                    findNavController().navigateUp()
-                }
-            }
-        )
-
-        val promptInfo = BiometricPrompt.PromptInfo.Builder()
-            .setTitle("Authentication Required")
-            .setSubtitle("Verify to leave this screen")
-            .setAllowedAuthenticators(
-                BiometricManager.Authenticators.BIOMETRIC_WEAK or
-                        BiometricManager.Authenticators.DEVICE_CREDENTIAL
-            )
-            .build()
-
-        biometricPrompt.authenticate(promptInfo)
-    }
-
-    private fun promptForConfirmation(message: String, action: () -> Unit) {
-        AlertDialog.Builder(requireContext())
-            .setMessage(message)
-            .setPositiveButton("Yes") { _, _ -> action() }
-            .setNegativeButton("No") { dialog, _ ->
-                dialog.dismiss()
-            }
-            .show()
-    }
-
-    @Suppress("unused") // currently no Delete button
-    private fun promptToDeleteRecording() {
-        promptForConfirmation("Do you really want to delete the recording?", ::deleteRecording)
     }
 
     private fun setupFormSection() {
@@ -349,6 +245,51 @@ class AddStudentFragment() : Fragment() {
         }
     }
 
+    // Locking (pinning)
+
+    override fun onResume() {
+        super.onResume()
+        lockManager?.resume()
+    }
+
+    private fun processLockAttempt(status: LockManager.Status) {
+        if (status == LockManager.Status.AUTH_NOT_AVAILABLE) {
+            reportAuthNotAvailable()
+            return
+        }
+
+        // Back button
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    lockManager?.handleExitRequest()
+                }
+            }
+        )
+
+        // Exit button
+        binding.btnExit.setIconResource(R.drawable.lock)
+    }
+
+    private fun reportAuthNotAvailable() {
+        Snackbar.make(
+            binding.root,
+            "The page cannot be pinned because authentication is not available on this device.",
+            Snackbar.LENGTH_INDEFINITE
+        ).apply {
+            // Make action color match text color.
+            val textView =
+                view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+            val messageTextColor = textView.currentTextColor
+            setAction(R.string.ok_button) { }
+            setActionTextColor(messageTextColor)
+            show()
+        }
+    }
+
+    // Photo
+
     private fun displayCapturedPhoto(photoUri: Uri) {
         binding.apply {
             capturedPhoto.setImageURI(photoUri)
@@ -373,6 +314,16 @@ class AddStudentFragment() : Fragment() {
             btnRetakePhoto.visibility = View.GONE
         }
     }
+
+    private fun showPermissionDeniedMessage(permission: String) {
+        Toast.makeText(
+            requireContext(),
+            "$permission permission is required for this feature",
+            Toast.LENGTH_LONG
+        ).show()
+    }
+
+    // Recording
 
     private fun stopRecordingUI(duration: Long) {
         binding.apply {
@@ -424,13 +375,11 @@ class AddStudentFragment() : Fragment() {
         }
     }
 
+    // Form handling
+
     private fun setupActionButtons() {
         binding.btnExit.setOnClickListener {
-            if (isLocked) {
-                authenticateToLeave()
-            } else {
-                findNavController().navigateUp()
-            }
+            lockManager?.handleExitRequest()
         }
 
         binding.btnClear.setOnClickListener {
@@ -443,7 +392,7 @@ class AddStudentFragment() : Fragment() {
     }
 
     private fun promptToClearForm() {
-        promptForConfirmation("Do you really want to clear the form?", ::clearForm)
+        requireContext().promptForConfirmation("Do you really want to clear the form?", ::clearForm)
     }
 
     private fun clearForm() {
@@ -510,47 +459,19 @@ class AddStudentFragment() : Fragment() {
                 audioUri = audioManager?.audioUri,
             )
 
-            if (success == true) {
-                Toast.makeText(
-                    requireContext(),
-                    "Student saved successfully!",
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
+            var message = if (success == true) {
                 clearForm()
+               "Student saved successfully!"
             } else {
-                Toast.makeText(
-                    requireContext(),
-                    "Failed to save student",
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
                 binding.btnSave.isEnabled = true
+                "Failed to save student"
             }
+            Toast.makeText(
+                requireContext(),
+                message,
+                Toast.LENGTH_SHORT
+            ).show()
         }
-    }
-
-    private fun showPermissionDeniedMessage(permission: String) {
-        Toast.makeText(
-            requireContext(),
-            "$permission permission is required for this feature",
-            Toast.LENGTH_LONG
-        ).show()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-
-        // navigation
-        findNavController().removeOnDestinationChangedListener(navListener)
-        isLocked = false
-
-        // free memory
-        clearForm() // deletes media files
-        _binding = null
-        requirements.clear()
-        photoManager = null
-        audioManager = null
     }
 
     companion object {
