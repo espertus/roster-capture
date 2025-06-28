@@ -19,7 +19,7 @@
     </fragment>
     <fragment
         android:id="@+id/addStudentFragment"
-        android:name="com.ellenspertus.rostercapture.AddStudentFragment"
+        android:name="com.ellenspertus.rostercapture.students.AddStudentFragment"
         android:label="AddStudentFragment" >
         <argument
             android:name="crn"

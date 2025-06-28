@@ -1,17 +1,8 @@
-package com.ellenspertus.rostercapture
+package com.ellenspertus.rostercapture.students
 
-import android.Manifest
-import android.app.Activity
 import android.app.AlertDialog
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.media.MediaRecorder
-import androidx.navigation.fragment.navArgs
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -21,16 +12,17 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.result.contract.ActivityResultContracts.*
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import com.ellenspertus.rostercapture.MainActivity
+import com.ellenspertus.rostercapture.R
 import com.ellenspertus.rostercapture.configuration.FieldConfigViewModel
 import com.ellenspertus.rostercapture.configuration.FieldStatus
 import com.ellenspertus.rostercapture.configuration.StudentField
@@ -38,10 +30,7 @@ import com.ellenspertus.rostercapture.databinding.FragmentAddStudentBinding
 import com.ellenspertus.rostercapture.extensions.hasText
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
-import java.io.File
 import java.util.Locale
-import kotlin.collections.mutableListOf
-import kotlin.getValue
 
 class AddStudentFragment() : Fragment() {
     private val args: AddStudentFragmentArgs by navArgs()
@@ -53,6 +42,7 @@ class AddStudentFragment() : Fragment() {
     private val fieldConfigViewModel: FieldConfigViewModel by activityViewModels()
 
     private var isLocked = false
+
     // If the fragment is not locked, we should offer to lock it only if
     // the fragment is reached through the navigation graph, not if we
     // return to the fragment from taking a picture, for example.
@@ -64,48 +54,13 @@ class AddStudentFragment() : Fragment() {
     }
 
     data class Requirement(val name: String, val check: () -> Boolean)
+
     // initialized when view is created
     private var requirements: MutableList<Requirement> = mutableListOf()
 
-
-    // Photo capture
-    private var photoUri: Uri? = null
-    private val takePictureLauncher = registerForActivityResult(
-        StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            displayCapturedPhoto()
-            checkForRequiredInputs()
-        }
-    }
-
-    // Audio recording
-    private var mediaRecorder: MediaRecorder? = null
-    private var audioUri: Uri? = null
-    private var isRecording = false
-    private var recordingStartTime = 0L
-    private val recordingHandler = Handler(Looper.getMainLooper())
-
-    // Permissions
-    private val cameraPermissionLauncher = registerForActivityResult(
-        RequestPermission()
-    ) { granted ->
-        if (granted) {
-            launchCamera()
-        } else {
-            showPermissionDeniedMessage("Camera")
-        }
-    }
-
-    private val audioPermissionLauncher = registerForActivityResult(
-        RequestPermission()
-    ) { granted ->
-        if (granted) {
-            startRecording()
-        } else {
-            showPermissionDeniedMessage("Microphone")
-        }
-    }
+    // Media
+    private var photoManager: PhotoManager? = null
+    private var audioManager: AudioManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -148,19 +103,26 @@ class AddStudentFragment() : Fragment() {
 
     private fun setupPhotoSection() {
         // Photos are always required.
-        requirements.add(Requirement(fieldConfigViewModel.getSelfieField().displayName) { photoUri != null })
+        requirements.add(Requirement(fieldConfigViewModel.getSelfieField().displayName) { photoManager?.photoUri != null })
         binding.btnTakePhoto.text = fieldConfigViewModel.getSelfieField().displayName
 
+        photoManager = PhotoManager(
+            fragment = this,
+            onPhotoCapture = ::displayCapturedPhoto,
+            onPermissionDenied = ::showPermissionDeniedMessage
+        )
+
         binding.photoContainer.setOnClickListener {
-            checkCameraPermissionAndLaunch()
+            photoManager?.checkPermissionAndLaunch()
         }
 
         binding.btnTakePhoto.setOnClickListener {
-            checkCameraPermissionAndLaunch()
+            photoManager?.checkPermissionAndLaunch()
         }
 
+        // not initially shown
         binding.btnRetakePhoto.setOnClickListener {
-            checkCameraPermissionAndLaunch()
+            photoManager?.checkPermissionAndLaunch()
         }
     }
 
@@ -171,19 +133,27 @@ class AddStudentFragment() : Fragment() {
             return
         }
 
+        audioManager = AudioManager(
+            fragment = this,
+            onUpdateDuration = ::updateDuration,
+            onRecordingComplete = ::stopRecordingUI,
+            onPermissionDenied = ::showPermissionDeniedMessage
+        )
         if (field.status == FieldStatus.REQUIRED) {
-            requirements.add(Requirement(field.displayName) { audioUri != null })
+            requirements.add(Requirement(field.displayName) {
+                audioManager?.audioUri != null
+            })
         }
 
         binding.btnRecord.apply {
             text = field.displayNameWithIndicator
             setOnClickListener {
-                recordOrStop()
+                audioManager?.recordOrStop()
             }
         }
 
         binding.btnRerecord.setOnClickListener {
-            recordOrStop()
+            audioManager?.recordOrStop()
         }
     }
 
@@ -210,7 +180,8 @@ class AddStudentFragment() : Fragment() {
                 Snackbar.LENGTH_INDEFINITE
             ).apply {
                 // Make action color match text color.
-                val textView = view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+                val textView =
+                    view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
                 val messageTextColor = textView.currentTextColor
                 setAction(R.string.ok_button) { }
                 setActionTextColor(messageTextColor)
@@ -277,14 +248,6 @@ class AddStudentFragment() : Fragment() {
     @Suppress("unused") // currently no Delete button
     private fun promptToDeleteRecording() {
         promptForConfirmation("Do you really want to delete the recording?", ::deleteRecording)
-    }
-
-    private fun recordOrStop() {
-        if (isRecording) {
-            stopRecording()
-        } else {
-            checkAudioPermissionAndRecord()
-        }
     }
 
     private fun setupFormSection() {
@@ -386,44 +349,7 @@ class AddStudentFragment() : Fragment() {
         }
     }
 
-    // Photo capture methods
-    private fun checkCameraPermissionAndLaunch() {
-        deletePhotoFile()
-        when {
-            ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.CAMERA
-            ) == PackageManager.PERMISSION_GRANTED -> {
-                launchCamera()
-            }
-
-            else -> {
-                cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
-            }
-        }
-    }
-
-    private fun launchCamera() {
-        deletePhotoFile()
-
-        val photoFile =
-            File(requireContext().cacheDir, "student_photo_${System.currentTimeMillis()}.jpg")
-        photoUri = FileProvider.getUriForFile(
-            requireContext(),
-            "${requireContext().packageName}.fileprovider",
-            photoFile
-        )
-
-        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
-            putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
-            putExtra("android.intent.extras.CAMERA_FACING", 1)
-            putExtra("android.intent.extras.LENS_FACING_FRONT", 1)
-            putExtra("android.intent.extra.USE_FRONT_CAMERA", true)
-        }
-        takePictureLauncher.launch(intent)
-    }
-
-    private fun displayCapturedPhoto() {
+    private fun displayCapturedPhoto(photoUri: Uri) {
         binding.apply {
             capturedPhoto.setImageURI(photoUri)
             capturedPhoto.visibility = View.VISIBLE
@@ -431,24 +357,13 @@ class AddStudentFragment() : Fragment() {
             btnTakePhoto.visibility = View.GONE
             btnRetakePhoto.visibility = View.VISIBLE
         }
+        checkForRequiredInputs()
     }
 
     private fun deletePhoto() {
         deletePhotoUI()
-        deletePhotoFile()
+        photoManager?.deletePhotoFile()
     }
-
-    private fun uriToFile(uri: Uri?): File? =
-        uri?.lastPathSegment?.let { fileName ->
-            File(requireContext().filesDir, fileName)
-        }
-
-    private fun fileToUri(file: File): Uri =
-        FileProvider.getUriForFile(
-            requireContext(),
-            "${requireContext().packageName}.fileprovider",
-            file
-        )
 
     private fun deletePhotoUI() {
         binding.apply {
@@ -459,54 +374,22 @@ class AddStudentFragment() : Fragment() {
         }
     }
 
-    private fun deletePhotoFile() {
-        uriToFile(photoUri)?.let { file ->
-            if (file.exists()) {
-                file.delete()
-                photoUri = null
-            }
+    private fun stopRecordingUI(duration: Long) {
+        binding.apply {
+            capturedAudio.text = String.format("Name recorded (%s)", makeDurationString(duration))
+
+            btnRecord.visibility = View.GONE
+            // Restore text and icon in case button is shown again later.
+            btnRecord.text = fieldConfigViewModel.getRecordingField().displayNameWithIndicator
+            btnRecord.setIconResource(R.drawable.microphone_outline)
+
+            btnRerecord.visibility = View.VISIBLE
         }
+        checkForRequiredInputs()
     }
 
-    // Audio recording methods
-    private fun checkAudioPermissionAndRecord() {
-        when {
-            ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.RECORD_AUDIO
-            ) == PackageManager.PERMISSION_GRANTED -> {
-                startRecording()
-            }
-
-            else -> {
-                audioPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
-            }
-        }
-    }
-
-    private fun startRecording() {
-        try {
-            deleteAudioFile()
-
-            // Create audio file
-            val audioFile =
-                File(requireContext().cacheDir, "student_audio_${System.currentTimeMillis()}.m4a")
-            audioUri = fileToUri(audioFile)
-
-            // Initialize MediaRecorder
-            mediaRecorder = MediaRecorder(requireContext()).apply {
-                setAudioSource(MediaRecorder.AudioSource.MIC)
-                setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-                setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
-                setOutputFile(audioFile.absolutePath)
-                prepare()
-                start()
-            }
-
-            isRecording = true
-            recordingStartTime = System.currentTimeMillis()
-
-            // Update UI
+    private fun updateDuration(duration: Long) {
+        if (duration == 0L) {
             binding.apply {
                 capturedAudio.visibility = View.VISIBLE
                 noAudio.visibility = View.GONE
@@ -517,62 +400,19 @@ class AddStudentFragment() : Fragment() {
                 btnRecord.visibility = View.VISIBLE
                 btnRerecord.visibility = View.GONE
             }
-
-            // Start duration updates
-            updateRecordingDuration()
-
-        } catch (e: Exception) {
-            Toast.makeText(requireContext(), "Failed to start recording", Toast.LENGTH_SHORT).show()
-            Log.e(TAG, "Recording failed", e)
         }
+        binding.capturedAudio.text = String.format("Recording %s...", makeDurationString(duration))
     }
 
-    private fun stopRecording() {
-        try {
-            mediaRecorder?.apply {
-                stop()
-                release()
-            }
-            mediaRecorder = null
-            isRecording = false
-            recordingHandler.removeCallbacksAndMessages(null)
-
-            // Update UI
-            binding.apply {
-                capturedAudio.text = String.format("Name recorded (%s)", makeDurationString())
-
-                btnRecord.visibility = View.GONE
-                // Restore text and icon in case button is shown again later.
-                btnRecord.text = fieldConfigViewModel.getRecordingField().displayNameWithIndicator
-                btnRecord.setIconResource(R.drawable.microphone_outline)
-
-                btnRerecord.visibility = View.VISIBLE
-            }
-            checkForRequiredInputs()
-
-        } catch (e: Exception) {
-            Toast.makeText(requireContext(), "Failed to stop recording", Toast.LENGTH_SHORT).show()
-            Log.e(TAG, "Stop recording failed", e)
-        }
-    }
-
-    private fun updateRecordingDuration() {
-        if (isRecording) {
-            binding.capturedAudio.text = String.format("Recording %s...", makeDurationString())
-            recordingHandler.postDelayed({ updateRecordingDuration() }, 100)
-        }
-    }
-
-    private fun makeDurationString(): String {
-        val duration = System.currentTimeMillis() - recordingStartTime
+    private fun makeDurationString(duration: Long): String {
         val seconds = (duration / MILLIS_PER_SECOND) % SECONDS_PER_MINUTE
         val minutes = (duration / MILLIS_PER_SECOND) / SECONDS_PER_MINUTE
-        return String.format(Locale.US, "%d:%02d", minutes, seconds)
+        return String.Companion.format(Locale.US, "%d:%02d", minutes, seconds)
     }
 
     private fun deleteRecording() {
         deleteAudioUI()
-        deleteAudioFile()
+        audioManager?.deleteAudioFile()
     }
 
     private fun deleteAudioUI() {
@@ -582,15 +422,6 @@ class AddStudentFragment() : Fragment() {
             btnRecord.visibility = View.VISIBLE
             btnRerecord.visibility = View.GONE
         }
-    }
-
-    private fun deleteAudioFile() {
-        uriToFile(audioUri)?.let { file ->
-            if (file.exists()) {
-                file.delete()
-            }
-        }
-        audioUri = null
     }
 
     private fun setupActionButtons() {
@@ -623,6 +454,7 @@ class AddStudentFragment() : Fragment() {
             etPreferredName.text?.clear()
             rgPronouns.clearCheck()
             scrollView.smoothScrollTo(0, 0)
+            btnSave.isEnabled = false
         }
         deletePhoto()
         deleteRecording()
@@ -641,7 +473,7 @@ class AddStudentFragment() : Fragment() {
         if (!requiredFieldsComplete()) {
             Toast.makeText(
                 requireContext(),
-                "Please complete required fields (indicated with ${StudentField.REQUIRED_INDICATOR}).",
+                "Please complete required fields (indicated with ${StudentField.Companion.REQUIRED_INDICATOR}).",
                 Toast.LENGTH_LONG
             )
                 .show()
@@ -674,8 +506,8 @@ class AddStudentFragment() : Fragment() {
                 lastName = lastName,
                 preferredName = preferredName?.ifEmpty { null },
                 pronouns = pronouns,
-                photoUri = photoUri,
-                audioUri = audioUri,
+                photoUri = photoManager?.photoUri,
+                audioUri = audioManager?.audioUri,
             )
 
             if (success == true) {
@@ -709,16 +541,16 @@ class AddStudentFragment() : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
 
-        _binding = null
-        mediaRecorder?.release()
-        recordingHandler.removeCallbacksAndMessages(null)
-        requirements.clear()
-
-        deletePhotoFile()
-        deleteAudioFile()
-
+        // navigation
         findNavController().removeOnDestinationChangedListener(navListener)
         isLocked = false
+
+        // free memory
+        clearForm() // deletes media files
+        _binding = null
+        requirements.clear()
+        photoManager = null
+        audioManager = null
     }
 
     companion object {
