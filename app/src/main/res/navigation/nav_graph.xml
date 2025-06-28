@@ -41,7 +41,9 @@
         tools:layout="@layout/fragment_start" >
         <action
             android:id="@+id/action_startFragment_to_selectCourseFragment"
-            app:destination="@id/selectCourseFragment" />
+            app:destination="@id/selectCourseFragment"
+            app:popUpTo="@id/startFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_startFragment_to_fieldConfigFragment"
             app:destination="@id/fieldConfigFragment" />
