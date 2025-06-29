@@ -7,7 +7,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
-import android.widget.Toast
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import com.ellenspertus.rostercapture.AppException
@@ -49,9 +48,18 @@ class AnkiBackend(
     val existingModelNames = api.modelList.values.toMutableList()
     val existingDeckNames = api.deckList.values.toMutableList()
 
+    fun hasModel(modelName: String) = existingModelNames.containsIgnoreCase(modelName)
+
+    fun hasDeck(deckName: String) = existingDeckNames.containsIgnoreCase(deckName)
+
     fun findModelIdByName(modelName: String, createIfAbsent: Boolean): Long? =
         when {
-            existingModelNames.containsIgnoreCase(modelName) -> api.modelList.entries.find { it.value.equalsIgnoreCase(modelName) }?.key
+            hasModel(modelName) -> api.modelList.entries.find {
+                it.value.equalsIgnoreCase(
+                    modelName
+                )
+            }?.key
+
             createIfAbsent -> createModel(modelName)
             else -> null
         }
@@ -72,7 +80,10 @@ class AnkiBackend(
 
     fun findDeckIdByName(deckName: String, createIfAbsent: Boolean): Long? =
         when {
-            existingDeckNames.containsIgnoreCase(deckName) -> api.deckList.entries.find { it.value.toString().equalsIgnoreCase(deckName) }?.key
+            hasDeck(deckName) -> api.deckList.entries.find {
+                it.value.toString().equalsIgnoreCase(deckName)
+            }?.key
+
             createIfAbsent -> createDeck(deckName)
             else -> null
         }
@@ -153,8 +164,7 @@ class AnkiBackend(
 
         val shareableUri: Uri = uri
 
-        // Grant AnkiDroid temporary read permission
-        // TODO: Show toast on error
+        // Grant AnkiDroid temporary read permission.
         grantReadPermission(shareableUri)
         try {
             api.addMediaFromUri(shareableUri, fileName, mimeType)?.let {
@@ -164,6 +174,7 @@ class AnkiBackend(
             Log.e(TAG, "Failed to add media", e)
             return null
         } finally {
+            // Revoke read permission.
             revokeReadPermission(shareableUri)
         }
         Log.e(TAG, "addMediaFromUri() returned null")

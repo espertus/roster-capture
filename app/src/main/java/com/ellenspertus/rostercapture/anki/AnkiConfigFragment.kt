@@ -14,7 +14,6 @@ import com.ellenspertus.rostercapture.AppException
 import com.ellenspertus.rostercapture.MainActivity
 import com.ellenspertus.rostercapture.R
 import com.ellenspertus.rostercapture.databinding.FragmentAnkiConfigBinding
-import com.ellenspertus.rostercapture.extensions.containsIgnoreCase
 import com.ellenspertus.rostercapture.extensions.navigateSafe
 import com.ellenspertus.rostercapture.extensions.navigateToFailure
 import kotlin.getValue
@@ -43,7 +42,7 @@ class AnkiConfigFragment : Fragment() {
 
         initializeModel()
 
-        if (!backend.existingDeckNames.containsIgnoreCase(AnkiBackend.DEFAULT_DECK_NAME)) {
+        if (!backend.hasDeck(AnkiBackend.DEFAULT_DECK_NAME)) {
             initializeDeck(AnkiBackend.DEFAULT_DECK_NAME)
             navigateToStartFragment()
             return
