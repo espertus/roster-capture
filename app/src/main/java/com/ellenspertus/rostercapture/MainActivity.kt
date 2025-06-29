@@ -2,7 +2,7 @@ package com.ellenspertus.rostercapture
 
 import android.os.Bundle
 import androidx.fragment.app.FragmentActivity
-import com.ellenspertus.rostercapture.backend.AnkiBackend
+import com.ellenspertus.rostercapture.anki.AnkiBackend
 
 class MainActivity : FragmentActivity() {
     var backend: AnkiBackend? = null

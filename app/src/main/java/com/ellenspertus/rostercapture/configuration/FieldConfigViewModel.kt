@@ -1,19 +1,19 @@
 package com.ellenspertus.rostercapture.configuration
 
 import android.content.Context
+import androidx.core.content.edit
 import androidx.lifecycle.ViewModel
 import com.ellenspertus.rostercapture.AppException
-import androidx.core.content.edit
 
 class FieldConfigViewModel : ViewModel() {
     private val _studentFields = originalFields
 
-    // currently not used
+    @Suppress("unused")
     val studentFields: List<StudentField>
         get() = _studentFields.map { it.copy() } // defensive copy
 
     fun hasConfiguration(context: Context) =
-        context.getSharedPreferences(FIELD_CONFIG_KEY, Context.MODE_PRIVATE).all.isNotEmpty()
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).all.isNotEmpty()
 
     fun getConfigurableFields() =
         _studentFields.filter {
@@ -41,7 +41,7 @@ class FieldConfigViewModel : ViewModel() {
     fun getRecordingField() = getFieldByName(RECORDING_FIELD_NAME)
 
     fun loadConfiguration(context: Context) {
-        val sharedPrefs = context.getSharedPreferences(FIELD_CONFIG_KEY, Context.MODE_PRIVATE)
+        val sharedPrefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
         _studentFields.forEach { field ->
             sharedPrefs.getString(field.name, null)?.let {
@@ -54,7 +54,7 @@ class FieldConfigViewModel : ViewModel() {
     }
 
     fun saveConfiguration(context: Context) {
-        context.getSharedPreferences(FIELD_CONFIG_KEY, Context.MODE_PRIVATE).edit {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit {
             _studentFields.forEach { field ->
                 putString(field.name, field.status.name)
                 if (field.isRenameable) {
@@ -65,7 +65,7 @@ class FieldConfigViewModel : ViewModel() {
     }
 
     companion object {
-        private const val FIELD_CONFIG_KEY = "field_config"
+        private const val PREFS_NAME = "field_config"
 
         private const val ID_FIELD = "ID"
         private const val FIRST_NAME = "First name"

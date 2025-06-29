@@ -1,5 +1,6 @@
 package com.ellenspertus.rostercapture.students
 
+import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
@@ -18,6 +19,7 @@ import androidx.navigation.fragment.navArgs
 import com.ellenspertus.rostercapture.AppException
 import com.ellenspertus.rostercapture.MainActivity
 import com.ellenspertus.rostercapture.R
+import com.ellenspertus.rostercapture.anki.AnkiConfigViewModel
 import com.ellenspertus.rostercapture.configuration.FieldConfigViewModel
 import com.ellenspertus.rostercapture.configuration.FieldStatus
 import com.ellenspertus.rostercapture.configuration.StudentField
@@ -39,6 +41,9 @@ class AddStudentFragment() : Fragment() {
     private lateinit var firstEditText: TextInputEditText // initializeFirstEditText()
 
     private val fieldConfigViewModel: FieldConfigViewModel by activityViewModels()
+    private val ankiConfigViewModel: AnkiConfigViewModel by activityViewModels()
+    private var modelId = 0L // initialized in onAttach()
+    private var deckId = 0L // initialized in onAttach()
 
     data class Requirement(val name: String, val check: () -> Boolean)
 
@@ -54,6 +59,22 @@ class AddStudentFragment() : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         crn = args.crn
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        ankiConfigViewModel.modelId?.let {
+            modelId = it
+        } ?: run {
+            navigateToFailure("modelId was null in AddStudentFragment")
+        }
+
+        ankiConfigViewModel.deckId?.let {
+            deckId = it
+        } ?: run {
+            navigateToFailure("deckId was null in AddStudentFragment")
+        }
     }
 
     override fun onCreateView(
@@ -462,29 +483,35 @@ class AddStudentFragment() : Fragment() {
 
         lifecycleScope.launch {
             val backend = (requireActivity() as MainActivity).backend
-            val success = backend?.writeStudent(
-                crn = crn,
-                studentId = studentId,
-                firstName = firstName,
-                lastName = lastName,
-                preferredName = preferredName?.ifEmpty { null },
-                pronouns = pronouns,
-                photoUri = photoManager?.photoUri,
-                audioUri = audioManager?.audioUri,
-            )
+            try {
+                val success = backend?.writeStudent(
+                    deckId = deckId,
+                    modelId = modelId,
+                    crn = crn,
+                    studentId = studentId,
+                    firstName = firstName,
+                    lastName = lastName,
+                    preferredName = preferredName?.ifEmpty { null },
+                    pronouns = pronouns,
+                    photoUri = photoManager?.photoUri,
+                    audioUri = audioManager?.audioUri,
+                )
 
-            var message = if (success == true) {
-                clearForm()
-                "Student saved successfully!"
-            } else {
-                binding.btnSave.isEnabled = true
-                "Failed to save student"
+                var message = if (success == true) {
+                    clearForm()
+                    "Student saved successfully!"
+                } else {
+                    binding.btnSave.isEnabled = true
+                    "Failed to save student"
+                }
+                Toast.makeText(
+                    requireContext(),
+                    message,
+                    Toast.LENGTH_SHORT
+                ).show()
+            } catch (e: Exception) {
+                navigateToFailure("Failed to save student: $e")
             }
-            Toast.makeText(
-                requireContext(),
-                message,
-                Toast.LENGTH_SHORT
-            ).show()
         }
     }
 

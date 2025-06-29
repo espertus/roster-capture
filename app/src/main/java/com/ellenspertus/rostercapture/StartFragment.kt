@@ -10,8 +10,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.ellenspertus.rostercapture.databinding.FragmentStartBinding
 import kotlin.system.exitProcess
-import com.ellenspertus.rostercapture.backend.AnkiBackend
-import com.ellenspertus.rostercapture.backend.AnkiBackend.PermissionStatus
+import com.ellenspertus.rostercapture.anki.AnkiBackend
+import com.ellenspertus.rostercapture.anki.AnkiBackend.PermissionStatus
+import com.ellenspertus.rostercapture.anki.AnkiConfigViewModel
 import com.ellenspertus.rostercapture.configuration.FieldConfigViewModel
 import com.ellenspertus.rostercapture.extensions.navigateSafe
 import com.ellenspertus.rostercapture.extensions.navigateToFailure
@@ -28,6 +29,7 @@ class StartFragment : Fragment() {
 
     private lateinit var mainActivity: MainActivity
     private val fieldConfigViewModel: FieldConfigViewModel by activityViewModels()
+    private val ankiConfigViewModel: AnkiConfigViewModel by activityViewModels()
 
     // This needs to be at the top level because registerForActivityResult()
     // can be called only during a Fragment's creation.
@@ -88,6 +90,12 @@ class StartFragment : Fragment() {
     private fun navigateToFieldConfigFragment() {
         findNavController().navigateSafe(
             StartFragmentDirections.actionStartFragmentToFieldConfigFragment()
+        )
+    }
+
+    private fun navigateToAnkiConfigFragment() {
+        findNavController().navigateSafe(
+            StartFragmentDirections.actionStartFragmentToAnkiConfigFragment()
         )
     }
 
@@ -175,7 +183,11 @@ class StartFragment : Fragment() {
         }
         try {
             mainActivity.backend = AnkiBackend(mainActivity)
-            navigateToSelectCourseFragment()
+            if (ankiConfigViewModel.isInitialized) {
+                navigateToSelectCourseFragment()
+            } else {
+                navigateToAnkiConfigFragment()
+            }
         } catch (e: AppException) {
             navigateToFailure(e)
         }

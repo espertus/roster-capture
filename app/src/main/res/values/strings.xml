@@ -22,6 +22,9 @@
     <string name="save_configuration_button">Save Configuration</string>
     <string name="cancel_button">Cancel</string>
 
+    <!-- Anki Configuration -->
+    <string name="anki_deck_name_conflict"><![CDATA[<p>Normally, RosterCapture stores cards in an AnkiDroid deck named <b>Roster</b>. You already have a deck with that name.</p><p>Should RosterCapture use that or a different deck?</p>]]></string>
+
     <!-- Select Course -->
     <string name="loading">Loading...</string>
     <string name="no_courses_found">No courses found.</string>
@@ -62,4 +65,7 @@
     <string name="something_went_wrong">Something went wrong</string>
     <string name="exit_app_button">Exit App</string>
     <string name="restart_app_button">Restart App</string>
+    <string name="ankidroid_configuration_header">AnkiDroid Configuration</string>
+    <string name="deck_name_label">Deck name</string>
+    <string name="set_deck_name_button">Set deck name</string>
 </resources>

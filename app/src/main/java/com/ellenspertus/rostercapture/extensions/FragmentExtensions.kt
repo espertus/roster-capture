@@ -17,3 +17,10 @@ fun Fragment.navigateToFailure(exception: AppException) {
         NavGraphDirections.actionGlobalFailureFragment(exception)
     )
 }
+
+fun Fragment.navigateToFailure(message: String) {
+    Log.e(this::class.simpleName, message)
+    findNavController().navigateSafe(
+        NavGraphDirections.actionGlobalFailureFragment(AppException.AppInternalException(message))
+    )
+}

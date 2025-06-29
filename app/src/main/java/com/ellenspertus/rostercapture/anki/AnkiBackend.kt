@@ -1,4 +1,4 @@
-package com.ellenspertus.rostercapture.backend
+package com.ellenspertus.rostercapture.anki
 
 import android.app.Activity
 import android.content.ActivityNotFoundException
@@ -10,8 +10,11 @@ import android.util.Log
 import android.widget.Toast
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
+import com.ellenspertus.rostercapture.AppException
 import com.ellenspertus.rostercapture.AppException.AppInternalException
 import com.ellenspertus.rostercapture.MainActivity
+import com.ellenspertus.rostercapture.extensions.containsIgnoreCase
+import com.ellenspertus.rostercapture.extensions.equalsIgnoreCase
 import com.ichi2.anki.FlashCardsContract.READ_WRITE_PERMISSION
 import com.ichi2.anki.api.AddContentApi
 
@@ -20,7 +23,9 @@ import com.ichi2.anki.api.AddContentApi
  *
  * @throws [AppInternalException] if the model and deck can't be retrieved or created
  */
-class AnkiBackend(private val mainActivity: MainActivity) {
+class AnkiBackend(
+    private val mainActivity: MainActivity
+) {
     enum class PermissionStatus {
         GRANTED,
         DENIED_CAN_ASK_AGAIN,
@@ -40,63 +45,43 @@ class AnkiBackend(private val mainActivity: MainActivity) {
     )
 
     private val api: AddContentApi = AddContentApi(mainActivity)
-    private var modelId = 0L
-    private var deckId = 0L
 
-    init {
-        findModelId(MODEL, true)?.let {
-            modelId = it
-        } ?: Log.e(TAG, "Unable to retrieve modelId")
-        findDeckIdByName(DECK_NAME, true)?.let {
-            deckId = it
-        } ?: Log.e(TAG, "Unable to retrieve deckId")
-        if (modelId == 0L || deckId == 0L) {
-            throw AppInternalException("Error accessing Anki API.")
+    val existingModelNames = api.modelList.values.toMutableList()
+    val existingDeckNames = api.deckList.values.toMutableList()
+
+    fun findModelIdByName(modelName: String, createIfAbsent: Boolean): Long? =
+        when {
+            existingModelNames.containsIgnoreCase(modelName) -> api.modelList.entries.find { it.value.equalsIgnoreCase(modelName) }?.key
+            createIfAbsent -> createModel(modelName)
+            else -> null
         }
+
+    fun createModel(modelName: String): Long {
+        existingModelNames.add(modelName)
+        return api.addNewCustomModel(
+            modelName,
+            FIELDS,
+            CARD_NAMES,
+            QUESTION_FORMATS,
+            ANSWER_FORMATS,
+            CSS,
+            null, // default deckId (not needed)
+            SORT_FIELD
+        )
     }
-
-
-    fun findModelId(model: Model, createIfAbsent: Boolean): Long? =
-        api.modelList.entries.firstOrNull {
-            it.value == model.name
-        }?.key ?: if (createIfAbsent) {
-            api.addNewCustomModel(
-                model.name,
-                model.fields,
-                model.cardNames,
-                model.questionFormats,
-                model.answerFormats,
-                model.css,
-                model.deckId,
-                model.sortField
-            )
-        } else {
-            null
-        }
 
     fun findDeckIdByName(deckName: String, createIfAbsent: Boolean): Long? =
-        api.deckList?.let {
-            it.entries.firstOrNull {
-                it.value.equals(deckName, ignoreCase = true)
-            }?.key
-        } ?: if (createIfAbsent) {
-            api.addNewDeck(deckName)
-        } else {
-            null
+        when {
+            existingDeckNames.containsIgnoreCase(deckName) -> api.deckList.entries.find { it.value.toString().equalsIgnoreCase(deckName) }?.key
+            createIfAbsent -> createDeck(deckName)
+            else -> null
         }
 
-
-    fun hasModel(name: String) =
-        api.modelList.entries.any { it.value == name }
-
-    fun hasDeck(name: String) =
-        api.deckList.entries.any { it.value.equals(name, ignoreCase = true) }
-
-
-    private fun showToast(message: String) {
-        Toast.makeText(mainActivity, message, Toast.LENGTH_LONG).show()
-    }
-
+    fun createDeck(deckName: String) =
+        api.addNewDeck(deckName).also {
+            existingDeckNames.add(deckName)
+            it
+        }
 
     fun addNote(
         modelId: Long,
@@ -115,6 +100,8 @@ class AnkiBackend(private val mainActivity: MainActivity) {
     }
 
     fun writeStudent(
+        modelId: Long,
+        deckId: Long,
         crn: String,
         studentId: String?,
         firstName: String,
@@ -138,9 +125,7 @@ class AnkiBackend(private val mainActivity: MainActivity) {
                 ID_FIELD -> studentId ?: ""
                 PRONOUN_FIELD -> pronouns ?: ""
                 else -> run {
-                    Log.e(TAG, "Illegal field name ${FIELDS[i]}")
-                    showToast("Internal Error")
-                    return false
+                    throw AppException.AppInternalException("Illegal field name ${FIELDS[i]}")
                 }
             }
         }
@@ -163,7 +148,7 @@ class AnkiBackend(private val mainActivity: MainActivity) {
         return addMediaToAnki(uri, "audio")
     }
 
-    fun addMediaToAnki(uri: Uri, mimeType: String): String? {
+    private fun addMediaToAnki(uri: Uri, mimeType: String): String? {
         val fileName = System.currentTimeMillis().toString()
 
         val shareableUri: Uri = uri
@@ -173,7 +158,6 @@ class AnkiBackend(private val mainActivity: MainActivity) {
         grantReadPermission(shareableUri)
         try {
             api.addMediaFromUri(shareableUri, fileName, mimeType)?.let {
-                Log.d(TAG, "Successfully added media: $it")
                 return it
             }
         } catch (e: Exception) {
@@ -189,8 +173,8 @@ class AnkiBackend(private val mainActivity: MainActivity) {
     companion object {
         private const val TAG = "AnkiBackend"
 
-        private const val DECK_NAME = "Roster"
-        private const val MODEL_NAME = "rostercapture"
+        internal const val DEFAULT_DECK_NAME = "Roster"
+        internal const val DEFAULT_MODEL_NAME = "com.ellenspertus.rostercapture"
         private const val NAME_FIELD = "name"
         private const val SELFIE_FIELD = "selfiePath"
         private const val AUDIO_FIELD = "audioPath"
@@ -207,17 +191,6 @@ class AnkiBackend(private val mainActivity: MainActivity) {
         private val QUESTION_FORMATS = arrayOf(QUESTION_FORMAT)
         private val ANSWER_FORMATS = arrayOf(ANSWER_FORMAT)
 
-        private val MODEL = Model(
-            name = MODEL_NAME,
-            fields = FIELDS,
-            cardNames = CARD_NAMES,
-            questionFormats = QUESTION_FORMATS,
-            answerFormats = ANSWER_FORMATS,
-            css = CSS,
-            deckId = null,
-            sortField = SORT_FIELD
-        )
-
         const val PACKAGE = "com.ichi2.anki"
         private const val ANKI_WEB_URL =
             "https://play.google.com/store/apps/details?id=com.ichi2.anki"
@@ -227,7 +200,8 @@ class AnkiBackend(private val mainActivity: MainActivity) {
         /**
          * Tests whether the API is available (i.e., if AnkiDroid is installed).
          */
-        fun isApiAvailable(context: Context) = AddContentApi.getAnkiDroidPackageName(context) != null
+        fun isApiAvailable(context: Context) =
+            AddContentApi.getAnkiDroidPackageName(context) != null
 
         /**
          * Opens the Google Play Store or a web page where the user can choose to
@@ -250,7 +224,8 @@ class AnkiBackend(private val mainActivity: MainActivity) {
 
         fun checkPermissionStatus(fragment: Fragment): PermissionStatus {
             return when {
-                fragment.requireContext().checkSelfPermission(READ_WRITE_PERMISSION) == PackageManager.PERMISSION_GRANTED -> {
+                fragment.requireContext()
+                    .checkSelfPermission(READ_WRITE_PERMISSION) == PackageManager.PERMISSION_GRANTED -> {
                     PermissionStatus.GRANTED
                 }
 
