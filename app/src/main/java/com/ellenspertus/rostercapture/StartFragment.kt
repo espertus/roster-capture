@@ -8,11 +8,10 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import com.ellenspertus.rostercapture.backend.AnkiWrapper
 import com.ellenspertus.rostercapture.databinding.FragmentStartBinding
 import kotlin.system.exitProcess
 import com.ellenspertus.rostercapture.backend.AnkiBackend
-import com.ellenspertus.rostercapture.backend.AnkiWrapper.PermissionStatus
+import com.ellenspertus.rostercapture.backend.AnkiBackend.PermissionStatus
 import com.ellenspertus.rostercapture.configuration.FieldConfigViewModel
 import com.ellenspertus.rostercapture.extensions.navigateSafe
 import com.ellenspertus.rostercapture.extensions.navigateToFailure
@@ -76,7 +75,7 @@ class StartFragment : Fragment() {
     }
 
     private fun isAnkiDroidInstalled(): Boolean =
-        AnkiWrapper.isApiAvailable(mainActivity)
+        AnkiBackend.isApiAvailable(mainActivity)
 
     // Transitions to other fragments
 
@@ -101,7 +100,7 @@ class StartFragment : Fragment() {
                 it.visibility = View.VISIBLE
                 it.text = getString(R.string.install_ankidroid)
                 it.setOnClickListener {
-                    AnkiWrapper.offerToInstallAnkiDroid(mainActivity)
+                    AnkiBackend.offerToInstallAnkiDroid(mainActivity)
                     exitProcess(0)
                 }
             }
@@ -135,7 +134,7 @@ class StartFragment : Fragment() {
     // Permissions handling
 
     private fun checkAnkiPermissions() {
-        when (AnkiWrapper.checkPermissionStatus(this)) {
+        when (AnkiBackend.checkPermissionStatus(this)) {
             PermissionStatus.GRANTED -> createBackend()
             PermissionStatus.DENIED_CAN_ASK_AGAIN -> solicitPermission()
             PermissionStatus.UNKNOWN_TRY_REQUEST -> solicitPermission()
@@ -155,7 +154,7 @@ class StartFragment : Fragment() {
     }
 
     private fun launchPermissionRequest() {
-        requestPermissionLauncher.launch(AnkiWrapper.REQUIRED_PERMISSION)
+        requestPermissionLauncher.launch(AnkiBackend.REQUIRED_PERMISSION)
         binding.buttonProceed.visibility = View.GONE
     }
 
@@ -171,7 +170,7 @@ class StartFragment : Fragment() {
     // This should be called only if AnkiDroid is installed and the required
     // permissions granted.
     private fun createBackend() {
-        if (!isAnkiDroidInstalled() || AnkiWrapper.checkPermissionStatus(this) != PermissionStatus.GRANTED) {
+        if (!isAnkiDroidInstalled() || AnkiBackend.checkPermissionStatus(this) != PermissionStatus.GRANTED) {
             navigateToFailure(AppException.AppInternalException("Assertion failed in createBackend()"))
         }
         try {
