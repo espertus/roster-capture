@@ -447,7 +447,7 @@ class AddStudentFragment() : Fragment() {
     }
 
     private fun saveStudentInfo() {
-        val nuid = binding.etId.text.toString()
+        val studentId = binding.etId.text.toString().ifEmpty { null }
         val firstName = binding.etFirstName.text.toString()
         val lastName = binding.etLastName.text.toString()
         val preferredName = binding.etPreferredName.text.toString().ifEmpty { null }
@@ -464,7 +464,7 @@ class AddStudentFragment() : Fragment() {
             val backend = (requireActivity() as MainActivity).backend
             val success = backend?.writeStudent(
                 crn = crn,
-                nuid = nuid,
+                studentId = studentId,
                 firstName = firstName,
                 lastName = lastName,
                 preferredName = preferredName?.ifEmpty { null },
