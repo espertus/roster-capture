@@ -22,8 +22,8 @@
         android:name="com.ellenspertus.rostercapture.students.AddStudentFragment"
         android:label="AddStudentFragment" >
         <argument
-            android:name="crn"
-            app:argType="string" />
+            android:name="course"
+            app:argType="com.ellenspertus.rostercapture.courses.Course" />
     </fragment>
     <fragment
         android:id="@+id/failureFragment"

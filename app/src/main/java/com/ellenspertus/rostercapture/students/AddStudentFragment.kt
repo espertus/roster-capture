@@ -23,6 +23,7 @@ import com.ellenspertus.rostercapture.anki.AnkiConfigViewModel
 import com.ellenspertus.rostercapture.configuration.FieldConfigViewModel
 import com.ellenspertus.rostercapture.configuration.FieldStatus
 import com.ellenspertus.rostercapture.configuration.StudentField
+import com.ellenspertus.rostercapture.courses.Course
 import com.ellenspertus.rostercapture.databinding.FragmentAddStudentBinding
 import com.ellenspertus.rostercapture.extensions.hasText
 import com.ellenspertus.rostercapture.extensions.navigateToFailure
@@ -34,7 +35,7 @@ import java.util.Locale
 
 class AddStudentFragment() : Fragment() {
     private val args: AddStudentFragmentArgs by navArgs()
-    private lateinit var crn: String
+    private lateinit var course: Course
 
     private var _binding: FragmentAddStudentBinding? = null
     private val binding get() = _binding!!
@@ -62,7 +63,7 @@ class AddStudentFragment() : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        crn = args.crn
+        course = args.course
 
         ankiConfigViewModel.modelId?.let {
             modelId = it
@@ -71,7 +72,7 @@ class AddStudentFragment() : Fragment() {
         }
 
         ankiConfigViewModel.deckName?.let {
-            val fullName = "$it::$crn"
+            val fullName = "$it::${course.id} (${course.crn})"
             backend.findDeckIdByName(fullName, createIfAbsent = true)?.let {
                 deckId = it
             } ?: run {
@@ -491,7 +492,7 @@ class AddStudentFragment() : Fragment() {
                 val success = backend.writeStudent(
                     modelId = modelId,
                     deckId = deckId,
-                    crn = crn,
+                    crn = course.crn,
                     studentId = studentId,
                     firstName = firstName,
                     lastName = lastName,

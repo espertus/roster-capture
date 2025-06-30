@@ -78,7 +78,7 @@ class SelectCourseFragment : Fragment() {
                 courseCrn.text = it.crn
 
                 root.setOnClickListener { view ->
-                    findNavController().navigateSafe(SelectCourseFragmentDirections.actionSelectCourseFragmentToAddStudentFragment(course.crn))
+                    findNavController().navigateSafe(SelectCourseFragmentDirections.actionSelectCourseFragmentToAddStudentFragment(course))
                 }
 
                 root.setOnLongClickListener {
