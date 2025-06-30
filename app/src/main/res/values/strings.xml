@@ -4,15 +4,21 @@
     <!-- Startup -->
     <string name="welcome_to_rostercapture">Welcome to RosterCapture</string>
     <string name="intro_to_roster_capture">RosterCapture helps teachers learn the names and faces of their students by creating flashcards that can be viewed in AnkiDroid.</string>
-    <string name="configure_explanation">You need to configure Roster Capture to specify what information to collect from students.</string>
-    <string name="install_ankidroid_explanation">You need to install the free AnkiDroid Flashcards app in order to use RosterCapture.</string>
-    <string name="permission_explanation">RosterCapture needs your permission to share information with AnkiDroid.</string>
-    <string name="install_ankidroid">Install AnkiDroid</string>
     <string name="configure_rostercapture">Configure RosterCapture</string>
+    <string name="ok_button">OK</string>
+    <!-- AnkiDroid installation -->
+    <string name="install_ankidroid_explanation">You need to install the free AnkiDroid Flashcards app in order to use RosterCapture.</string>
+    <string name="install_ankidroid">Install AnkiDroid</string>
+    <string name="configure_explanation">You need to configure Roster Capture to specify what information to collect from students.</string>
+    <!-- AnkiDroid permissions -->
+    <string name="permission_explanation">RosterCapture needs your permission to share information with AnkiDroid.</string>
     <string name="grant_permission">Grant Permission</string>
     <string name="permissions_rejection">You declined to grant RosterCapture the required permission to share data with AnkiDroid. If you would like to do so now, you can rerun the app, but Android may not allow us to ask again, in which case you will need to uninstall and reinstall RosterCapture.</string>
-    <string name="ok_button">OK</string>
+    <!-- AnkiDroid decks -->
     <string name="anki_deck_name_conflict"><![CDATA[<p>Normally, RosterCapture stores cards in an AnkiDroid deck named <b>Roster</b>. You already have a deck with that name.</p><p>You may choose to use this deck or another one.</p>"]]></string>
+    <string name="deck_name_label">Deck name</string>
+    <string name="use_deck_button">Use deck</string>
+
     <!-- Field Configuration -->
     <string name="solicit_field_info">Specify which types of information you would like to collect and if you would like to rename the prompts.</string>
     <string name="rename_button">Rename</string>
@@ -62,7 +68,4 @@
     <string name="something_went_wrong">Something went wrong</string>
     <string name="exit_app_button">Exit App</string>
     <string name="restart_app_button">Restart App</string>
-    <string name="ankidroid_configuration_header">AnkiDroid Configuration</string>
-    <string name="deck_name_label">Deck name</string>
-    <string name="set_deck_name_button">Set deck name</string>
 </resources>
