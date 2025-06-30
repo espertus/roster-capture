@@ -6,6 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.text.HtmlCompat
+import androidx.core.view.isVisible
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.ellenspertus.rostercapture.databinding.FragmentStartBinding
@@ -69,11 +72,16 @@ class StartFragment : Fragment() {
 
         // Requirement 3: Permissions are granted.
         if (mainActivity.backend == null) {
-            // This will instantiate a backend if permissions are granted.
+            // This will instantiate a backend and proceed to Requirement 4
+            // if permissions are granted.
             checkAnkiPermissions()
-        } else {
-            navigateToSelectCourseFragment()
+            return
         }
+
+        // Requirement 4: Model and deck are configured.
+        configureModelAndDeck()
+
+        navigateToSelectCourseFragment()
     }
 
     private fun isAnkiDroidInstalled(): Boolean =
@@ -93,12 +101,6 @@ class StartFragment : Fragment() {
         )
     }
 
-    private fun navigateToAnkiConfigFragment() {
-        findNavController().navigateSafe(
-            StartFragmentDirections.actionStartFragmentToAnkiConfigFragment()
-        )
-    }
-
     // Primarily UI methods
 
     private fun requestAnkiDroid() {
@@ -112,7 +114,6 @@ class StartFragment : Fragment() {
                     exitProcess(0)
                 }
             }
-            showExitButton()
         }
     }
 
@@ -126,15 +127,6 @@ class StartFragment : Fragment() {
                     navigateToFieldConfigFragment()
                 }
                 tvConfigure.visibility = View.GONE
-            }
-        }
-    }
-
-    private fun showExitButton() {
-        binding.buttonExit.apply {
-            visibility = View.VISIBLE
-            setOnClickListener {
-                exitProcess(0)
             }
         }
     }
@@ -186,10 +178,79 @@ class StartFragment : Fragment() {
             if (ankiConfigViewModel.isInitialized) {
                 navigateToSelectCourseFragment()
             } else {
-                navigateToAnkiConfigFragment()
+                configureModelAndDeck()
             }
         } catch (e: AppException) {
             navigateToFailure(e)
+        }
+    }
+
+    // Model and deck configuration
+    private fun configureModelAndDeck() {
+        // Check if it's already configured.
+        if (ankiConfigViewModel.isInitialized) {
+            navigateToSelectCourseFragment()
+            return
+        }
+
+        initializeModel()
+
+        // If the deck name doesn't exist yet, create it.
+        require(mainActivity.backend != null)
+        if (mainActivity.backend?.hasDeck(AnkiBackend.DEFAULT_DECK_NAME) == false) {
+            initializeDeck(AnkiBackend.DEFAULT_DECK_NAME)
+        }
+
+        // Finally, prompt for deck name.
+        promptForDeckName()
+    }
+
+    private fun initializeModel() {
+        if (ankiConfigViewModel.modelId == null || ankiConfigViewModel.modelName == null) {
+            mainActivity.backend?.findModelIdByName(
+                AnkiBackend.DEFAULT_MODEL_NAME,
+                createIfAbsent = true
+            )?.let {
+                ankiConfigViewModel.updateModel(it, AnkiBackend.DEFAULT_MODEL_NAME)
+            } ?: run {
+                navigateToFailure(AppException.AppInternalException("Unable to create model"))
+            }
+        }
+    }
+
+    private fun initializeDeck(deckName: String) {
+        require(ankiConfigViewModel.deckId == null && ankiConfigViewModel.deckName == null)
+        require(mainActivity.backend != null)
+        mainActivity.backend?.findDeckIdByName(deckName, createIfAbsent = true)?.let {
+            ankiConfigViewModel.updateDeck(it, deckName)
+        } ?: run {
+            navigateToFailure("Unable to create deck")
+        }
+    }
+
+    private fun promptForDeckName() {
+        binding.apply {
+            tvIntro.visibility = View.GONE
+
+            tvDeckExplanation.text = HtmlCompat.fromHtml(
+                getString(R.string.anki_deck_name_conflict),
+                HtmlCompat.FROM_HTML_MODE_LEGACY
+            )
+            tvDeckExplanation.visibility = View.VISIBLE
+
+            tilDeck.visibility = View.VISIBLE
+            etDeck.setText(AnkiBackend.DEFAULT_DECK_NAME)
+            etDeck.doAfterTextChanged {
+                val deckName = etDeck.text?.toString()
+                buttonProceed.isEnabled = deckName?.isNotEmpty() == true
+            }
+
+            buttonProceed.visibility = View.VISIBLE
+            buttonProceed.text = "Use deck"
+            buttonProceed.setOnClickListener {
+                initializeDeck(etDeck.text.toString().trim())
+                navigateToSelectCourseFragment()
+            }
         }
     }
 
