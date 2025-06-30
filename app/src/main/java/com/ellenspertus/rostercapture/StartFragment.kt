@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.text.HtmlCompat
-import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -246,7 +245,7 @@ class StartFragment : Fragment() {
             }
 
             buttonProceed.visibility = View.VISIBLE
-            buttonProceed.text = "Use deck"
+            buttonProceed.text = getString(R.string.use_deck_button)
             buttonProceed.setOnClickListener {
                 initializeDeck(etDeck.text.toString().trim())
                 navigateToSelectCourseFragment()

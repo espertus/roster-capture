@@ -39,6 +39,10 @@ class AddStudentFragment() : Fragment() {
     private var _binding: FragmentAddStudentBinding? = null
     private val binding get() = _binding!!
     private lateinit var firstEditText: TextInputEditText // initializeFirstEditText()
+    private val _backend
+        get() = (requireActivity() as MainActivity).backend
+    private val backend
+        get() = _backend!!
 
     private val fieldConfigViewModel: FieldConfigViewModel by activityViewModels()
     private val ankiConfigViewModel: AnkiConfigViewModel by activityViewModels()
@@ -59,10 +63,6 @@ class AddStudentFragment() : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         crn = args.crn
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
 
         ankiConfigViewModel.modelId?.let {
             modelId = it
@@ -70,10 +70,15 @@ class AddStudentFragment() : Fragment() {
             navigateToFailure("modelId was null in AddStudentFragment")
         }
 
-        ankiConfigViewModel.deckId?.let {
-            deckId = it
+        ankiConfigViewModel.deckName?.let {
+            val fullName = "$it::$crn"
+            backend.findDeckIdByName(fullName, createIfAbsent = true)?.let {
+                deckId = it
+            } ?: run {
+                navigateToFailure("Could not create deck $fullName")
+            }
         } ?: run {
-            navigateToFailure("deckId was null in AddStudentFragment")
+            navigateToFailure("deckName was null in AddStudentFragment")
         }
     }
 
@@ -482,11 +487,10 @@ class AddStudentFragment() : Fragment() {
         }
 
         lifecycleScope.launch {
-            val backend = (requireActivity() as MainActivity).backend
             try {
-                val success = backend?.writeStudent(
-                    deckId = deckId,
+                val success = backend.writeStudent(
                     modelId = modelId,
+                    deckId = deckId,
                     crn = crn,
                     studentId = studentId,
                     firstName = firstName,
