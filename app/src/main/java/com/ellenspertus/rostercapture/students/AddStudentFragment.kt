@@ -126,7 +126,7 @@ class AddStudentFragment() : Fragment() {
     private fun setupPhotoSection() {
         // Photos are always required.
         requirements.add(Requirement(fieldConfigViewModel.getSelfieField().displayName) { photoManager?.photoUri != null })
-        binding.btnTakePhoto.text = fieldConfigViewModel.getSelfieField().displayName
+        binding.btnTakePhoto.text = fieldConfigViewModel.getSelfieField().displayNameWithIndicator
 
         photoManager = PhotoManager(
             fragment = this,
@@ -512,7 +512,7 @@ class AddStudentFragment() : Fragment() {
                 Toast.makeText(
                     requireContext(),
                     message,
-                    Toast.LENGTH_SHORT
+                    Toast.LENGTH_LONG
                 ).show()
             } catch (e: Exception) {
                 navigateToFailure("Failed to save student: $e")
