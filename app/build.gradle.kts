@@ -1,3 +1,5 @@
+import java.io.FileInputStream
+import java.util.Properties
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -14,21 +16,37 @@ android {
     namespace = "com.ellenspertus.rostercapture"
     compileSdk = 36
 
+    val keystorePropertiesFile = rootProject.file("keystore.properties")
+    val keystoreProperties = Properties()
+
+    if (keystorePropertiesFile.exists()) {
+        keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+    }
+
+    signingConfigs {
+        create("release") {
+            storeFile = file(keystoreProperties["storeFile"] as String)
+            storePassword = keystoreProperties["password"] as String
+            keyAlias = keystoreProperties["keyAlias"] as String
+            keyPassword = keystoreProperties["password"] as String
+        }
+    }
+
     buildFeatures {
         buildConfig = true
         compose = false
-        buildConfig = true
         viewBinding = true
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
+            isMinifyEnabled = false // trying to fix baseline profile error
+            isShrinkResources = false // trying to fix baseline profile error
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
 
             ndk {
                 debugSymbolLevel = "NONE"
@@ -44,7 +62,7 @@ android {
     defaultConfig {
         applicationId = "com.ellenspertus.rostercapture"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 35;
         versionCode = 1
         versionName = "0.1.0"
 
@@ -52,8 +70,14 @@ android {
         setProperty("archivesBaseName", "rostercapture-v${versionName}")
     }
 
+    // trying to fix baseline profile error
+    configurations.all {
+        exclude(group = "androidx.profileinstaller", module = "profileinstaller")
+    }
+
     lint {
         disable += "DirectSystemCurrentTimeMillisUsage" // AnkiDroid
+        disable += "DirectDateInstantiation"
     }
 }
 

@@ -27,6 +27,7 @@ google-play-service-account.json
 *.key
 *.mobileprovision
 **/.firebaserc
+keystore.properties
 
 # Firebase local emulator files
 firebase-debug.log
