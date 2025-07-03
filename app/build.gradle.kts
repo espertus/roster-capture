@@ -40,8 +40,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false // trying to fix baseline profile error
-            isShrinkResources = false // trying to fix baseline profile error
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -68,11 +68,6 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         setProperty("archivesBaseName", "rostercapture-v${versionName}")
-    }
-
-    // trying to fix baseline profile error
-    configurations.all {
-        exclude(group = "androidx.profileinstaller", module = "profileinstaller")
     }
 
     lint {
