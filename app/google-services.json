@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "185767295855",
+    "project_id": "roster-capture",
+    "storage_bucket": "roster-capture.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:185767295855:android:499ef00f18b0b5b914469a",
+        "android_client_info": {
+          "package_name": "com.ellenspertus.rostercapture"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqvxJZxGQVCFOcCBGqgMOsvmgSkEoTlx8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

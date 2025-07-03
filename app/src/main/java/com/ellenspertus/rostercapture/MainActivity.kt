@@ -3,6 +3,7 @@ package com.ellenspertus.rostercapture
 import android.os.Bundle
 import androidx.fragment.app.FragmentActivity
 import com.ellenspertus.rostercapture.anki.AnkiBackend
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 
 class MainActivity : FragmentActivity() {
     var backend: AnkiBackend? = null
@@ -10,5 +11,6 @@ class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = !BuildConfig.DEBUG
     }
 }

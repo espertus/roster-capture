@@ -19,8 +19,6 @@ local.properties
 # Key files and sensitive information
 *.jks
 *.keystore
-google-services.json
-**/google-services.json
 firebase_options.dart
 **/firebase_options.dart
 google-play-service-account.json

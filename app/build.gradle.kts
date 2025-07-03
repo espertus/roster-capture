@@ -2,10 +2,12 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.firebase.crashlytics)
+    alias(libs.plugins.google.protobuf)
+    alias(libs.plugins.google.services)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.navigation.safe.args)
     alias(libs.plugins.parcelize)
-    alias(libs.plugins.google.protobuf)
 }
 
 android {
@@ -19,6 +21,21 @@ android {
         viewBinding = true
     }
 
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+
+            ndk {
+                debugSymbolLevel = "NONE"
+            }
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -26,13 +43,13 @@ android {
 
     defaultConfig {
         applicationId = "com.ellenspertus.rostercapture"
-        minSdk = 34
-        //noinspection OldTargetApi
-        targetSdk = 34
+        minSdk = 24
+        targetSdk = 35
         versionCode = 1
-        versionName = "1.0"
+        versionName = "0.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        setProperty("archivesBaseName", "rostercapture-v${versionName}")
     }
 
     lint {
@@ -72,6 +89,8 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.anki.android)
     implementation(libs.datastore)
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
     implementation(libs.fragment.ktx)
     implementation(libs.kotlinx.coroutines)
     implementation(libs.lifecycle.viewmodel)
@@ -79,4 +98,5 @@ dependencies {
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.ui)
     implementation(libs.protobuf.javalite)
+    implementation(platform(libs.firebase.bom))
 }
