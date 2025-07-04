@@ -8,6 +8,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.ellenspertus.rostercapture.R
 import com.ellenspertus.rostercapture.extensions.promptForConfirmation
+import com.ellenspertus.rostercapture.usertest.Analytics
 
 class LockManager(
     private val fragment: Fragment,
@@ -62,7 +63,9 @@ class LockManager(
     }
 
     fun lockPage() {
+        Analytics.logFirstNTimes(5, "pinning_attempted")
         if (isAuthenticationAvailable()) {
+            Analytics.logFirstNTimes(5, "pinning_available")
             activity.startLockTask()
             isLocked = true
             onLockAttempt(Status.LOCKED)
@@ -80,10 +83,15 @@ class LockManager(
     }
 
     private fun offerToLock() {
+        Analytics.logFirstNTimes(10, "pinning_offered")
         context.promptForConfirmation(
-            "Would you like to pin the page so students cannot navigate away from it?"
+            "Would you like to pin the page so students cannot navigate away from it?",
+            {
+                Analytics.logFirstNTimes(10, "pinning_chosen")
+                lockPage()
+            },
+            {  Analytics.logFirstNTimes(10, "pinning_declined") }
         )
-        { lockPage() }
     }
 
     private fun authenticateToLeave() {

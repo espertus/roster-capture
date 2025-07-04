@@ -1,6 +1,5 @@
 package com.ellenspertus.rostercapture.students
 
-import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
@@ -16,7 +15,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
-import com.ellenspertus.rostercapture.AppException
 import com.ellenspertus.rostercapture.MainActivity
 import com.ellenspertus.rostercapture.R
 import com.ellenspertus.rostercapture.anki.AnkiConfigViewModel
@@ -28,6 +26,7 @@ import com.ellenspertus.rostercapture.databinding.FragmentAddStudentBinding
 import com.ellenspertus.rostercapture.extensions.hasText
 import com.ellenspertus.rostercapture.extensions.navigateToFailure
 import com.ellenspertus.rostercapture.extensions.promptForConfirmation
+import com.ellenspertus.rostercapture.usertest.Analytics
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
@@ -105,6 +104,8 @@ class AddStudentFragment() : Fragment() {
         setupFormSection()
         setupActionButtons()
         initializeFirstEditText()
+
+        Analytics.logFirstNTimes(10, "add_student_opened")
     }
 
     override fun onDestroyView() {
@@ -282,7 +283,7 @@ class AddStudentFragment() : Fragment() {
         val editTexts = listOf(binding.etId, binding.etFirstName, binding.etLastName)
         editTexts.firstOrNull { it.isEnabled }?.let {
             firstEditText = it
-        } ?: navigateToFailure(AppException.AppInternalException("Could not find enabled edittext"))
+        } ?: navigateToFailure("Could not find enabled edittext")
     }
 
     // Locking (pinning)
@@ -325,6 +326,7 @@ class AddStudentFragment() : Fragment() {
             setAction(R.string.ok_button) { }
             setActionTextColor(messageTextColor)
             show()
+            Analytics.logFirstNTimes(10, "pinning_unavailable")
         }
     }
 
@@ -339,6 +341,7 @@ class AddStudentFragment() : Fragment() {
             btnRetakePhoto.visibility = View.VISIBLE
         }
         checkForRequiredInputs()
+        Analytics.logFirstNTimes(5, "photo_taken")
     }
 
     private fun deletePhoto() {
@@ -356,6 +359,9 @@ class AddStudentFragment() : Fragment() {
     }
 
     private fun showPermissionDeniedMessage(permission: String) {
+        Analytics.log("permission_denied", Bundle().apply {
+            putString("permission", permission)
+        })
         Toast.makeText(
             requireContext(),
             "$permission permission is required for this feature",
@@ -377,6 +383,7 @@ class AddStudentFragment() : Fragment() {
             btnRerecord.visibility = View.VISIBLE
         }
         checkForRequiredInputs()
+        Analytics.logFirstNTimes(5, "recording_made")
     }
 
     private fun updateDuration(duration: Long) {
@@ -432,7 +439,10 @@ class AddStudentFragment() : Fragment() {
     }
 
     private fun promptToClearForm() {
-        requireContext().promptForConfirmation("Do you really want to clear the form?", ::clearForm)
+        requireContext().promptForConfirmation(
+            "Do you really want to clear the form?",
+            ::clearForm,
+        )
     }
 
     private fun clearForm() {
@@ -504,9 +514,11 @@ class AddStudentFragment() : Fragment() {
 
                 var message = if (success == true) {
                     clearForm()
+                    Analytics.logEveryNthTime(10, "student_save_succeeded")
                     "Student saved successfully!"
                 } else {
                     binding.btnSave.isEnabled = true
+                    Analytics.logFirstNTimes(10, "student_save_failed")
                     "Failed to save student"
                 }
                 Toast.makeText(

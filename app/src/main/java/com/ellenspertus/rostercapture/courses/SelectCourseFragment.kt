@@ -13,6 +13,7 @@ import com.ellenspertus.rostercapture.R
 import com.ellenspertus.rostercapture.databinding.FragmentSelectCourseBinding
 import com.ellenspertus.rostercapture.databinding.ItemCourseCardBinding
 import com.ellenspertus.rostercapture.extensions.navigateSafe
+import com.ellenspertus.rostercapture.extensions.promptForConfirmation
 import kotlinx.coroutines.launch
 
 class SelectCourseFragment : Fragment() {
@@ -91,18 +92,8 @@ class SelectCourseFragment : Fragment() {
         }
     }
 
-    private fun promptForConfirmation(message: String, action: () -> Unit) {
-        AlertDialog.Builder(requireContext())
-            .setMessage(message)
-            .setPositiveButton("Yes") { _, _ -> action() }
-            .setNegativeButton("No") { dialog, _ ->
-                dialog.dismiss()
-            }
-            .show()
-    }
-
     private fun promptToRemoveCourse(course: Course) {
-        promptForConfirmation("Do you really want to delete ${course.name}?") {
+        requireContext().promptForConfirmation("Do you really want to delete ${course.name}?") {
             coursesViewModel.removeCourse(course.crn)
         }
     }

@@ -10,6 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.navArgs
 import com.ellenspertus.rostercapture.databinding.FragmentFailureBinding
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
 import kotlin.getValue
 import kotlin.system.exitProcess
 
@@ -33,11 +35,12 @@ class FailureFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        args.exception.let { exception ->
+        args.exception.let {
+            Firebase.crashlytics.recordException(it)
             binding.apply {
-                textMessage.text = exception.message
+                textMessage.text = it.message
                 imageIcon.setImageResource(
-                    when (exception) {
+                    when (it) {
                         is AppException.AppUserException -> R.drawable.outline_app_blocking_24
                         is AppException.AppInternalException -> R.drawable.outline_error_24
                     }
@@ -45,7 +48,7 @@ class FailureFragment : Fragment() {
                 buttonExit.setOnClickListener {
                     endProcess()
                 }
-                if (exception.restartable) {
+                if (it.restartable) {
                     buttonRestart.let {
                         it.visibility = View.VISIBLE
                         it.setOnClickListener {

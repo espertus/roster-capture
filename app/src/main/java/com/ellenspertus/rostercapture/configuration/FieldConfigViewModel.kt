@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.core.content.edit
 import androidx.lifecycle.ViewModel
 import com.ellenspertus.rostercapture.AppException
+import com.ellenspertus.rostercapture.usertest.Analytics
 
 class FieldConfigViewModel : ViewModel() {
     private val _studentFields = originalFields
@@ -54,6 +55,7 @@ class FieldConfigViewModel : ViewModel() {
     }
 
     fun saveConfiguration(context: Context) {
+        Analytics.logFirstNTimes(10, "configuration_saved")
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit {
             _studentFields.forEach { field ->
                 putString(field.name, field.status.name)

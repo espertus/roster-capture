@@ -11,7 +11,7 @@ import java.util.Date
 import java.util.Locale
 import java.util.UUID
 
-class TestMetadata(private val context: Context) {
+class Metadata(private val context: Context) {
     private val prefs = context.getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
     private val numRuns = incrementNumRuns()
     private val userId = getOrCreateUserId()
@@ -27,7 +27,6 @@ class TestMetadata(private val context: Context) {
         (prefs.getInt(NUM_RUNS_KEY, 0) + 1).also {
             prefs.edit { putInt(NUM_RUNS_KEY, it) }
         }
-
 
     fun initializeCrashlytics(instance: FirebaseCrashlytics) {
         instance.apply {

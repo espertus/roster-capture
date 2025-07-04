@@ -19,6 +19,7 @@ import com.ellenspertus.rostercapture.anki.AnkiConfigViewModel
 import com.ellenspertus.rostercapture.configuration.FieldConfigViewModel
 import com.ellenspertus.rostercapture.extensions.navigateSafe
 import com.ellenspertus.rostercapture.extensions.navigateToFailure
+import com.ellenspertus.rostercapture.usertest.Analytics
 
 /**
  * An invisible fragment that verifies that the API is accessible
@@ -62,12 +63,14 @@ class StartFragment : Fragment() {
             requestAnkiDroid()
             return
         }
+        Analytics.logFirstTime("AnkiDroid installed")
 
         // Requirement 2: Fields are configured.
         if (!fieldConfigViewModel.hasConfiguration(requireContext())) {
             requestConfiguration()
             return
         }
+        Analytics.logFirstTime("AnkiDroid initially configured")
 
         // Requirement 3: Permissions are granted.
         if (mainActivity.backend == null) {
@@ -101,12 +104,14 @@ class StartFragment : Fragment() {
     // Transitions to other fragments
 
     private fun navigateToSelectCourseFragment() {
+        Analytics.logFirstTime("startup_complete")
         findNavController().navigateSafe(
             StartFragmentDirections.actionStartFragmentToSelectCourseFragment()
         )
     }
 
     private fun navigateToFieldConfigFragment() {
+        Analytics.log("configuration_solicitation")
         findNavController().navigateSafe(
             StartFragmentDirections.actionStartFragmentToFieldConfigFragment()
         )
@@ -115,6 +120,7 @@ class StartFragment : Fragment() {
     // Primarily UI methods
 
     private fun requestAnkiDroid() {
+        Analytics.log("ankidroid_request")
         binding.apply {
             tvAnki.visibility = View.VISIBLE
             buttonProceed.let {
@@ -153,8 +159,10 @@ class StartFragment : Fragment() {
     private fun solicitPermission() {
         require(!permissionGranted())
         if (permissionPermanentlyDenied()) {
+            Analytics.logFirstTime("anki_permission_permanently_denied")
             handlePermissionDenied()
         } else {
+            Analytics.log("anki_permission_solicited")
             binding.apply {
                 // Explain why permission is needed.
                 tvPermissions.visibility = View.VISIBLE
@@ -176,11 +184,10 @@ class StartFragment : Fragment() {
     }
 
     private fun handlePermissionDenied() {
+        Analytics.log("anki_permission_denied")
         // At this point, we don't know whether we are allowed to ask again.
         navigateToFailure(
-            AppException.AppUserException(
                 getString(R.string.permissions_rejection)
-            )
         )
     }
 
@@ -188,12 +195,13 @@ class StartFragment : Fragment() {
     // permissions granted.
     private fun createBackend(): Boolean {
         if (!isAnkiDroidInstalled() || AnkiBackend.checkPermissionStatus(this) != PermissionStatus.GRANTED) {
-            navigateToFailure(AppException.AppInternalException("Assertion failed in createBackend()"))
+            navigateToFailure("Assertion failed in createBackend()")
             return false
         }
 
         try {
             mainActivity.backend = AnkiBackend(mainActivity)
+            Analytics.logFirstTime("anki_backend_created")
             return true
         } catch (e: AppException) {
             navigateToFailure(e)
@@ -228,8 +236,9 @@ class StartFragment : Fragment() {
                 createIfAbsent = true
             )?.let {
                 ankiConfigViewModel.updateModel(it, AnkiBackend.DEFAULT_MODEL_NAME)
+                Analytics.log("model_created")
             } ?: run {
-                navigateToFailure(AppException.AppInternalException("Unable to create model"))
+                navigateToFailure("Unable to create model")
             }
         }
     }
@@ -239,6 +248,9 @@ class StartFragment : Fragment() {
         require(mainActivity.backend != null)
         mainActivity.backend?.findDeckIdByName(deckName, createIfAbsent = true)?.let {
             ankiConfigViewModel.updateDeck(it, deckName)
+            Analytics.log("deck_created", Bundle().apply {
+                putString("deck_name", deckName)
+            })
             navigateToSelectCourseFragment()
         } ?: run {
             navigateToFailure("Unable to create deck")
