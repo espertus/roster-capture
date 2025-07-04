@@ -18,17 +18,22 @@ android {
 
     val keystorePropertiesFile = rootProject.file("keystore.properties")
     val keystoreProperties = Properties()
+    val hasKeystore = keystorePropertiesFile.exists()
 
-    if (keystorePropertiesFile.exists()) {
+    if (hasKeystore) {
         keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+    } else {
+        logger.warn("keystore.properties file not found. Release builds will not be signed.")
     }
 
     signingConfigs {
-        create("release") {
-            storeFile = file(keystoreProperties["storeFile"] as String)
-            storePassword = keystoreProperties["password"] as String
-            keyAlias = keystoreProperties["keyAlias"] as String
-            keyPassword = keystoreProperties["password"] as String
+        if (hasKeystore) {
+            create("release") {
+                storeFile = file(keystoreProperties["storeFile"] as String)
+                storePassword = keystoreProperties["password"] as String
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["password"] as String
+            }
         }
     }
 
@@ -53,7 +58,10 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("release")
+
+            if (hasKeystore) {
+                signingConfig = signingConfigs.getByName("release")
+            }
 
             ndk {
                 debugSymbolLevel = "NONE"
