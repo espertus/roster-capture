@@ -15,6 +15,7 @@
 .cxx
 local.properties
 .kotlin/
+app/release
 
 # Key files and sensitive information
 *.jks

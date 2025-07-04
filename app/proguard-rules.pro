@@ -1,4 +1,2 @@
 -keepattributes SourceFile,LineNumberTable
-
-
-
+-keep class com.ellenspertus.rostercapture.** { *; }
