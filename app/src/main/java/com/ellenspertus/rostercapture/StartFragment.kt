@@ -1,6 +1,7 @@
 package com.ellenspertus.rostercapture
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -37,11 +38,10 @@ class StartFragment : Fragment() {
     // can be called only during a Fragment's creation.
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted) {
-                createBackend()
-            } else {
+            if (!isGranted) {
                 handlePermissionDenied()
             }
+            // If it was granted, onResume() will be called and move to the next step.
         }
 
     override fun onCreateView(
@@ -71,14 +71,26 @@ class StartFragment : Fragment() {
 
         // Requirement 3: Permissions are granted.
         if (mainActivity.backend == null) {
-            // This will instantiate a backend and proceed to Requirement 4
-            // if permissions are granted.
-            checkAnkiPermissions()
-            return
+            if (!AnkiBackend.hasPermission(this)) {
+                solicitPermission()
+                // When the permission request is complete,
+                // onResume() will be called, and it will re-attempt.
+                return
+            } else {
+                // Try creating backend.
+                if (!createBackend()) {
+                    // It navigates to the FailureFragment.
+                    return
+                }
+                // If it succeeds, fall through to the final requirement.
+            }
         }
 
         // Requirement 4: Model and deck are configured.
-        configureModelAndDeck()
+        if (!ankiConfigViewModel.isInitialized) {
+            configureModelAndDeck() // which calls navigateToSelectCourseFragment()
+            return
+        }
 
         navigateToSelectCourseFragment()
     }
@@ -132,22 +144,28 @@ class StartFragment : Fragment() {
 
     // Permissions handling
 
-    private fun checkAnkiPermissions() {
-        when (AnkiBackend.checkPermissionStatus(this)) {
-            PermissionStatus.GRANTED -> createBackend()
-            PermissionStatus.DENIED_CAN_ASK_AGAIN -> solicitPermission()
-            PermissionStatus.UNKNOWN_TRY_REQUEST -> solicitPermission()
-            PermissionStatus.PERMANENTLY_DENIED -> handlePermissionDenied()
-        }
-    }
+    private fun permissionGranted() =
+        AnkiBackend.checkPermissionStatus(this) == PermissionStatus.GRANTED
+
+    private fun permissionPermanentlyDenied() =
+        AnkiBackend.checkPermissionStatus(this) == PermissionStatus.PERMANENTLY_DENIED
 
     private fun solicitPermission() {
-        binding.apply {
-            tvPermissions.visibility = View.VISIBLE
-            buttonProceed.visibility = View.VISIBLE
-            buttonProceed.text = getString(R.string.grant_permission)
-            buttonProceed.setOnClickListener {
-                launchPermissionRequest()
+        require(!permissionGranted())
+        if (permissionPermanentlyDenied()) {
+            handlePermissionDenied()
+        } else {
+            binding.apply {
+                // Explain why permission is needed.
+                tvPermissions.visibility = View.VISIBLE
+
+                // Enable button to launch permission request.
+                buttonProceed.visibility = View.VISIBLE
+                buttonProceed.text = getString(R.string.grant_permission)
+                buttonProceed.setOnClickListener {
+                    // This will call onResume() when complete.
+                    launchPermissionRequest()
+                }
             }
         }
     }
@@ -168,19 +186,18 @@ class StartFragment : Fragment() {
 
     // This should be called only if AnkiDroid is installed and the required
     // permissions granted.
-    private fun createBackend() {
+    private fun createBackend(): Boolean {
         if (!isAnkiDroidInstalled() || AnkiBackend.checkPermissionStatus(this) != PermissionStatus.GRANTED) {
             navigateToFailure(AppException.AppInternalException("Assertion failed in createBackend()"))
+            return false
         }
+
         try {
             mainActivity.backend = AnkiBackend(mainActivity)
-            if (ankiConfigViewModel.isInitialized) {
-                navigateToSelectCourseFragment()
-            } else {
-                configureModelAndDeck()
-            }
+            return true
         } catch (e: AppException) {
             navigateToFailure(e)
+            return false
         }
     }
 
@@ -222,6 +239,7 @@ class StartFragment : Fragment() {
         require(mainActivity.backend != null)
         mainActivity.backend?.findDeckIdByName(deckName, createIfAbsent = true)?.let {
             ankiConfigViewModel.updateDeck(it, deckName)
+            navigateToSelectCourseFragment()
         } ?: run {
             navigateToFailure("Unable to create deck")
         }
@@ -240,6 +258,7 @@ class StartFragment : Fragment() {
             tilDeck.visibility = View.VISIBLE
             etDeck.setText(AnkiBackend.DEFAULT_DECK_NAME)
             etDeck.doAfterTextChanged {
+                Log.d(TAG, "In etDeck.doAfterTextChanged")
                 val deckName = etDeck.text?.toString()
                 buttonProceed.isEnabled = deckName?.isNotEmpty() == true
             }

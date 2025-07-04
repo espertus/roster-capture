@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import com.ellenspertus.rostercapture.AppException
 import com.ellenspertus.rostercapture.AppException.AppInternalException
 import com.ellenspertus.rostercapture.MainActivity
+import com.ellenspertus.rostercapture.StartFragment
 import com.ellenspertus.rostercapture.extensions.containsIgnoreCase
 import com.ellenspertus.rostercapture.extensions.equalsIgnoreCase
 import com.ichi2.anki.FlashCardsContract.READ_WRITE_PERMISSION
@@ -250,5 +251,9 @@ class AnkiBackend(
                 }
             }
         }
+
+        fun hasPermission(fragment: Fragment) =
+            checkPermissionStatus(fragment) ==
+                    PermissionStatus.GRANTED
     }
 }
