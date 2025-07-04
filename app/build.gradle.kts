@@ -32,6 +32,13 @@ android {
         }
     }
 
+    applicationVariants.all {
+        outputs.all {
+            val outputImpl = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
+            outputImpl.outputFileName = "rostercapture-v${defaultConfig.versionName}-${name}.apk"
+        }
+    }
+
     buildFeatures {
         buildConfig = true
         compose = false
@@ -67,7 +74,6 @@ android {
         versionName = "0.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        setProperty("archivesBaseName", "rostercapture-v${versionName}")
     }
 
     lint {
