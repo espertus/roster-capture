@@ -1,9 +1,9 @@
 package com.ellenspertus.rostercapture.courses
 
-import android.app.Dialog
 import android.os.Bundle
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.ellenspertus.rostercapture.databinding.DialogAddCourseBinding
@@ -11,40 +11,80 @@ import com.ellenspertus.rostercapture.databinding.DialogAddCourseBinding
 class AddCourseDialogFragment(private val courses: List<Course>) : DialogFragment() {
 
     private val coursesViewModel: CoursesViewModel by activityViewModels()
+    private var _binding: DialogAddCourseBinding? = null
+    private val binding get() = _binding!!
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val binding = DialogAddCourseBinding.inflate(layoutInflater)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = DialogAddCourseBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-        return AlertDialog.Builder(requireContext())
-            .setTitle("Add Course")
-            .setView(binding.root)
-            .setPositiveButton("Add") { _, _ ->
-                val crn = binding.crnEditText.text.toString().trim()
-                val id = binding.courseIdEditText.text.toString().trim()
-                val name = binding.courseNameEditText.text.toString().trim()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-                if (crn.isNotEmpty() && id.isNotEmpty() && name.isNotEmpty()) {
-                    if (courses.any { it.crn == crn }) {
-                        Toast.makeText(
-                            requireContext(),
-                            "A course with CRN $crn already exists",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    } else {
-                        coursesViewModel.addCourse(
-                            Course(crn = crn, id = id, name = name)
-                        )
-                    }
-                } else {
-                    Toast.makeText(
-                        requireContext(),
-                        "Please fill in all fields",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
+        // Enable Add button only when other fields are valid.
+        binding.addButton.setOnClickListener {
+            handleAddCourse()
+        }
+        binding.addButton.isEnabled = false
+        setupTextChangeListeners()
+
+        // The Cancel button is always enabled.
+        binding.cancelButton.setOnClickListener {
+            dismiss()
+        }
+    }
+
+    private fun setupTextChangeListeners() {
+        val listener = object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {
+                validateInputs()
             }
-            .setNegativeButton("Cancel", null)
-            .create()
+        }
+
+        binding.crnEditText.addTextChangedListener(listener)
+        binding.courseIdEditText.addTextChangedListener(listener)
+        binding.courseNameEditText.addTextChangedListener(listener)
+    }
+
+    private fun validateInputs() {
+        val crn = binding.crnEditText.text.toString().trim()
+        val id = binding.courseIdEditText.text.toString().trim()
+        val name = binding.courseNameEditText.text.toString().trim()
+
+        val isDuplicateCrn = courses.any { it.crn == crn }
+        if (crn.isNotEmpty() && isDuplicateCrn) {
+            binding.crnInputLayout.error = "A course with this CRN already exists"
+        } else {
+            binding.crnInputLayout.error = null
+        }
+
+        // Enable Add button only if all fields are filled and CRN is unique.
+        binding.addButton.isEnabled = crn.isNotEmpty() &&
+                id.isNotEmpty() &&
+                name.isNotEmpty() &&
+                !isDuplicateCrn
+    }
+
+    private fun handleAddCourse() {
+        val course = Course(
+            crn = binding.crnEditText.text.toString().trim(),
+            id = binding.courseIdEditText.text.toString().trim(),
+            name = binding.courseNameEditText.text.toString().trim()
+        )
+        coursesViewModel.addCourse(course)
+        dismiss()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     companion object {

@@ -8,4 +8,6 @@ data class Course(
     var crn: String = "",
     val id: String = "",
     val name: String = "",
-) : Parcelable
+) : Parcelable {
+    override fun toString() = "$id: $name"
+}
