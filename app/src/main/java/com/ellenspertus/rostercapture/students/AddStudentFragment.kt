@@ -473,7 +473,10 @@ class AddStudentFragment() : Fragment() {
         if (!requiredFieldsComplete()) {
             Toast.makeText(
                 requireContext(),
-                "Please complete required fields (indicated with ${StudentField.Companion.REQUIRED_INDICATOR}).",
+                getString(
+                    R.string.please_complete_required_fields,
+                    StudentField.Companion.REQUIRED_INDICATOR
+                ),
                 Toast.LENGTH_LONG
             )
                 .show()
@@ -515,11 +518,11 @@ class AddStudentFragment() : Fragment() {
                 var message = if (success == true) {
                     clearForm()
                     Analytics.logEveryNthTime(10, "student_save_succeeded")
-                    "Student saved successfully!"
+                    getString(R.string.student_saved_successfully)
                 } else {
                     binding.btnSave.isEnabled = true
                     Analytics.logFirstNTimes(10, "student_save_failed")
-                    "Failed to save student"
+                    getString(R.string.failed_to_save_student)
                 }
                 Toast.makeText(
                     requireContext(),

@@ -10,6 +10,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import com.ellenspertus.rostercapture.R
 import java.io.File
 
 /**
@@ -76,7 +77,8 @@ class AudioManager(
             onRecordingComplete(duration)
 
         } catch (e: Exception) {
-            Toast.makeText(context, "Failed to stop recording", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context,
+                context.getString(R.string.failed_to_stop_recording), Toast.LENGTH_SHORT).show()
             Log.e(TAG, "Stop recording failed", e)
         }
     }
@@ -107,7 +109,8 @@ class AudioManager(
             onUpdateDuration(0L)
             updateRecordingDuration()
         } catch (e: Exception) {
-            Toast.makeText(context, "Failed to start recording", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context,
+                context.getString(R.string.failed_to_start_recording), Toast.LENGTH_SHORT).show()
             Log.e(TAG, "Recording failed", e)
         }
     }

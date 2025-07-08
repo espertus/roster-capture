@@ -30,9 +30,10 @@
     <string name="optional_button">Optional</string>
     <string name="not_used_button">Not Used</string>
     <string name="save_configuration_button">Save Configuration</string>
+    <string name="configuration_saved">Configuration saved</string>
 
     <!-- Select Course -->
-    <string name="loading">Loading...</string>
+    <string name="loading">Loading…</string>
     <string name="no_courses_found">No courses found.</string>
     <string name="gear_icon_content_description">gear icon</string>
     <string name="create_first_course_instruction">Create your first course with the + button.</string>
@@ -51,6 +52,8 @@
     <string name="record_name_request">Please record your name.</string>
     <string name="stop_recording">Stop recording</string>
     <string name="re_record_name_button">Re-record name</string>
+    <string name="failed_to_stop_recording">Failed to stop recording</string>
+    <string name="failed_to_start_recording">Failed to start recording</string>
     <!-- Photo -->
     <string name="camera_icon_description">Camera icon</string>
     <string name="captured_selfie_description">Captured selfie</string>
@@ -61,14 +64,16 @@
     <string name="gender_neutral_pronouns">they/them/theirs</string>
     <string name="other_pronouns_prompt">other (please specify)</string>
     <string name="please_specify_pronouns_prompt">Please specify</string>
-    <!-- Buttons -->
+    <!-- Actions -->
     <string name="clear_button">Clear</string>
     <string name="exit_button">Exit</string>
+    <string name="please_complete_required_fields">Please complete required fields (indicated with %1$s).</string>
+    <string name="student_saved_successfully">Student saved successfully!</string>
+    <string name="failed_to_save_student">Failed to save student</string>
 
     <!-- Failure -->
     <string name="error_indicator_content_description">error indicator</string>
     <string name="something_went_wrong">Something went wrong</string>
     <string name="exit_app_button">Exit App</string>
     <string name="restart_app_button">Restart App</string>
-    <string name="xxx">Course ID</string>
 </resources>
