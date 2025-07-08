@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">RosterCapture</string>
 
+    <!-- Used multiple places -->
+    <string name="cancel_button">Cancel</string>
+    <string name="save_button">Save</string>
+
     <!-- Startup -->
     <string name="welcome_to_rostercapture">Welcome to RosterCapture</string>
     <string name="intro_to_roster_capture">RosterCapture helps teachers learn the names and faces of their students by creating flashcards that can be viewed in AnkiDroid.</string>
@@ -26,20 +30,19 @@
     <string name="optional_button">Optional</string>
     <string name="not_used_button">Not Used</string>
     <string name="save_configuration_button">Save Configuration</string>
-    <string name="cancel_button">Cancel</string>
 
     <!-- Select Course -->
     <string name="loading">Loading...</string>
     <string name="no_courses_found">No courses found.</string>
     <string name="gear_icon_content_description">gear icon</string>
     <string name="create_first_course_instruction">Create your first course with the + button.</string>
-    <string name="add_course">Add Course</string>
     <string name="select_a_course">Select a course</string>
 
     <!-- Add Course -->
+    <string name="add_course">Add Course</string>
+    <string name="crn_prompt">CRN (unique identifier)</string>
     <string name="course_id_prompt">Course ID (e.g., CS 1000)</string>
     <string name="course_name_prompt">Course Name</string>
-    <string name="crn_prompt">CRN</string>
 
     <!-- Add Student -->
     <string name="add_student_header">Student Information</string>
@@ -61,11 +64,11 @@
     <!-- Buttons -->
     <string name="clear_button">Clear</string>
     <string name="exit_button">Exit</string>
-    <string name="save_button">Save</string>
 
     <!-- Failure -->
     <string name="error_indicator_content_description">error indicator</string>
     <string name="something_went_wrong">Something went wrong</string>
     <string name="exit_app_button">Exit App</string>
     <string name="restart_app_button">Restart App</string>
+    <string name="xxx">Course ID</string>
 </resources>

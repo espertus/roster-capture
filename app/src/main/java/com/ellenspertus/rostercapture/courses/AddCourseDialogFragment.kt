@@ -27,10 +27,10 @@ class AddCourseDialogFragment(private val courses: List<Course>) : DialogFragmen
         super.onViewCreated(view, savedInstanceState)
 
         // Enable Add button only when other fields are valid.
-        binding.addButton.setOnClickListener {
+        binding.saveButton.setOnClickListener {
             handleAddCourse()
         }
-        binding.addButton.isEnabled = false
+        binding.saveButton.isEnabled = false
         setupTextChangeListeners()
 
         // The Cancel button is always enabled.
@@ -66,7 +66,7 @@ class AddCourseDialogFragment(private val courses: List<Course>) : DialogFragmen
         }
 
         // Enable Add button only if all fields are filled and CRN is unique.
-        binding.addButton.isEnabled = crn.isNotEmpty() &&
+        binding.saveButton.isEnabled = crn.isNotEmpty() &&
                 id.isNotEmpty() &&
                 name.isNotEmpty() &&
                 !isDuplicateCrn
