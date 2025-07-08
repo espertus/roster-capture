@@ -260,6 +260,7 @@ class StartFragment : Fragment() {
     private fun promptForDeckName() {
         binding.apply {
             tvIntro.visibility = View.GONE
+            tvPermissions.visibility = View.GONE
 
             tvDeckExplanation.text = HtmlCompat.fromHtml(
                 getString(R.string.anki_deck_name_conflict),
