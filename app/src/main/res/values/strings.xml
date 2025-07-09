@@ -36,8 +36,14 @@
     <string name="loading">Loading…</string>
     <string name="no_courses_found">No courses found.</string>
     <string name="gear_icon_content_description">gear icon</string>
-    <string name="create_first_course_instruction">Create your first course with the + button.</string>
     <string name="select_a_course">Select a course</string>
+
+    <!-- Tips -->
+    <string name="create_first_course_tip">Create your first course with the + button.</string>
+    <string name="delete_course_tip">Tip: To delete a course, long press it.</string>
+
+    <!-- Delete Course -->
+    <string name="delete_course_confirmation">Do you really want to delete %1$s?</string>
 
     <!-- Add Course -->
     <string name="add_course">Add Course</string>
@@ -76,4 +82,5 @@
     <string name="something_went_wrong">Something went wrong</string>
     <string name="exit_app_button">Exit App</string>
     <string name="restart_app_button">Restart App</string>
+    <string name="duplicate_crn_error">A course with this CRN already exists</string>
 </resources>

@@ -1,6 +1,5 @@
 package com.ellenspertus.rostercapture.courses
 
-import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -35,18 +34,38 @@ class SelectCourseFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Whenever a first course is added, display this tip.
+        childFragmentManager.setFragmentResultListener(
+            COURSE_ADDED_KEY,
+            viewLifecycleOwner
+        ) { _, bundle ->
+            // We can't get the size from the viewModel, which might not have been updated.
+            if (bundle.getInt(COURSE_COUNT_KEY) == 1) {
+                showDeleteTip()
+            } else {
+                hideDeleteTip()
+            }
+        }
+
         viewLifecycleOwner.lifecycleScope.launch {
             coursesViewModel.courses.collect { courses ->
                 binding.coursesContainer.removeAllViews()
                 courseCards.clear()
 
                 binding.fabAddCourse.setOnClickListener {
-                    AddCourseDialogFragment(courses).show(childFragmentManager, AddCourseDialogFragment.TAG)
+                    AddCourseDialogFragment().show(
+                        childFragmentManager,
+                        AddCourseDialogFragment.TAG
+                    )
                 }
                 if (courses.isEmpty()) {
                     binding.textWelcome.text = getString(R.string.no_courses_found)
-                    binding.textInstruct.visibility = View.VISIBLE
+                    showCreateTip()
+                    hideDeleteTip()
                 } else {
+                    if (courses.size != 1) {
+                        hideDeleteTip()
+                    }
                     solicitCourse(courses.sortedBy { it.id })
                 }
             }
@@ -56,6 +75,26 @@ class SelectCourseFragment : Fragment() {
                 SelectCourseFragmentDirections.actionSelectCourseFragmentToFieldConfigFragment()
             )
         }
+    }
+
+    private fun showDeleteTip() {
+        binding.textDeleteCourse.apply {
+            visibility = View.VISIBLE
+        }
+    }
+
+    private fun showCreateTip() {
+        binding.textCreateCourse.apply {
+            visibility = View.VISIBLE
+        }
+    }
+
+    private fun hideDeleteTip() {
+        binding.textDeleteCourse.visibility = View.GONE
+    }
+
+    private fun hideCreateTip() {
+        binding.textCreateCourse.visibility = View.GONE
     }
 
     private fun solicitCourse(courses: List<Course>) {
@@ -72,14 +111,18 @@ class SelectCourseFragment : Fragment() {
             binding.coursesContainer,
             false
         ).apply {
-            binding.textInstruct.visibility = View.INVISIBLE
+            hideCreateTip()
             course.let {
                 courseIdText.text = it.id
                 courseNameText.text = it.name
                 courseCrn.text = it.crn
 
                 root.setOnClickListener { view ->
-                    findNavController().navigateSafe(SelectCourseFragmentDirections.actionSelectCourseFragmentToAddStudentFragment(course))
+                    findNavController().navigateSafe(
+                        SelectCourseFragmentDirections.actionSelectCourseFragmentToAddStudentFragment(
+                            course
+                        )
+                    )
                 }
 
                 root.setOnLongClickListener {
@@ -93,7 +136,12 @@ class SelectCourseFragment : Fragment() {
     }
 
     private fun promptToRemoveCourse(course: Course) {
-        requireContext().promptForConfirmation("Do you really want to delete ${course.name}?") {
+        requireContext().promptForConfirmation(
+            getString(
+                R.string.delete_course_confirmation,
+                course.name
+            )
+        ) {
             coursesViewModel.removeCourse(course.crn)
         }
     }
@@ -101,5 +149,10 @@ class SelectCourseFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    companion object {
+        const val COURSE_ADDED_KEY = "courseAdded"
+        const val COURSE_COUNT_KEY = "courseCount"
     }
 }

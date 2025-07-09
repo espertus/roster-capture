@@ -4,15 +4,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResult
+import com.ellenspertus.rostercapture.R
+import com.ellenspertus.rostercapture.courses.SelectCourseFragment.Companion.COURSE_ADDED_KEY
+import com.ellenspertus.rostercapture.courses.SelectCourseFragment.Companion.COURSE_COUNT_KEY
 import com.ellenspertus.rostercapture.databinding.DialogAddCourseBinding
 
-class AddCourseDialogFragment(private val courses: List<Course>) : DialogFragment() {
-
+class AddCourseDialogFragment() : DialogFragment() {
     private val coursesViewModel: CoursesViewModel by activityViewModels()
     private var _binding: DialogAddCourseBinding? = null
     private val binding get() = _binding!!
+    private val courses
+        get() = coursesViewModel.courses.value
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,7 +46,7 @@ class AddCourseDialogFragment(private val courses: List<Course>) : DialogFragmen
     }
 
     private fun setupTextChangeListeners() {
-        val listener = object : android.text.TextWatcher {
+        val changeListener = object : android.text.TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: android.text.Editable?) {
@@ -48,9 +54,9 @@ class AddCourseDialogFragment(private val courses: List<Course>) : DialogFragmen
             }
         }
 
-        binding.crnEditText.addTextChangedListener(listener)
-        binding.courseIdEditText.addTextChangedListener(listener)
-        binding.courseNameEditText.addTextChangedListener(listener)
+        binding.crnEditText.addTextChangedListener(changeListener)
+        binding.courseIdEditText.addTextChangedListener(changeListener)
+        binding.courseNameEditText.addTextChangedListener(changeListener)
     }
 
     private fun validateInputs() {
@@ -59,10 +65,10 @@ class AddCourseDialogFragment(private val courses: List<Course>) : DialogFragmen
         val name = binding.courseNameEditText.text.toString().trim()
 
         val isDuplicateCrn = courses.any { it.crn == crn }
-        if (crn.isNotEmpty() && isDuplicateCrn) {
-            binding.crnInputLayout.error = "A course with this CRN already exists"
+        binding.crnInputLayout.error = if (crn.isNotEmpty() && isDuplicateCrn) {
+            getString(R.string.duplicate_crn_error)
         } else {
-            binding.crnInputLayout.error = null
+            null
         }
 
         // Enable Add button only if all fields are filled and CRN is unique.
@@ -77,6 +83,10 @@ class AddCourseDialogFragment(private val courses: List<Course>) : DialogFragmen
             crn = binding.crnEditText.text.toString().trim(),
             id = binding.courseIdEditText.text.toString().trim(),
             name = binding.courseNameEditText.text.toString().trim()
+        )
+        setFragmentResult(
+            COURSE_ADDED_KEY,
+            bundleOf(COURSE_COUNT_KEY to courses.size + 1)
         )
         coursesViewModel.addCourse(course)
         dismiss()
