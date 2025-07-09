@@ -6,17 +6,15 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.util.Log
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
-import com.ellenspertus.rostercapture.AppException
 import com.ellenspertus.rostercapture.AppException.AppInternalException
 import com.ellenspertus.rostercapture.MainActivity
-import com.ellenspertus.rostercapture.StartFragment
 import com.ellenspertus.rostercapture.extensions.containsIgnoreCase
 import com.ellenspertus.rostercapture.extensions.equalsIgnoreCase
 import com.ichi2.anki.FlashCardsContract.READ_WRITE_PERMISSION
 import com.ichi2.anki.api.AddContentApi
+import timber.log.Timber
 
 /**
  * An encapsulation of Anki integration.
@@ -26,24 +24,6 @@ import com.ichi2.anki.api.AddContentApi
 class AnkiBackend(
     private val mainActivity: MainActivity
 ) {
-    enum class PermissionStatus {
-        GRANTED,
-        DENIED_CAN_ASK_AGAIN,
-        UNKNOWN_TRY_REQUEST,
-        PERMANENTLY_DENIED
-    }
-
-    data class Model(
-        val name: String,
-        val fields: Array<String>,
-        val cardNames: Array<String>,
-        val questionFormats: Array<String>,
-        val answerFormats: Array<String>,
-        val css: String?,   // null for no css
-        var deckId: Long?,  // null for default deck
-        val sortField: Int?,
-    )
-
     private val api: AddContentApi = AddContentApi(mainActivity)
 
     val existingModelNames = api.modelList.values.toMutableList()
@@ -89,7 +69,7 @@ class AnkiBackend(
             else -> null
         }
 
-    fun createDeck(deckName: String) =
+    fun createDeck(deckName: String): Long =
         api.addNewDeck(deckName).also {
             existingDeckNames.add(deckName)
             it
@@ -137,12 +117,11 @@ class AnkiBackend(
                 ID_FIELD -> studentId ?: ""
                 PRONOUN_FIELD -> pronouns ?: ""
                 else -> run {
-                    throw AppException.AppInternalException("Illegal field name ${FIELDS[i]}")
+                    throw AppInternalException("Illegal field name ${FIELDS[i]}")
                 }
             }
         }
 
-        // TODO: Remove duplicates
         val numAdded = addNote(
             modelId,
             deckId,
@@ -172,19 +151,17 @@ class AnkiBackend(
                 return it
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to add media", e)
+            Timber.e(e, "Failed to add media")
             return null
         } finally {
             // Revoke read permission.
             revokeReadPermission(shareableUri)
         }
-        Log.e(TAG, "addMediaFromUri() returned null")
+        Timber.e("addMediaFromUri() returned null")
         return null
     }
 
     companion object {
-        private const val TAG = "AnkiBackend"
-
         internal const val DEFAULT_DECK_NAME = "Roster"
         internal const val DEFAULT_MODEL_NAME = "com.ellenspertus.rostercapture"
         private const val NAME_FIELD = "name"
@@ -255,5 +232,12 @@ class AnkiBackend(
         fun hasPermission(fragment: Fragment) =
             checkPermissionStatus(fragment) ==
                     PermissionStatus.GRANTED
+    }
+
+    enum class PermissionStatus {
+        GRANTED,
+        DENIED_CAN_ASK_AGAIN,
+        UNKNOWN_TRY_REQUEST,
+        PERMANENTLY_DENIED
     }
 }

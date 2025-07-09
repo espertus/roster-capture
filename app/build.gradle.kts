@@ -131,5 +131,6 @@ dependencies {
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.ui)
     implementation(libs.protobuf.javalite)
+    implementation(libs.timber)
     implementation(platform(libs.firebase.bom))
 }

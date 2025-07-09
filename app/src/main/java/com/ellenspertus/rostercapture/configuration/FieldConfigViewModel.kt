@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.core.content.edit
 import androidx.lifecycle.ViewModel
 import com.ellenspertus.rostercapture.AppException
-import com.ellenspertus.rostercapture.usertest.Analytics
+import com.ellenspertus.rostercapture.instrumentation.Analytics
 
 class FieldConfigViewModel : ViewModel() {
     private val _studentFields = originalFields

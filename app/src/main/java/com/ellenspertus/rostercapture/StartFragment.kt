@@ -1,7 +1,6 @@
 package com.ellenspertus.rostercapture
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -19,7 +18,7 @@ import com.ellenspertus.rostercapture.anki.AnkiConfigViewModel
 import com.ellenspertus.rostercapture.configuration.FieldConfigViewModel
 import com.ellenspertus.rostercapture.extensions.navigateSafe
 import com.ellenspertus.rostercapture.extensions.navigateToFailure
-import com.ellenspertus.rostercapture.usertest.Analytics
+import com.ellenspertus.rostercapture.instrumentation.Analytics
 
 /**
  * An invisible fragment that verifies that the API is accessible
@@ -271,7 +270,6 @@ class StartFragment : Fragment() {
             tilDeck.visibility = View.VISIBLE
             etDeck.setText(AnkiBackend.DEFAULT_DECK_NAME)
             etDeck.doAfterTextChanged {
-                Log.d(TAG, "In etDeck.doAfterTextChanged")
                 val deckName = etDeck.text?.toString()
                 buttonProceed.isEnabled = deckName?.isNotEmpty() == true
             }
@@ -283,9 +281,5 @@ class StartFragment : Fragment() {
                 navigateToSelectCourseFragment()
             }
         }
-    }
-
-    companion object {
-        private const val TAG = "StartFragment"
     }
 }

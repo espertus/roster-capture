@@ -8,7 +8,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.ellenspertus.rostercapture.R
 import com.ellenspertus.rostercapture.extensions.promptForConfirmation
-import com.ellenspertus.rostercapture.usertest.Analytics
+import com.ellenspertus.rostercapture.instrumentation.Analytics
 
 class LockManager(
     private val fragment: Fragment,

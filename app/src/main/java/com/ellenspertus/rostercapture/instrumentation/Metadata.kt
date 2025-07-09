@@ -1,4 +1,4 @@
-package com.ellenspertus.rostercapture.usertest
+package com.ellenspertus.rostercapture.instrumentation
 
 import android.content.Context
 import android.content.Context.MODE_PRIVATE

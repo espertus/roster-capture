@@ -26,7 +26,7 @@ import com.ellenspertus.rostercapture.databinding.FragmentAddStudentBinding
 import com.ellenspertus.rostercapture.extensions.hasText
 import com.ellenspertus.rostercapture.extensions.navigateToFailure
 import com.ellenspertus.rostercapture.extensions.promptForConfirmation
-import com.ellenspertus.rostercapture.usertest.Analytics
+import com.ellenspertus.rostercapture.instrumentation.Analytics
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch

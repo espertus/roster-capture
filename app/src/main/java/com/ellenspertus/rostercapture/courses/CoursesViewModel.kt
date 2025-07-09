@@ -3,7 +3,7 @@ package com.ellenspertus.rostercapture.courses
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.ellenspertus.rostercapture.usertest.Analytics
+import com.ellenspertus.rostercapture.instrumentation.Analytics
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
