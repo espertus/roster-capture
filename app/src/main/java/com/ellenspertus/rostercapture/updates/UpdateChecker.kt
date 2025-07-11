@@ -1,11 +1,8 @@
 package com.ellenspertus.rostercapture.updates
 
 import android.app.DownloadManager
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
-import android.os.Build
 import android.os.Environment
 import android.widget.Toast
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -24,7 +21,8 @@ import com.ellenspertus.rostercapture.R
 private const val MAX_RELEASE_NOTE_LENGTH = 500
 private const val PREFS_NAME = "update_prefs"
 private const val SKIPPED_VERSION_KEY = "skipped_version"
-private const val GITHUB_URL = "https://api.github.com/repos/espertus/roster-capture-test/releases/latest"
+private const val GITHUB_URL =
+    "https://api.github.com/repos/espertus/roster-capture-test/releases/latest"
 
 object UpdateChecker {
     fun checkUpdate(context: Context, scope: CoroutineScope) {
@@ -130,74 +128,34 @@ object UpdateChecker {
             .edit {
                 putString(SKIPPED_VERSION_KEY, version)
             }
-        Toast.makeText(context,
-            context.getString(R.string.skip_confirmation, version), Toast.LENGTH_SHORT).show()
+        Toast.makeText(
+            context,
+            context.getString(R.string.skip_confirmation, version), Toast.LENGTH_SHORT
+        ).show()
     }
 
     private fun handleDownload(context: Context, url: String) {
-        val uri = url.toUri()
         try {
-            val fileName = "rostercapture-update-${System.currentTimeMillis()}.apk"
-
-            val request = DownloadManager.Request(uri).apply {
+            val request = DownloadManager.Request(url.toUri()).apply {
                 setTitle(context.getString(R.string.download_title))
                 setDescription(context.getString(R.string.download_description))
                 setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)
+                setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "app-update.apk")
                 setMimeType("application/vnd.android.package-archive")
             }
 
-            val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-            val downloadId = downloadManager.enqueue(request)
+            val downloadManager =
+                context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+            downloadManager.enqueue(request)
 
-            Toast.makeText(context, context.getString(R.string.download_started), Toast.LENGTH_LONG).show()
-
-            trackDownload(context, downloadId)
+            Toast.makeText(
+                context,
+                context.getString(R.string.download_started),
+                Toast.LENGTH_LONG
+            ).show()
         } catch (e: Exception) {
-            Timber.e(e, "DownloadManager failed, falling back to browser")
-            try {
-                val intent = Intent(Intent.ACTION_VIEW, uri)
-                context.startActivity(intent)
-            } catch (e: Exception) {
-                Toast.makeText(context,
-                    context.getString(R.string.download_failed), Toast.LENGTH_LONG).show()
-            }
-        }
-    }
-
-    private fun trackDownload(context: Context, downloadId: Long) {
-        val receiver = object : BroadcastReceiver() {
-            override fun onReceive(ctx: Context, intent: Intent) {
-                val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
-                if (id == downloadId) {
-                    val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-                    val uri = downloadManager.getUriForDownloadedFile(downloadId)
-
-                    if (uri != null) {
-                        // Automatically open installer
-                        val installIntent = Intent(Intent.ACTION_VIEW).apply {
-                            setDataAndType(uri, "application/vnd.android.package-archive")
-                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION
-                        }
-
-                        try {
-                            context.startActivity(installIntent)
-                        } catch (e: Exception) {
-                            Timber.e(e, "Failed to start installer")
-                        }
-                    }
-
-                    context.unregisterReceiver(this)
-                }
-            }
-        }
-
-        val filter = IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            context.registerReceiver(receiver, filter, Context.RECEIVER_EXPORTED)
-        } else {
-            @Suppress("UnspecifiedRegisterReceiverFlag")
-            context.registerReceiver(receiver, filter)
+            Timber.e(e, "Download failed, opening in browser")
+            context.startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))
         }
     }
 }

@@ -95,6 +95,6 @@
     <string name="skip_confirmation">Version %1$s will be skipped</string>
     <string name="download_title">RosterCapture Update</string>
     <string name="download_description">Downloading latest version…</string>
-    <string name="download_started">Download started</string>
+    <string name="download_started">Download started. Watch for notification.</string>
     <string name="download_failed">Unable to download. Please try manually.</string>
 </resources>
