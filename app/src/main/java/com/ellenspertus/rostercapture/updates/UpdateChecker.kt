@@ -17,6 +17,7 @@ import androidx.core.content.edit
 import com.ellenspertus.rostercapture.BuildConfig
 import androidx.core.net.toUri
 import com.ellenspertus.rostercapture.R
+import com.ellenspertus.rostercapture.instrumentation.Analytics
 
 private const val MAX_RELEASE_NOTE_LENGTH = 500
 private const val PREFS_NAME = "update_prefs"
@@ -113,11 +114,14 @@ object UpdateChecker {
                 })
                 .setPositiveButton(context.getString(R.string.download_button)) { _, _ ->
                     handleDownload(context, downloadUrl)
+                    Analytics.logFirstTime("Updating to $latestVersion")
                 }
                 .setNeutralButton(context.getString(R.string.not_now_button)) { _, _ ->
+                    Analytics.logFirstTime("Decided not to update now to $latestVersion")
                 }
                 .setNegativeButton(context.getString(R.string.skip_button)) { _, _ ->
                     skipVersion(context, latestVersion)
+                    Analytics.logFirstTime("Decided to skip update to $latestVersion")
                 }
                 .show()
         }
@@ -135,8 +139,9 @@ object UpdateChecker {
     }
 
     private fun handleDownload(context: Context, url: String) {
+        val uri = url.toUri()
         try {
-            val request = DownloadManager.Request(url.toUri()).apply {
+            val request = DownloadManager.Request(uri).apply {
                 setTitle(context.getString(R.string.download_title))
                 setDescription(context.getString(R.string.download_description))
                 setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
@@ -155,7 +160,7 @@ object UpdateChecker {
             ).show()
         } catch (e: Exception) {
             Timber.e(e, "Download failed, opening in browser")
-            context.startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))
+            context.startActivity(Intent(Intent.ACTION_VIEW, uri))
         }
     }
 }
