@@ -83,4 +83,18 @@
     <string name="exit_app_button">Exit App</string>
     <string name="restart_app_button">Restart App</string>
     <string name="duplicate_crn_error">A course with this CRN already exists</string>
+
+    <!-- UpdateChecker -->
+    <string name="update_available">Update Available! 🎉</string>
+    <string name="version_is_now_available">Version %1$s is now available!\n</string>
+    <string name="current_version">Current version: %1$s\n\n</string>
+    <string name="what_s_new">What\'s new:\n</string>
+    <string name="download_button">Download</string>
+    <string name="not_now_button">Not now</string>
+    <string name="skip_button">Skip</string>
+    <string name="skip_confirmation">Version %1$s will be skipped</string>
+    <string name="download_title">RosterCapture Update</string>
+    <string name="download_description">Downloading latest version…</string>
+    <string name="download_started">Download started</string>
+    <string name="download_failed">Unable to download. Please try manually.</string>
 </resources>

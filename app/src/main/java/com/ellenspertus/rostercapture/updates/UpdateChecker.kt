@@ -19,6 +19,7 @@ import java.net.URL
 import androidx.core.content.edit
 import com.ellenspertus.rostercapture.BuildConfig
 import androidx.core.net.toUri
+import com.ellenspertus.rostercapture.R
 
 private const val MAX_RELEASE_NOTE_LENGTH = 500
 private const val PREFS_NAME = "update_prefs"
@@ -102,22 +103,22 @@ object UpdateChecker {
         val releaseNotes = getReleaseNotes(json)
         findDownloadUrl(json)?.let { downloadUrl ->
             MaterialAlertDialogBuilder(context)
-                .setTitle("Update Available! 🎉")
+                .setTitle(context.getString(R.string.update_available))
                 .setMessage(buildString {
-                    append("Version $latestVersion is now available!\n")
-                    append("Current version: ${BuildConfig.VERSION_NAME}\n\n")
+                    append(context.getString(R.string.version_is_now_available, latestVersion))
+                    append(context.getString(R.string.current_version, BuildConfig.VERSION_NAME))
 
                     if (releaseNotes.isNotEmpty()) {
-                        append("What's new:\n")
+                        append(context.getString(R.string.what_s_new))
                         append(releaseNotes)
                     }
                 })
-                .setPositiveButton("Download") { _, _ ->
+                .setPositiveButton(context.getString(R.string.download_button)) { _, _ ->
                     handleDownload(context, downloadUrl)
                 }
-                .setNeutralButton("Not now") { _, _ ->
+                .setNeutralButton(context.getString(R.string.not_now_button)) { _, _ ->
                 }
-                .setNegativeButton("Skip") { _, _ ->
+                .setNegativeButton(context.getString(R.string.skip_button)) { _, _ ->
                     skipVersion(context, latestVersion)
                 }
                 .show()
@@ -129,7 +130,8 @@ object UpdateChecker {
             .edit {
                 putString(SKIPPED_VERSION_KEY, version)
             }
-        Toast.makeText(context, "Version $version will be skipped", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context,
+            context.getString(R.string.skip_confirmation, version), Toast.LENGTH_SHORT).show()
     }
 
     private fun handleDownload(context: Context, url: String) {
@@ -138,8 +140,8 @@ object UpdateChecker {
             val fileName = "rostercapture-update-${System.currentTimeMillis()}.apk"
 
             val request = DownloadManager.Request(uri).apply {
-                setTitle("RosterCapture Update")
-                setDescription("Downloading latest version...")
+                setTitle(context.getString(R.string.download_title))
+                setDescription(context.getString(R.string.download_description))
                 setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                 setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)
                 setMimeType("application/vnd.android.package-archive")
@@ -148,7 +150,7 @@ object UpdateChecker {
             val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
             val downloadId = downloadManager.enqueue(request)
 
-            Toast.makeText(context, "Download started - check notification bar", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, context.getString(R.string.download_started), Toast.LENGTH_LONG).show()
 
             trackDownload(context, downloadId)
         } catch (e: Exception) {
@@ -157,7 +159,8 @@ object UpdateChecker {
                 val intent = Intent(Intent.ACTION_VIEW, uri)
                 context.startActivity(intent)
             } catch (e: Exception) {
-                Toast.makeText(context, "Unable to download. Please try manually.", Toast.LENGTH_LONG).show()
+                Toast.makeText(context,
+                    context.getString(R.string.download_failed), Toast.LENGTH_LONG).show()
             }
         }
     }
