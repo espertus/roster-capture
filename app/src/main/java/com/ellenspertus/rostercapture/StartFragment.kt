@@ -15,16 +15,21 @@ import kotlin.system.exitProcess
 import com.ellenspertus.rostercapture.anki.AnkiBackend
 import com.ellenspertus.rostercapture.anki.AnkiBackend.PermissionStatus
 import com.ellenspertus.rostercapture.anki.AnkiConfigViewModel
+import com.ellenspertus.rostercapture.configuration.FieldConfigFragment
 import com.ellenspertus.rostercapture.configuration.FieldConfigViewModel
+import com.ellenspertus.rostercapture.courses.SelectCourseFragment
 import com.ellenspertus.rostercapture.extensions.navigateSafe
 import com.ellenspertus.rostercapture.extensions.navigateToFailure
 import com.ellenspertus.rostercapture.instrumentation.Analytics
 
 /**
- * An invisible fragment that verifies that the API is accessible
- * and that required permissions are granted. Depending on the result,
- * it navigates to [com.ellenspertus.rostercapture.courses.SelectCourseFragment] or [FailureFragment] or
- * exits.
+ * A fragment that verifies that:
+ * * the API is accessible
+ * * fields are configured (see [FieldConfigFragment])
+ * * required permissions are granted
+ * * the Anki data and model have been created
+ *
+ * If everything is good, it navigates to [SelectCourseFragment].
  */
 class StartFragment : Fragment() {
     private var _binding: FragmentStartBinding? = null
