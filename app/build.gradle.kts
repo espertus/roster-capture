@@ -78,8 +78,8 @@ android {
         applicationId = "com.ellenspertus.rostercapture"
         minSdk = 31
         targetSdk = 35
-        versionCode = 7
-        versionName = "0.0.7"
+        versionCode = 1
+        versionName = "0.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
