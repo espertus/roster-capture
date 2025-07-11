@@ -17,8 +17,18 @@ desktop or iOS apps. All Anki apps are free and open source.
 [![Student Information 1](images/student-information1-thumbnail.png)](images/student-information1.png)
 [![Student Information 2](images/student-information2-thumbnail.png)](images/student-information2.png)
 
+## Installation
+
+To install Roster Capture, go to [Latest Releases](https://github.com/espertus/roster-capture/releases/latest)
+on your Android device (or use this [QR code](images/rc-release-400.png)) and click
+on the link ending in "apk", such as `rostercapture-v0.1.0-release.apk`
+
+
+This [one-minute video](images/installation-screencast.mp4)
+([silent version](images/install-screencast.webm)) shows all the installation steps.
+
 ## FAQ
-### What information can be collected?
+### What information can I collect from students?
 
 These are the required fields:
 * First name
@@ -63,6 +73,12 @@ For more security, use a burner phone or [Guest Mode](https://support.google.com
 ### What version of Android is required?
 
 Android 14 (API 34)
+
+### What information does the app collect?
+
+All information about your classes and students stays on your phone.
+The app does report crash data and analytics, such as that the user
+created their first class (but not any information about the class).
 
 ### What if I have questions or suggestions?
 
