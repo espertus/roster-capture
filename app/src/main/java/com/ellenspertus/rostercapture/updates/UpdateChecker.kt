@@ -23,7 +23,7 @@ private const val MAX_RELEASE_NOTE_LENGTH = 500
 private const val PREFS_NAME = "update_prefs"
 private const val SKIPPED_VERSION_KEY = "skipped_version"
 private const val GITHUB_URL =
-    "https://api.github.com/repos/espertus/roster-capture-test/releases/latest"
+    "https://api.github.com/repos/espertus/roster-capture/releases/latest"
 
 object UpdateChecker {
     fun checkUpdate(context: Context, scope: CoroutineScope) {
