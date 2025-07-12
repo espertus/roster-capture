@@ -1,15 +1,15 @@
 # Roster Capture
 
-Roster Capture helps teachers of large classes learn students' names and other important
-information. Teachers specify what information they want to collect and then pass the phone
-around the classroom, letting each student take a selfie and provide relevant information about
-themselves (such as their preferred name and how it is pronounced).
+Roster Capture is an Android app that helps teachers connect with their students by learning
+their names, faces, and how to address them. Teachers specify what information to collect
+(photos, preferred names, pronouns, audio pronunciations), and then pass the device around 
+their classroom, letting students take selfies and add their information.
 
-The collected information is stored in the popular flashcard app,
+The collected information is passed to the popular free flashcard app,
 [AnkiDroid](https://play.google.com/store/apps/details?id=com.ichi2.anki), where teachers can
 study the information and quiz themselves. They can also sync the data from AnkiDroid to
 to [AnkiWeb](https://ankiweb.net/about), so it can be accessed online or through Anki's
-desktop or iOS apps. All Anki apps are free and open source.
+desktop or iOS apps.
 
 [![Configure Student Fields](images/configure-student-fields-thumbnail.png)](images/configure-student-fields.png)
 [![Select Course](images/select-course-thumbnail.png)](images/select-course.png)
@@ -22,7 +22,6 @@ desktop or iOS apps. All Anki apps are free and open source.
 To install Roster Capture, go to [Latest Releases](https://github.com/espertus/roster-capture/releases/latest)
 on your Android device (or use this [QR code](images/rc-release-400.png)) and click
 on the link ending in "apk", such as `rostercapture-v0.1.0-release.apk`
-
 
 This [one-minute video](images/installation-screencast.mp4)
 ([silent version](images/install-screencast.webm)) shows all the installation steps.
@@ -79,7 +78,8 @@ Android 14 (API 34)
 
 All information about your classes and students stays on your phone.
 The app does report crash data and analytics, such as that the user
-created their first class (but not any information about the class).
+created their first class (but not any information about the class)
+[[view code](https://github.com/search?q=repo%3Aespertus%2Froster-capture+Analytics.log&type=code)].
 
 ### What if I have questions or suggestions?
 
