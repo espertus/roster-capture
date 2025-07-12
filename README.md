@@ -67,6 +67,7 @@ For more security, use a burner phone or [Guest Mode](https://support.google.com
 ### What permissions are required?
 
 * CAMERA, so students can take selfies
+* INTERNET, so it can check for updates
 * RECORD_AUDIO, so students can record their names
 * USE_BIOMETRIC, so students can't do anything but add their information
 
@@ -82,7 +83,9 @@ created their first class (but not any information about the class).
 
 ### What if I have questions or suggestions?
 
-Create an issue, or otherwise contact me. I'd be happy to hear from you.
+[Create an issue](https://github.com/espertus/roster-capture/issues/new),
+or email me ([rc@ellenspertus.com](mailto:rc@ellenspertus.com)).
+I'd be happy to hear from you.
 
 ## Credits
 
