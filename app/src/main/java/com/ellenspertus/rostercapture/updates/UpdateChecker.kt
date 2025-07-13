@@ -26,14 +26,16 @@ private const val GITHUB_URL =
     "https://api.github.com/repos/espertus/roster-capture/releases/latest"
 
 object UpdateChecker {
+    private val currentVersion = Version(BuildConfig.VERSION_NAME)
+
     fun checkUpdate(context: Context, scope: CoroutineScope) {
         scope.launch {
             runCatching {
                 val json = withContext(Dispatchers.IO) {
                     JSONObject(URL(GITHUB_URL).readText())
                 }
-                val latestVersion = json.getString("tag_name").removePrefix("v")
-                if (shouldShowUpdate(context, latestVersion)) {
+                val latestVersion = Version(json.getString("tag_name"))
+                if (shouldShowUpdate(context, currentVersion, latestVersion)) {
                     withContext(Dispatchers.Main) {
                         showDialog(context, latestVersion, json)
                     }
@@ -44,28 +46,13 @@ object UpdateChecker {
         }
     }
 
-    private fun shouldShowUpdate(context: Context, latestVersion: String): Boolean {
-        val skippedVersion = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-            .getString(SKIPPED_VERSION_KEY, null)
 
-        return latestVersion != skippedVersion &&
-                compareVersions(latestVersion, BuildConfig.VERSION_NAME) > 0
-    }
+    private fun shouldShowUpdate(context: Context, currentVersion: Version, latestVersion: Version) =
+        latestVersion != getSkippedVersion(context) || currentVersion < latestVersion
 
-    private fun compareVersions(v1: String, @Suppress("SameParameterValue") v2: String): Int {
-        val parts1 = v1.split(".").map { it.toIntOrNull() ?: 0 }
-        val parts2 = v2.split(".").map { it.toIntOrNull() ?: 0 }
-
-        for (i in 0 until maxOf(parts1.size, parts2.size)) {
-            val part1 = parts1.getOrNull(i) ?: 0
-            val part2 = parts2.getOrNull(i) ?: 0
-
-            if (part1 != part2) {
-                return part1.compareTo(part2)
-            }
-        }
-        return 0
-    }
+    private fun getSkippedVersion(context: Context): Version? =
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        .getString(SKIPPED_VERSION_KEY, null)?.let { Version(it) }
 
     private fun getReleaseNotes(json: JSONObject) =
         try {
