@@ -4,6 +4,7 @@ import android.app.DownloadManager
 import android.content.Context
 import android.content.Intent
 import android.os.Environment
+import android.util.Log
 import android.widget.Toast
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.CoroutineScope
@@ -28,52 +29,41 @@ private const val GITHUB_URL =
 object UpdateChecker {
     private val currentVersion = Version(BuildConfig.VERSION_NAME)
 
-    fun checkUpdate(context: Context, scope: CoroutineScope) {
+    fun checkUpdate(
+        context: Context,
+        scope: CoroutineScope,
+        onUpdateAvailable: (Version) -> Unit = { showUpdateDialog(context, it) },
+        onUpdateSkipped: (Version) -> Unit = {},
+        onNoUpdate: () -> Unit = {},
+        onFailure: (Throwable) -> Unit = { Timber.e(it, "Update check failed") }
+    ) {
         scope.launch {
             runCatching {
                 val json = withContext(Dispatchers.IO) {
                     JSONObject(URL(GITHUB_URL).readText())
                 }
-                val latestVersion = Version(json.getString("tag_name"))
-                if (shouldShowUpdate(context, currentVersion, latestVersion)) {
-                    withContext(Dispatchers.Main) {
-                        showDialog(context, latestVersion, json)
+                val latestVersion = Version(json)
+                withContext(Dispatchers.Main) {
+                    when {
+                        currentVersion >= latestVersion -> onNoUpdate()
+                        latestVersion == getSkippedVersion(context) -> onUpdateSkipped(latestVersion)
+                        else -> onUpdateAvailable(latestVersion)
                     }
                 }
             }.onFailure {
-                Timber.e(it, "Update check failed")
+                onFailure(it)
             }
         }
     }
 
-    private fun shouldShowUpdate(context: Context, currentVersion: Version, latestVersion: Version) =
-        latestVersion != getSkippedVersion(context) && currentVersion < latestVersion
-
     private fun getSkippedVersion(context: Context): Version? =
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        .getString(SKIPPED_VERSION_KEY, null)?.let { Version(it) }
+            .getString(SKIPPED_VERSION_KEY, null)?.let { Version(it) }
 
-    private fun findDownloadUrl(json: JSONObject): String? =
-        try {
-            json.getJSONArray("assets")
-                .let { assets ->
-                    for (i in 0 until assets.length()) {
-                        val asset = assets.getJSONObject(i)
-                        if (asset.getString("name").endsWith(".apk")) {
-                            return@let asset.getString("browser_download_url")
-                        }
-                    }
-                    Timber.e("Unable to extract download URL from JSON")
-                    null
-                }
-        } catch (e: Exception) {
-            Timber.e(e, "Exception extracting download URL")
-            null
-        }
-
-    private fun showDialog(context: Context, latestVersion: Version, json: JSONObject) {
+    fun showUpdateDialog(context: Context, latestVersion: Version) {
         val releaseNotes = latestVersion.releaseNotes.take(MAX_RELEASE_NOTE_LENGTH)
-        findDownloadUrl(json)?.let { downloadUrl ->
+
+        latestVersion.downloadUrl?.let { downloadUrl ->
             MaterialAlertDialogBuilder(context)
                 .setTitle(context.getString(R.string.update_available))
                 .setMessage(buildString {
@@ -97,10 +87,10 @@ object UpdateChecker {
                     Analytics.logFirstTime("Decided to skip update to $latestVersion")
                 }
                 .show()
-        }
+        } ?: Timber.e("latestVersion.downloadUrl is null")
     }
 
-    private fun skipVersion(context: Context, version: Version) {
+    fun skipVersion(context: Context, version: Version) {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             .edit {
                 putString(SKIPPED_VERSION_KEY, version.toString())
@@ -111,7 +101,7 @@ object UpdateChecker {
         ).show()
     }
 
-    private fun handleDownload(context: Context, url: String) {
+    fun handleDownload(context: Context, url: String) {
         val uri = url.toUri()
         try {
             val request = DownloadManager.Request(uri).apply {

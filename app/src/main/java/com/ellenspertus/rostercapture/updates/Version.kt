@@ -2,7 +2,12 @@ package com.ellenspertus.rostercapture.updates
 
 import kotlin.text.removePrefix
 import org.json.JSONObject
+import timber.log.Timber
 
+/**
+ * A version of the application. Fields [releaseNotes] and [downloadUrl] are set only
+ * for the latest version, not for the current version or skipped version.
+ */
 class Version(val name: String) : Comparable<Version> {
 
     private val parts = name.removePrefix("v").split(".").map { it.toIntOrNull() ?: 0 }
@@ -10,8 +15,12 @@ class Version(val name: String) : Comparable<Version> {
     var releaseNotes: String = ""
         private set
 
+    var downloadUrl: String? = null
+        private set
+
     constructor(json: JSONObject) : this(json.getString("tag_name")) {
         releaseNotes = getReleaseNotes(json)
+        downloadUrl = findDownloadUrl(json)
     }
 
     private fun getReleaseNotes(json: JSONObject) =
@@ -24,6 +33,24 @@ class Version(val name: String) : Comparable<Version> {
                 .trim()
         } catch (e: Exception) {
             ""
+        }
+
+    private fun findDownloadUrl(json: JSONObject): String? =
+        try {
+            json.getJSONArray("assets")
+                .let { assets ->
+                    for (i in 0 until assets.length()) {
+                        val asset = assets.getJSONObject(i)
+                        if (asset.getString("name").endsWith(".apk")) {
+                            return@let asset.getString("browser_download_url")
+                        }
+                    }
+                    Timber.e("Unable to extract download URL from JSON")
+                    null
+                }
+        } catch (e: Exception) {
+            Timber.e(e, "Exception extracting download URL")
+            null
         }
 
     override fun toString() = parts.joinToString(".")
