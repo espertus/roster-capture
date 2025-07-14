@@ -46,26 +46,12 @@ object UpdateChecker {
         }
     }
 
-
     private fun shouldShowUpdate(context: Context, currentVersion: Version, latestVersion: Version) =
-        latestVersion != getSkippedVersion(context) || currentVersion < latestVersion
+        latestVersion != getSkippedVersion(context) && currentVersion < latestVersion
 
     private fun getSkippedVersion(context: Context): Version? =
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         .getString(SKIPPED_VERSION_KEY, null)?.let { Version(it) }
-
-    private fun getReleaseNotes(json: JSONObject) =
-        try {
-            json.getString("body")
-                .replace(Regex("#{1,6}\\s*"), "")  // Removes # through ###### with optional spaces
-                .replace(Regex("\\*{2,}"), "")     // Removes ** for bold
-                .replace(Regex("\\n{3,}"), "\n\n") // Collapse multiple newlines
-                .replace(Regex("^[-*+]\\s+", RegexOption.MULTILINE), "• ") // Lists
-                .trim()
-                .take(MAX_RELEASE_NOTE_LENGTH)
-        } catch (e: Exception) {
-            ""
-        }
 
     private fun findDownloadUrl(json: JSONObject): String? =
         try {
@@ -85,8 +71,8 @@ object UpdateChecker {
             null
         }
 
-    private fun showDialog(context: Context, latestVersion: String, json: JSONObject) {
-        val releaseNotes = getReleaseNotes(json)
+    private fun showDialog(context: Context, latestVersion: Version, json: JSONObject) {
+        val releaseNotes = latestVersion.releaseNotes.take(MAX_RELEASE_NOTE_LENGTH)
         findDownloadUrl(json)?.let { downloadUrl ->
             MaterialAlertDialogBuilder(context)
                 .setTitle(context.getString(R.string.update_available))
@@ -114,10 +100,10 @@ object UpdateChecker {
         }
     }
 
-    private fun skipVersion(context: Context, version: String) {
+    private fun skipVersion(context: Context, version: Version) {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             .edit {
-                putString(SKIPPED_VERSION_KEY, version)
+                putString(SKIPPED_VERSION_KEY, version.toString())
             }
         Toast.makeText(
             context,
