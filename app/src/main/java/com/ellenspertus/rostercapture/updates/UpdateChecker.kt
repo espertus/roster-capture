@@ -17,6 +17,7 @@ import java.net.URL
 import androidx.core.content.edit
 import com.ellenspertus.rostercapture.BuildConfig
 import androidx.core.net.toUri
+import com.ellenspertus.rostercapture.AppException
 import com.ellenspertus.rostercapture.R
 import com.ellenspertus.rostercapture.instrumentation.Analytics
 
@@ -47,6 +48,7 @@ object UpdateChecker {
                     when {
                         currentVersion >= latestVersion -> onNoUpdate()
                         latestVersion == getSkippedVersion(context) -> onUpdateSkipped(latestVersion)
+                        !latestVersion.isDownloadable -> onFailure(AppException.AppInternalException("isDownloadable false for $latestVersion"))
                         else -> onUpdateAvailable(latestVersion)
                     }
                 }
@@ -60,6 +62,7 @@ object UpdateChecker {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             .getString(SKIPPED_VERSION_KEY, null)?.let { Version(it) }
 
+    // This does nothing if !latestVersion.isDownloadable.
     fun showUpdateDialog(context: Context, latestVersion: Version) {
         val releaseNotes = latestVersion.releaseNotes.take(MAX_RELEASE_NOTE_LENGTH)
 
@@ -87,7 +90,7 @@ object UpdateChecker {
                     Analytics.logFirstTime("Decided to skip update to $latestVersion")
                 }
                 .show()
-        } ?: Timber.e("latestVersion.downloadUrl is null")
+        }
     }
 
     fun skipVersion(context: Context, version: Version) {
