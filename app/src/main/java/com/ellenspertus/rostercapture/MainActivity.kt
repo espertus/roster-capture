@@ -1,12 +1,12 @@
 package com.ellenspertus.rostercapture
 
 import android.os.Bundle
-import androidx.fragment.app.FragmentActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.ellenspertus.rostercapture.anki.AnkiBackend
 import com.ellenspertus.rostercapture.app.UpdateChecker
 
-class MainActivity : FragmentActivity() {
+class MainActivity : AppCompatActivity() {
     var backend: AnkiBackend? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {

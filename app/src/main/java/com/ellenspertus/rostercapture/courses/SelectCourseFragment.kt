@@ -1,9 +1,11 @@
 package com.ellenspertus.rostercapture.courses
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -13,7 +15,8 @@ import com.ellenspertus.rostercapture.databinding.FragmentSelectCourseBinding
 import com.ellenspertus.rostercapture.databinding.ItemCourseCardBinding
 import com.ellenspertus.rostercapture.extensions.navigateSafe
 import com.ellenspertus.rostercapture.extensions.promptForConfirmation
-import com.ellenspertus.rostercapture.app.Menu
+import com.ellenspertus.rostercapture.app.RosterCaptureMenuProvider
+import com.google.android.material.appbar.MaterialToolbar
 import kotlinx.coroutines.launch
 
 class SelectCourseFragment : Fragment() {
@@ -35,9 +38,19 @@ class SelectCourseFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupToolbar()
         setupTipDisplay()
-        Menu.setupMenu(this, binding.buttonOverflow)
         manageCourses()
+    }
+
+    // Must be called after view has been created
+    private fun setupToolbar() {
+        (activity as? AppCompatActivity)?.apply {
+            setSupportActionBar(
+                requireView().findViewById<MaterialToolbar>(R.id.toolbar)
+            )
+            addMenuProvider(RosterCaptureMenuProvider(this@SelectCourseFragment), viewLifecycleOwner)
+        }
     }
 
     private fun setupTipDisplay() {
