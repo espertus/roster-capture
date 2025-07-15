@@ -9,6 +9,7 @@ local.properties
 .idea/assetWizardSettings.xml
 .idea/deploymentTargetSelector.xml
 .idea/appInsightsSettings.xml
+.idea/misc.xml
 
 .DS_Store
 /build
