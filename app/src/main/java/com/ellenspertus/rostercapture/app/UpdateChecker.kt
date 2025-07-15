@@ -1,10 +1,9 @@
-package com.ellenspertus.rostercapture.updates
+package com.ellenspertus.rostercapture.app
 
 import android.app.DownloadManager
 import android.content.Context
 import android.content.Intent
 import android.os.Environment
-import android.util.Log
 import android.widget.Toast
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.CoroutineScope
@@ -21,14 +20,13 @@ import com.ellenspertus.rostercapture.AppException
 import com.ellenspertus.rostercapture.R
 import com.ellenspertus.rostercapture.instrumentation.Analytics
 
-private const val MAX_RELEASE_NOTE_LENGTH = 500
 private const val PREFS_NAME = "update_prefs"
 private const val SKIPPED_VERSION_KEY = "skipped_version"
 private const val GITHUB_URL =
     "https://api.github.com/repos/espertus/roster-capture/releases/latest"
 
 object UpdateChecker {
-    private val currentVersion = Version(BuildConfig.VERSION_NAME)
+    const val MAX_RELEASE_NOTE_LENGTH = 500
 
     fun checkUpdate(
         context: Context,
@@ -46,9 +44,14 @@ object UpdateChecker {
                 val latestVersion = Version(json)
                 withContext(Dispatchers.Main) {
                     when {
-                        currentVersion >= latestVersion -> onNoUpdate()
+                        Version.current >= latestVersion -> onNoUpdate()
                         latestVersion == getSkippedVersion(context) -> onUpdateSkipped(latestVersion)
-                        !latestVersion.isDownloadable -> onFailure(AppException.AppInternalException("isDownloadable false for $latestVersion"))
+                        !latestVersion.isDownloadable -> onFailure(
+                            AppException.AppInternalException(
+                                "isDownloadable false for $latestVersion"
+                            )
+                        )
+
                         else -> onUpdateAvailable(latestVersion)
                     }
                 }
@@ -70,21 +73,27 @@ object UpdateChecker {
             MaterialAlertDialogBuilder(context)
                 .setTitle(context.getString(R.string.update_available))
                 .setMessage(buildString {
-                    append(context.getString(R.string.version_is_now_available, latestVersion))
-                    append(context.getString(R.string.current_version, BuildConfig.VERSION_NAME))
+                    appendLine(context.getString(R.string.version_is_now_available, latestVersion))
+                    appendLine(
+                        context.getString(
+                            R.string.current_version,
+                            BuildConfig.VERSION_NAME
+                        )
+                    )
+                    appendLine()
 
                     if (releaseNotes.isNotEmpty()) {
-                        append(context.getString(R.string.what_s_new))
+                        appendLine(context.getString(R.string.what_s_new))
                         append(releaseNotes)
                     }
                 })
-                .setPositiveButton(context.getString(R.string.download_button)) { _, _ ->
+                .setPositiveButton("Update") { _, _ ->
                     handleDownload(context, downloadUrl)
                     Analytics.logFirstTime("Updating to $latestVersion")
                 }
                 .setNeutralButton(context.getString(R.string.not_now_button)) { _, _ ->
-                    Analytics.logFirstTime("Decided not to update now to $latestVersion")
-                }
+                Analytics.logFirstTime("Decided not to update now to $latestVersion")
+            }
                 .setNegativeButton(context.getString(R.string.skip_button)) { _, _ ->
                     skipVersion(context, latestVersion)
                     Analytics.logFirstTime("Decided to skip update to $latestVersion")

@@ -86,9 +86,9 @@
 
     <!-- UpdateChecker -->
     <string name="update_available">Update Available! 🎉</string>
-    <string name="version_is_now_available">Version %1$s is now available!\n</string>
-    <string name="current_version">Current version: %1$s\n\n</string>
-    <string name="what_s_new">What\'s new:\n</string>
+    <string name="version_is_now_available">Version %1$s is now available!</string>
+    <string name="current_version">Current version: %1$s</string>
+    <string name="what_s_new">What\'s new:</string>
     <string name="download_button">Download</string>
     <string name="not_now_button">Not now</string>
     <string name="skip_button">Skip</string>
@@ -97,4 +97,17 @@
     <string name="download_description">Downloading latest version…</string>
     <string name="download_started">Download started. Watch for notification.</string>
     <string name="download_failed">Unable to download. Please try manually.</string>
+
+    <!-- Options Menu -->
+    <string name="options">options</string>
+    <string name="about_title">About RosterCapture</string>
+    <string name="about_message"><![CDATA[
+    © 2025 Ellen Spertus<br>
+    Version %1$s<br>
+    <a href="https://github.com/ellenspertus/rostercapture">Source Code</a><br>
+    <a href="https://github.com/espertus/roster-capture/blob/main/README.md">Documentation</a><br><br>
+]]></string>
+    <string name="version_is_available">Version %1$s is available.</string>
+    <string name="you_have_the_latest_version">You have the latest version.</string>
+    <string name="see_update_info_button">See Update Info</string>
 </resources>

@@ -13,6 +13,7 @@ import com.ellenspertus.rostercapture.databinding.FragmentSelectCourseBinding
 import com.ellenspertus.rostercapture.databinding.ItemCourseCardBinding
 import com.ellenspertus.rostercapture.extensions.navigateSafe
 import com.ellenspertus.rostercapture.extensions.promptForConfirmation
+import com.ellenspertus.rostercapture.app.Menu
 import kotlinx.coroutines.launch
 
 class SelectCourseFragment : Fragment() {
@@ -34,6 +35,12 @@ class SelectCourseFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupTipDisplay()
+        Menu.setupMenu(this, binding.buttonOverflow)
+        manageCourses()
+    }
+
+    private fun setupTipDisplay() {
         // Whenever a first course is added, display this tip.
         childFragmentManager.setFragmentResultListener(
             COURSE_ADDED_KEY,
@@ -46,7 +53,29 @@ class SelectCourseFragment : Fragment() {
                 hideDeleteTip()
             }
         }
+    }
 
+    private fun showDeleteTip() {
+        binding.textDeleteCourse.apply {
+            visibility = View.VISIBLE
+        }
+    }
+
+    private fun showCreateTip() {
+        binding.textCreateCourse.apply {
+            visibility = View.VISIBLE
+        }
+    }
+
+    private fun hideDeleteTip() {
+        binding.textDeleteCourse.visibility = View.GONE
+    }
+
+    private fun hideCreateTip() {
+        binding.textCreateCourse.visibility = View.GONE
+    }
+
+    private fun manageCourses() {
         viewLifecycleOwner.lifecycleScope.launch {
             coursesViewModel.courses.collect { courses ->
                 binding.coursesContainer.removeAllViews()
@@ -70,31 +99,6 @@ class SelectCourseFragment : Fragment() {
                 }
             }
         }
-        binding.settingsButton.setOnClickListener {
-            findNavController().navigateSafe(
-                SelectCourseFragmentDirections.actionSelectCourseFragmentToFieldConfigFragment()
-            )
-        }
-    }
-
-    private fun showDeleteTip() {
-        binding.textDeleteCourse.apply {
-            visibility = View.VISIBLE
-        }
-    }
-
-    private fun showCreateTip() {
-        binding.textCreateCourse.apply {
-            visibility = View.VISIBLE
-        }
-    }
-
-    private fun hideDeleteTip() {
-        binding.textDeleteCourse.visibility = View.GONE
-    }
-
-    private fun hideCreateTip() {
-        binding.textCreateCourse.visibility = View.GONE
     }
 
     private fun solicitCourse(courses: List<Course>) {

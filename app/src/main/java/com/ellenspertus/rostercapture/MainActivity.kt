@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import com.ellenspertus.rostercapture.anki.AnkiBackend
-import com.ellenspertus.rostercapture.updates.UpdateChecker
+import com.ellenspertus.rostercapture.app.UpdateChecker
 
 class MainActivity : FragmentActivity() {
     var backend: AnkiBackend? = null

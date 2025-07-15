@@ -55,6 +55,8 @@
         <action
             android:id="@+id/action_fieldConfigFragment_to_startFragment"
             app:destination="@id/startFragment" />
-    </fragment><action android:id="@+id/action_global_failureFragment" app:destination="@id/failureFragment"/>
+    </fragment>
 
+    <action android:id="@+id/action_global_failureFragment" app:destination="@id/failureFragment"/>
+    <action android:id="@+id/action_global_fieldConfigFragment" app:destination="@id/fieldConfigFragment"/>
 </navigation>

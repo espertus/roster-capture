@@ -1,5 +1,6 @@
-package com.ellenspertus.rostercapture.updates
+package com.ellenspertus.rostercapture.app
 
+import com.ellenspertus.rostercapture.BuildConfig
 import kotlin.text.removePrefix
 import org.json.JSONObject
 import timber.log.Timber
@@ -44,6 +45,8 @@ class Version(val name: String) : Comparable<Version> {
     override fun hashCode() = toString().hashCode()
 
     companion object {
+        val current = Version(BuildConfig.VERSION_NAME)
+
         private fun extractReleaseNotes(json: JSONObject) =
             try {
                 json.getString("body")
