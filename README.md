@@ -66,13 +66,14 @@ For more security, use a burner phone or [Guest Mode](https://support.google.com
 ### What permissions are required?
 
 * CAMERA, so students can take selfies
-* INTERNET, so it can check for updates
 * RECORD_AUDIO, so students can record their names
+* INTERNET, so it can check for updates
+* REQUEST_INSTALL_PACKAGES, so it can install updates with user permission
 * USE_BIOMETRIC, so students can't do anything but add their information
 
 ### What version of Android is required?
 
-Android 14 (API 34)
+Android 12 (API 31)
 
 ### What information does the app collect?
 
@@ -80,6 +81,15 @@ All information about your classes and students stays on your phone.
 The app does report crash data and analytics, such as that the user
 created their first class (but not any information about the class)
 [[view code](https://github.com/search?q=repo%3Aespertus%2Froster-capture+Analytics.log&type=code)].
+
+### The app downloaded an update but didn't install it.
+
+If that happens, here's how to install it:
+1. Open the Files app.
+2. Click on Downloads.
+3. Tap the most recent file with the Roster Capture icon and a
+   name ending "apk".
+4. Confirm that you want to update or install the app.
 
 ### What if I have questions or suggestions?
 
