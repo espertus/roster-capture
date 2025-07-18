@@ -89,7 +89,7 @@
     <string name="version_is_now_available">Version %1$s is now available!</string>
     <string name="current_version">Current version: %1$s</string>
     <string name="what_s_new">What\'s new:</string>
-    <string name="download_button">Download</string>
+    <string name="update_button">Update</string>
     <string name="not_now_button">Not now</string>
     <string name="skip_button">Skip</string>
     <string name="skip_confirmation">Version %1$s will be skipped</string>
@@ -105,7 +105,9 @@
     © 2025 Ellen Spertus<br>
     Version %1$s<br>
     <a href="https://github.com/ellenspertus/rostercapture">Source Code</a><br>
-    <a href="https://github.com/espertus/roster-capture/blob/main/README.md">Documentation</a><br><br>
+    <a href="https://github.com/espertus/roster-capture/blob/main/README.md">Documentation</a><br>
+    <a href="https://github.com/espertus/roster-capture/tree/main?tab=readme-ov-file#credits">Licenses</a><br>
+    <br>
 ]]></string>
     <string name="version_is_available">Version %1$s is available.</string>
     <string name="you_have_the_latest_version">You have the latest version.</string>
