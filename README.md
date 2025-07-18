@@ -103,8 +103,35 @@ I got the idea of passing a phone around the classroom to get selfies from
 [Name That Student](http://www.alexandramarin.ca/namethatstudent.html)
 by [Alexandra Marin](http://www.alexandramarin.ca/).
 
-This app uses AnkiDroid's
-[Instant-Add API](https://github.com/ankidroid/Anki-Android/wiki/AnkiDroid-API).
+### Third-party libraries
+
+- **[AndroidX Libraries](https://developer.android.com/jetpack/androidx)** - Android Jetpack components
+  - License: [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0)
+  - Copyright (c) The Android Open Source Project
+
+- **[AnkiDroid API](https://github.com/ankidroid/Anki-Android)** - Flashcard integration
+  - License: [LGPL-3.0](https://www.gnu.org/licenses/lgpl-3.0.html)
+  - Copyright (c) AnkiDroid contributors
+
+- **[Firebase Android SDK](https://github.com/firebase/firebase-android-sdk)** - Analytics and crash reporting client libraries
+  - License: [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0)
+  - Copyright (c) Google LLC
+
+- **[Material Components for Android](https://github.com/material-components/material-components-android)** - Material Design UI components
+  - License: [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0)
+  - Copyright (c) Google LLC
+
+- **[Kotlin Coroutines](https://github.com/Kotlin/kotlinx.coroutines)** - Asynchronous programming
+  - License: [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0)
+  - Copyright (c) JetBrains s.r.o. and Kotlin Programming Language contributors
+
+- **[Protocol Buffers](https://github.com/protocolbuffers/protobuf)** - Data serialization
+  - License: [BSD 3-Clause](https://opensource.org/licenses/BSD-3-Clause)
+  - Copyright (c) Google LLC
+
+- **[Timber](https://github.com/JakeWharton/timber)** - Logging utility
+  - License: [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0)
+  - Copyright (c) Jake Wharton
 
 ### Image sources
 The app icons were created by Aisha Asgha.
@@ -124,3 +151,9 @@ The app icons were created by Aisha Asgha.
 * Claude.ai
   * dashed_border.xml
   * solid_border.xml
+
+## Copyright
+
+Copyright (c) 2025 Ellen Spertus
+
+This project is licensed under the [MIT License](LICENSE).
