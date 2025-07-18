@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.database.ContentObserver
-import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.os.Handler
@@ -148,11 +147,11 @@ object UpdateChecker {
                 putLong(DOWNLOAD_ID_KEY, downloadId)
             }
 
-            // Register content observer as primary method
-            registerDownloadObserver(context, downloadId)
-
-            // Keep the broadcast receiver as fallback
+            // Add BroadcastReceiver to install APK after downloading.
             registerDownloadReceiver(context)
+
+            // This was added because the BroadcastReceiver did not always fire.
+            registerDownloadObserver(context, downloadId)
 
             Toast.makeText(
                 context,
@@ -165,48 +164,6 @@ object UpdateChecker {
         }
     }
 
-    private fun registerDownloadObserver(context: Context, downloadId: Long) {
-        val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-
-        downloadObserver = object : ContentObserver(Handler(Looper.getMainLooper())) {
-            override fun onChange(selfChange: Boolean) {
-                val query = DownloadManager.Query().setFilterById(downloadId)
-                downloadManager.query(query)?.use { cursor ->
-                    if (cursor.moveToFirst()) {
-                        val statusIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)
-                        if (statusIndex != -1) {
-                            val status = cursor.getInt(statusIndex)
-
-                            if (status == DownloadManager.STATUS_SUCCESSFUL) {
-                                installApk(context, downloadId)
-                                unregisterObserver(context)
-                                unregisterReceiver(context)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        context.contentResolver.registerContentObserver(
-            DOWNLOAD_URL.toUri(),
-            true,
-            downloadObserver!!
-        )
-
-    }
-
-    private fun unregisterObserver(context: Context) {
-        downloadObserver?.let {
-            try {
-                context.contentResolver.unregisterContentObserver(it)
-            } catch (e: Exception) {
-                Timber.e(e, "Failed to unregister ContentObserver")
-            }
-            downloadObserver = null
-        }
-    }
-
     private fun registerDownloadReceiver(context: Context) {
         downloadReceiver = object : BroadcastReceiver() {
             override fun onReceive(ctx: Context, intent: Intent) {
@@ -215,7 +172,7 @@ object UpdateChecker {
                     .getLong(DOWNLOAD_ID_KEY, -1)
                 if (downloadId == savedDownloadId) {
                     installApk(context, downloadId)
-                    unregisterReceiver(context)
+                    unregisterWatchers(context)
                 }
             }
         }
@@ -235,19 +192,32 @@ object UpdateChecker {
         }
     }
 
-    // Update the unregister function to also clean up the observer
-    fun unregisterReceiver(context: Context) {
-        downloadReceiver?.let {
-            try {
-                context.applicationContext.unregisterReceiver(it)
-            } catch (e: Exception) {
-                Timber.e(e, "Failed to unregister receiver")
+    private fun registerDownloadObserver(context: Context, downloadId: Long) {
+        val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+
+        downloadObserver = object : ContentObserver(Handler(Looper.getMainLooper())) {
+            override fun onChange(selfChange: Boolean) {
+                val query = DownloadManager.Query().setFilterById(downloadId)
+                downloadManager.query(query)?.use { cursor ->
+                    if (cursor.moveToFirst()) {
+                        val statusIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)
+                        if (statusIndex != -1) {
+                            val status = cursor.getInt(statusIndex)
+                            if (status == DownloadManager.STATUS_SUCCESSFUL) {
+                                installApk(context, downloadId)
+                                unregisterWatchers(context)
+                            }
+                        }
+                    }
+                }
             }
-            downloadReceiver = null
         }
 
-        // Also unregister the observer if it exists
-        unregisterObserver(context)
+        context.contentResolver.registerContentObserver(
+            DOWNLOAD_URL.toUri(),
+            true,
+            downloadObserver!!
+        )
     }
 
     private fun installApk(context: Context, downloadId: Long) {
@@ -304,6 +274,26 @@ object UpdateChecker {
             } else {
                 Timber.e("No download found with ID: $downloadId")
             }
+        }
+    }
+
+    fun unregisterWatchers(context: Context) {
+        downloadReceiver?.let {
+            try {
+                context.applicationContext.unregisterReceiver(it)
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to unregister receiver")
+            }
+            downloadReceiver = null
+        }
+
+        downloadObserver?.let {
+            try {
+                context.contentResolver.unregisterContentObserver(it)
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to unregister ContentObserver")
+            }
+            downloadObserver = null
         }
     }
 }
